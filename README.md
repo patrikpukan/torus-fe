@@ -1,3 +1,36 @@
+# 📁 Project Structure
+
+src/
+app/
+assets/
+features/
+pages/
+shared/
+main.tsx
+
+### `app/`
+Globálna inicializácia aplikácie — providery, router, layout, globálne štýly.
+
+### `assets/`
+Statické súbory (obrázky, SVG, fonty). Pre skutočne statické → `public/`.
+
+### `features/`
+Samostatné funkčné celky (napr. `auth`, `cart`).  
+Každá feature má vlastné `api/`, `components/`, `hooks/`, `lib/`.
+
+### `pages/`
+Route-level stránky.  
+Každá má vlastný priečinok s `Page.tsx` a lokálnymi sekciami/hookmi.
+
+### `shared/`
+Zdieľané UI a utility naprieč projektom:
+- `ui/` – generické komponenty (Button, Modal…)
+- `hooks/` – znovupoužiteľné hooky
+- `lib/` – helpers, formátovanie, http
+- `assets/` – globálne ikony/ilustrácie
+- `styles/` – globálne CSS, tokens
+
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

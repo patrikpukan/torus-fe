@@ -1,23 +1,24 @@
-import CssBaseline from '@mui/material/CssBaseline'
-import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import BaseLayout from './layouts/BaseLayout'
-import HomePage from '../pages/home/HomePage'
-import LandingPage from '../pages/LandingPage'
-import LoginPage from '../pages/login/LoginPage'
-import RegisterPage from '../pages/register/RegisterPage'
-import ResetPasswordPage from '../pages/reset-password/ResetPasswordPage'
-import ProfilePage from '../pages/profile/ProfilePage'
+import BaseLayout from "./layouts/BaseLayout";
+import HomePage from "../pages/home/HomePage";
+import LandingPage from "../pages/LandingPage";
+import LoginPage from "../pages/login/LoginPage";
+import RegisterPage from "../pages/register/RegisterPage";
+import ResetPasswordPage from "../pages/reset-password/ResetPasswordPage";
+import ProfilePage from "../pages/profile/ProfilePage";
+import UserListPage from "../pages/user-list/UserListPage";
 
 const theme = createTheme({
   palette: {
-    mode: 'light',
+    mode: "light",
     primary: {
-      main: '#0d47a1',
+      main: "#0d47a1",
     },
     secondary: {
-      main: '#00bcd4',
+      main: "#00bcd4",
     },
   },
 });
@@ -35,11 +36,12 @@ const App = () => {
             <Route path="reset-password" element={<ResetPasswordPage />} />
             <Route path="home" element={<HomePage />} />
             <Route path="profile" element={<ProfilePage />} />
+            <Route path="user-list" element={<UserListPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
-  )
-}
+  );
+};
 
-export default App
+export default App;

@@ -21,6 +21,7 @@
     "@schedule-x/theme-default": "^3.3.0",
     "@tanstack/react-query": "^5.90.2",
     "material-react-table": "^3.2.1",
+    "prettier-eslint": "^16.4.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.4",

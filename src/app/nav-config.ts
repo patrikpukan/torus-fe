@@ -1,9 +1,10 @@
 export type NavItem = {
-  label: string
-  path: string
-}
+  label: string;
+  path: string;
+};
 
 export const navConfig: NavItem[] = [
-  { label: 'Home', path: '/home' },
-  { label: 'Profile', path: '/profile' },
-]
+  { label: "Home", path: "/home" },
+  { label: "Profile", path: "/profile" },
+  { label: "User List", path: "/user-list" },
+];

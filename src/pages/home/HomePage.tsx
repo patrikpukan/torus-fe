@@ -1,15 +1,12 @@
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
-
 const HomePage = () => {
   return (
-    <Stack spacing={2}>
-      <Typography variant="h4">Home</Typography>
-      <Typography variant="body1">
+    <div className="space-y-2">
+      <h1 className="text-3xl font-semibold tracking-tight">Home</h1>
+      <p className="text-base text-muted-foreground">
         Dashboard content will live here. For now, this is just a placeholder.
-      </Typography>
-    </Stack>
-  )
-}
+      </p>
+    </div>
+  );
+};
 
-export default HomePage
+export default HomePage;

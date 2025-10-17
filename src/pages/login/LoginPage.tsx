@@ -1,11 +1,9 @@
-import Box from "@mui/material/Box";
-
 import LoginForm from "../../features/auth/components/LoginForm";
 
 const LoginPage = () => (
-  <Box display="flex" alignItems="center" justifyContent="center">
+  <div className="flex min-h-screen items-center justify-center">
     <LoginForm />
-  </Box>
+  </div>
 );
 
 export default LoginPage;

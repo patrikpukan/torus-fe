@@ -6,6 +6,7 @@ import BaseLayout from "./layouts/BaseLayout";
 import HomePage from "../pages/home/HomePage";
 import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/login/LoginPage";
+import RegisterOrgPage from "../pages/register-org/RegisterOrgPage";
 import RegisterPage from "../pages/register/RegisterPage";
 import ResetPasswordPage from "../pages/reset-password/ResetPasswordPage";
 import ProfilePage from "../pages/profile/ProfilePage";
@@ -33,6 +34,7 @@ const App = () => {
             <Route index element={<LandingPage />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="register" element={<RegisterPage />} />
+            <Route path="register-org" element={<RegisterOrgPage />} />
             <Route path="reset-password" element={<ResetPasswordPage />} />
             <Route path="home" element={<HomePage />} />
             <Route path="profile" element={<ProfilePage />} />

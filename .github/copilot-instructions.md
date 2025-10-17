@@ -3,7 +3,7 @@
 ## Stack Overview
 
 - React 19 with Vite and TypeScript; prefer modern React patterns (hooks, suspense ready components) and keep components as server agnostic as possible.
-- Material UI 7 with Emotion; rely on the design system components, the sx prop, and theme overrides instead of ad hoc CSS.
+- shadcn with Emotion; rely on the design system components, the sx prop, and theme overrides instead of ad hoc CSS.
 - React Router 7; use nested routes with layout components and `Outlet`, and favor `NavLink` for navigation elements that need active styling.
 - TanStack Query 5 for data fetching, caching, and background refetching; colocate query hooks with the feature that consumes the data.
 - Schedule-X calendar utilities and Material React Table are available for scheduling and tabular displays; keep adapters in feature folders.
@@ -19,7 +19,7 @@
 
 ## Styling And Theming
 
-- Wrap new layout trees in Material UI primitives (`Box`, `Stack`, `Container`, `Grid`) and compose with the `sx` prop.
+- Wrap new layout trees in shadcn primitives (Box, Stack, Container, Grid) and compose with the sx prop.
 - Keep spacing and sizing aligned to the theme spacing scale; avoid hard coded pixel values unless necessary.
 - Favor variant driven typography (`Typography` component) and keep colors within theme palette keys.
 - When custom styling is complex, extract an Emotion styled component but keep theme awareness via the callback API.
@@ -50,8 +50,8 @@ const useProfile = (userId: string) => {
 
 ## Forms And User Input
 
-- Build forms with Material UI inputs (`TextField`, `Select`, `DatePicker`) and align labels with their inputs using `htmlFor`.
-- Adopt `react-hook-form` with TanStack Query mutations when adding complex forms; integrate via `Controller` for MUI compatibility.
+- Build forms with shadcn inputs (TextField, Select, DatePicker) and align labels with their inputs using htmlFor
+- Adopt react-hook-form with TanStack Query mutations when adding complex forms; integrate via Controller for shadcn compatibility.
 - Include inline validation messaging and disable submit buttons while pending to reflect mutation state.
 
 ## Dates And Scheduling
@@ -67,7 +67,7 @@ const useProfile = (userId: string) => {
 
 ## Accessibility And UX
 
-- Ensure interactive elements expose `aria` attributes or semantic HTML equivalents; Material UI components should receive the correct role automatically when used as intended.
+- Ensure interactive elements expose aria attributes or semantic HTML equivalents; shadcn components should receive the correct role automatically when used as intended.
 - Maintain keyboard navigation support by respecting focus order and using `Button`, `Link`, and form components appropriately.
 - Provide loading and empty states for all query backed views and handle error surfaces with inline alerts or snackbars.
 

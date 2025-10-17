@@ -1,36 +1,43 @@
-import Button from '@mui/material/Button'
-import Paper from '@mui/material/Paper'
-import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const ResetPasswordForm = () => {
   return (
-    <Paper elevation={3} sx={{ p: 4, width: '100%', maxWidth: 420 }}>
-      <Stack spacing={3}>
-        <Typography variant="h4" component="h1" textAlign="center">
-          Reset your password
-        </Typography>
+    <Card className="w-full max-w-[420px]">
+      <CardHeader className="text-center">
+        <CardTitle className="text-2xl">Reset your password</CardTitle>
+      </CardHeader>
 
-        <Stack spacing={1}>
-          <Typography component="label" htmlFor="reset-password-email" variant="body2" fontWeight={600}>
+      <CardContent className="space-y-4">
+        <div className="space-y-1.5">
+          <Label
+            htmlFor="reset-password-email"
+            className="text-sm font-semibold"
+          >
             Email:
-          </Typography>
-          <TextField
+          </Label>
+          <Input
             id="reset-password-email"
             name="email"
             type="email"
             autoComplete="email"
-            fullWidth
           />
-        </Stack>
+        </div>
+      </CardContent>
 
-        <Button variant="contained" color="primary" fullWidth>
-          Send reset password email
-        </Button>
-      </Stack>
-    </Paper>
-  )
-}
+      <CardFooter className="p-6 pt-0">
+        <Button className="w-full">Send reset password email</Button>
+      </CardFooter>
+    </Card>
+  );
+};
 
-export default ResetPasswordForm
+export default ResetPasswordForm;

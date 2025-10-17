@@ -6,6 +6,7 @@ import HomePage from "../pages/home/HomePage";
 import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/login/LoginPage";
 import ProfilePage from "../pages/profile/ProfilePage";
+import PairingsRoute from "../pages/pairings/PairingsRoute";
 import RegisterOrgPage from "../pages/register-org/RegisterOrgPage";
 import RegisterPage from "../pages/register/RegisterPage";
 import ResetPasswordPage from "../pages/reset-password/ResetPasswordPage";
@@ -41,6 +42,10 @@ const App = () => {
             <Route path="profile" element={<ProfilePage />} />
             <Route path="user-list" element={<UserListPage />} />
             <Route path="user-list/:email" element={<UserDetailPage />} />
+            <Route path="pairings">
+              <Route index element={<PairingsRoute />} />
+              <Route path=":id" element={<PairingsRoute />} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>

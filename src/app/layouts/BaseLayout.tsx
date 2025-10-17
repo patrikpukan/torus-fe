@@ -1,85 +1,96 @@
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Container from "@mui/material/Container";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import { Outlet, NavLink } from "react-router-dom";
-
-import { navConfig } from "../nav-config";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarRail,
+  SidebarSeparator,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { Home, LogIn, User, Users } from "lucide-react";
+import { NavLink, Outlet } from "react-router-dom";
 import logo from "../../assets/torus_logo.png";
+import { navConfig } from "../nav-config";
 
 const BaseLayout = () => {
   return (
-    <Box minHeight="100vh" display="flex" flexDirection="column">
-      <AppBar position="static">
-        <Container>
-          <Toolbar
-            disableGutters
-            sx={{ display: "flex", justifyContent: "space-between" }}
+    <SidebarProvider>
+      <Sidebar collapsible="icon">
+        <SidebarHeader>
+          <NavLink
+            to="/"
+            className="flex items-center gap-2 px-2 py-1.5 group-data-[collapsible=icon]:hidden"
           >
-            <Box
-              component={NavLink}
-              to="/"
-              sx={{ display: "inline-flex", alignItems: "center", mr: 2 }}
-            >
-              <Box
-                component="img"
-                src={logo}
-                alt="Torus Logo"
-                sx={{
-                  height: 35,
-                  backgroundColor: "white",
-                  borderRadius: "4px",
-                  px: 1.5,
-                  py: 0.5,
-                }}
-              />
-            </Box>
-            <Box component="nav" display="flex" gap={2}>
-              {navConfig.map((item) => (
-                <Button
-                  key={item.path}
-                  color="inherit"
-                  component={NavLink}
-                  to={item.path}
-                  sx={{
-                    "&.active": {
-                      borderBottom: "2px solid currentColor",
-                    },
-                  }}
-                >
-                  {item.label}
-                </Button>
-              ))}
-              <Button
-                variant="outlined"
-                color="inherit"
-                component={NavLink}
-                to="/login"
-              >
-                Login
-              </Button>
-            </Box>
-          </Toolbar>
-        </Container>
-      </AppBar>
-
-      <Container component="main" sx={{ flexGrow: 1, py: 4 }}>
-        <Outlet />
-      </Container>
-
-      <Box
-        component="footer"
-        sx={{ mt: "auto", py: 2, backgroundColor: "grey.100" }}
-      >
-        <Container>
-          <Typography variant="body2" color="text.secondary" textAlign="center">
+            <img
+              src={logo}
+              alt="Torus Logo"
+              className="h-9 rounded bg-white px-1.5 py-0.5 group-data-[collapsible=icon]:h-6"
+            />
+            <span className="text-base font-semibold group-data-[collapsible=icon]:hidden">
+              Torus
+            </span>
+          </NavLink>
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Main</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {navConfig.map((item) => (
+                  <SidebarMenuItem key={item.path}>
+                    <SidebarMenuButton asChild>
+                      <NavLink to={item.path}>
+                        {item.path === "/home" && <Home />}
+                        {item.path === "/profile" && <User />}
+                        {item.path === "/user-list" && <Users />}
+                        <span>{item.label}</span>
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+                <SidebarSeparator />
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <NavLink to="/login">
+                      <LogIn />
+                      <span>Login</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+        <SidebarFooter className="mt-auto">
+          <div className="px-2 py-1.5 text-xs text-sidebar-foreground/70">
+            © {new Date().getFullYear()} Torus
+          </div>
+        </SidebarFooter>
+        <SidebarRail />
+      </Sidebar>
+      <SidebarInset>
+        <div className="sticky top-0 z-10 flex h-12 items-center gap-2 border-b bg-background px-3">
+          <SidebarTrigger />
+          <div className="ml-auto" />
+        </div>
+        <div className="container mx-auto flex-1 p-4">
+          <Outlet />
+        </div>
+        <footer className="mt-auto border-t bg-muted/30">
+          <div className="container mx-auto py-3 text-center text-sm text-muted-foreground">
             © {new Date().getFullYear()} Torus. All rights reserved.
-          </Typography>
-        </Container>
-      </Box>
-    </Box>
+          </div>
+        </footer>
+      </SidebarInset>
+    </SidebarProvider>
   );
 };
 

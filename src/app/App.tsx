@@ -2,15 +2,16 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import BaseLayout from "./layouts/BaseLayout";
 import HomePage from "../pages/home/HomePage";
 import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/login/LoginPage";
+import ProfilePage from "../pages/profile/ProfilePage";
 import RegisterOrgPage from "../pages/register-org/RegisterOrgPage";
 import RegisterPage from "../pages/register/RegisterPage";
 import ResetPasswordPage from "../pages/reset-password/ResetPasswordPage";
-import ProfilePage from "../pages/profile/ProfilePage";
+import UserDetailPage from "../pages/user-list/UserDetailPage";
 import UserListPage from "../pages/user-list/UserListPage";
+import BaseLayout from "./layouts/BaseLayout";
 
 const theme = createTheme({
   palette: {
@@ -39,6 +40,7 @@ const App = () => {
             <Route path="home" element={<HomePage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="user-list" element={<UserListPage />} />
+            <Route path="user-list/:email" element={<UserDetailPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

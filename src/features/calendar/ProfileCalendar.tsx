@@ -100,13 +100,15 @@ const ProfileCalendar = () => {
   const handleAddEvent = () => {
     // Add a quick 1-hour available slot starting at the next full hour (local timezone)
     const base = Temporal.Now.zonedDateTimeISO();
-    const nextHour = base.with({
-      minute: 0,
-      second: 0,
-      millisecond: 0,
-      microsecond: 0,
-      nanosecond: 0,
-    }).add({ hours: 1 });
+    const nextHour = base
+      .with({
+        minute: 0,
+        second: 0,
+        millisecond: 0,
+        microsecond: 0,
+        nanosecond: 0,
+      })
+      .add({ hours: 1 });
     calendar.events.add({
       id: String(Date.now()),
       title: "Available",
@@ -133,7 +135,7 @@ const ProfileCalendar = () => {
 
       <div className="mt-10 flex flex-col items-center gap-4">
         <Button
-          className="h-auto w-80 rounded-xl bg-muted-foreground py-4 text-lg font-semibold text-white hover:bg-muted-foreground/90"
+          className="h-auto w-80 rounded-xl bg-muted-foreground py-4 text-lg font-semibold hover:bg-muted-foreground/90"
           size="lg"
           onClick={handleAddEvent}
         >

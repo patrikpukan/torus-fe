@@ -1,10 +1,8 @@
 image: node:22.15.0-alpine
 
 stages:
+  - build
   - deploy
-
-variables:
-  YARN_CACHE_FOLDER: "$CI_PROJECT_DIR/cache/yarn"
 
 .rules:
   rules:
@@ -12,15 +10,15 @@ variables:
     - if: ($CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "push")
   interruptible: true
 
-.cache_template: &cache_config
-  key:
-    files:
-      - yarn.lock
-  paths:
-    - cache/yarn
-    - node_modules
-    - frontend/node_modules
-    - backend/node_modules
+build_on_merge_request:
+  stage: build
+  script:
+    - npm ci
+    - npm run lint
+    - npm run build
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+  interruptible: true
 
 deploy_to_production:
   stage: deploy
@@ -45,17 +43,10 @@ deploy_to_production:
 
         # Add any build or restart commands here, for example:
         # echo "📦 Installing dependencies..."
-        # corepack enable
-        # yarn install
         npm install
         # echo "🛠️  Building the application..."
         npm run lint
         npm run build
-        # yarn check-all
-        # yarn backend build
-        # yarn backend seed
-        # yarn frontend build
-        # yarn restart
 
         # echo "🚀 Restarting application..."
         # pm2 reload all

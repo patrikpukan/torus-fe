@@ -13,6 +13,7 @@ stages:
 build_on_merge_request:
   stage: build
   script:
+    - npm install
     - npm ci
     - npm run lint
     - npm run build

@@ -15,6 +15,12 @@ h3 {
 }
 
 @layer base {
+  h1 {
+    color: #223241;
+  }
+}
+
+@layer base {
   :root {
     /* Generic tokens map to sidebar by default */
     --background: var(--sidebar-background);

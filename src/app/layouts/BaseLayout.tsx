@@ -14,7 +14,7 @@ import {
   SidebarSeparator,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Home, LogIn, User, Users } from "lucide-react";
+import { Handshake, Home, LogIn, User, Users } from "lucide-react";
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import {
@@ -56,6 +56,7 @@ const BaseLayout = () => {
                     <SidebarMenuButton asChild>
                       <NavLink to={item.path}>
                         {item.path === "/home" && <Home />}
+                        {item.path === "/pairings" && <Handshake />}
                         {item.path === "/profile" && <User />}
                         {item.path === "/user-list" && <Users />}
                         <span>{item.label}</span>

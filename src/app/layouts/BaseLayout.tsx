@@ -17,6 +17,11 @@ import {
 import { Home, LogIn, User, Users } from "lucide-react";
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "../../components/ui/avatar";
 import { navConfig } from "../nav-config";
 import { Logo } from "./Logo";
 import { LogoText } from "./LogoText";
@@ -35,7 +40,7 @@ const BaseLayout = () => {
               </div>
             )}
             {!sidebarOpen && (
-              <div className="w-full hidden group-data-[collapsible=icon]:block ">
+              <div className="w-full max-w-10 hidden group-data-[collapsible=icon]:block ">
                 <Logo />
               </div>
             )}
@@ -73,7 +78,25 @@ const BaseLayout = () => {
         </SidebarContent>
         <SidebarFooter className="mt-auto">
           <div className="px-2 py-1.5 text-xs text-sidebar-foreground/70">
-            © {new Date().getFullYear()} Torus
+            {sidebarOpen && (
+              <div className="grid grid-cols-[auto_1fr] gap-2 items-center">
+                <div className="max-w-10">
+                  <Avatar>
+                    <AvatarImage src="https://github.com/shadcn.png" />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
+                </div>
+                User name
+              </div>
+            )}
+            {!sidebarOpen && (
+              <div className="max-w-10">
+                <Avatar>
+                  <AvatarImage src="https://github.com/shadcn.png" />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+              </div>
+            )}
           </div>
         </SidebarFooter>
         <SidebarRail />

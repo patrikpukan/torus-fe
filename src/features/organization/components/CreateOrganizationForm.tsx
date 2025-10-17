@@ -192,8 +192,7 @@ const CreateOrganizationForm = () => {
       <CardHeader>
         <CardTitle>Registrace organizace</CardTitle>
         <CardDescription>
-          Vyplňte údaje pro založení nové organizace. Vytvoříme správce se
-          silným heslem a rezervujeme unikátní název.
+          Vyplňte údaje pro založení nové organizace.
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit} noValidate>

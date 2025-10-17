@@ -9,8 +9,7 @@ const RegisterOrgPage = () => {
         </h1>
         <p className="mt-3 text-base text-muted-foreground">
           Vyplňte prosím informace o společnosti, kterou chcete spravovat. Po
-          ověření vám zpřístupníme administrační rozhraní a vytvoříme účet
-          správce.
+          ověření vám zpřístupníme administrační rozhraní Vaší organizace.
         </p>
       </header>
       <CreateOrganizationForm />

@@ -1,8 +1,4 @@
 import { useMemo } from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
 import { Temporal } from "temporal-polyfill";
 import { ScheduleXCalendar } from "@schedule-x/react";
 import {
@@ -11,7 +7,9 @@ import {
   type CalendarEvent,
 } from "@schedule-x/calendar";
 import "@schedule-x/theme-default/dist/index.css";
-import 'temporal-polyfill/global'
+import "temporal-polyfill/global";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 const normalizeLocale = (l?: string): string => {
   if (!l) return "en-US";
@@ -126,35 +124,31 @@ const ProfileCalendar = () => {
   };
 
   return (
-    <Box>
-      <Typography variant="h3" fontWeight={600} mb={3}>
-        Calendar
-      </Typography>
+    <div>
+      <h1 className="mb-6 text-3xl font-semibold">Calendar</h1>
 
-      <Paper variant="outlined" sx={{ p: 2 }}>
+      <Card className="p-4">
         <ScheduleXCalendar calendarApp={calendar} />
-      </Paper>
+      </Card>
 
-      <Box display="flex" flexDirection="column" alignItems="center" gap={3} mt={5}>
+      <div className="mt-10 flex flex-col items-center gap-4">
         <Button
-          variant="contained"
-          color="inherit"
-          size="large"
+          className="h-auto w-80 rounded-xl bg-muted-foreground py-4 text-lg font-semibold text-white hover:bg-muted-foreground/90"
+          size="lg"
           onClick={handleAddEvent}
-          sx={{ width: 320, py: 2, borderRadius: 2, bgcolor: "grey.700", color: "#fff" }}
         >
           Add event
         </Button>
         <Button
-          variant="outlined"
-          size="large"
+          className="h-auto w-80 rounded-xl py-4 text-lg"
+          size="lg"
+          variant="outline"
           onClick={handleSyncGoogle}
-          sx={{ width: 320, py: 2, borderRadius: 2 }}
         >
           Sync with google calendar
         </Button>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

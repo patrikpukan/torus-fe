@@ -1,12 +1,17 @@
-import { useMemo } from "react";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
-import Avatar from "@mui/material/Avatar";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import Button from "@mui/material/Button";
+import { useMemo, type ChangeEvent, type FormEvent } from "react";
+import { CircleUser } from "lucide-react";
+
+import {
+  Field,
+  FieldContent,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import type { UserProfile } from "../../types/User";
 
 export type ProfileFormProps = {
@@ -38,98 +43,113 @@ const ProfileForm = ({
   );
 
   const handleChange =
-    (key: keyof UserProfile) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    (key: keyof UserProfile) =>
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       if (!onChange) return;
-      onChange({ ...value, [key]: e.target.value });
+      onChange({ ...value, [key]: event.target.value } as UserProfile);
     };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     onSubmit?.(value);
   };
 
+  const getFieldValue = (key: keyof UserProfile) => {
+    const fieldValue = value[key];
+    return Array.isArray(fieldValue) ? fieldValue.join(", ") : fieldValue;
+  };
+
   return (
-    <Box
-      component={onSubmit ? "form" : "div"}
+    <form
       onSubmit={onSubmit ? handleSubmit : undefined}
+      className="mx-auto flex w-full max-w-4xl flex-col gap-8"
     >
-      <Typography variant="h3" fontWeight={600} textAlign="center" gutterBottom>
-        Profile
-      </Typography>
-      <Avatar
-        sx={{ bgcolor: "grey.200", width: 96, height: 96, mx: "auto", mb: 5 }}
-      >
-        <AccountCircleIcon sx={{ fontSize: 72, color: "grey.600" }} />
-      </Avatar>
+      <div className="flex flex-col items-center gap-4">
+        <h1 className="text-3xl font-semibold">Profile</h1>
+        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-muted text-muted-foreground">
+          <CircleUser className="h-16 w-16" strokeWidth={1.5} />
+        </div>
+      </div>
 
-      <Grid container spacing={3}>
-        {fields.map(({ key, label }) => (
-          <Grid key={key} size={{ xs: 12, md: 6 }}>
-            <TextField
-              fullWidth
-              label={label}
-              value={value[key]}
-              onChange={handleChange(key)}
-              InputProps={{ readOnly }}
-            />
-          </Grid>
-        ))}
-      </Grid>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        {fields.map(({ key, label }) => {
+          const fieldId = `profile-${key}`;
 
-      <Box mt={6}>
-        <Typography variant="h5" fontWeight={600} gutterBottom>
-          Get to know me:
-        </Typography>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12 }}>
-            <TextField
-              fullWidth
-              label="About me"
-              multiline
-              minRows={3}
-              value={value.about}
-              onChange={handleChange("about")}
-              InputProps={{ readOnly }}
-            />
-          </Grid>
-          <Grid size={{ xs: 12 }}>
-            <TextField
-              fullWidth
-              label="Hobbies"
-              value={value.hobbies}
-              onChange={handleChange("hobbies")}
-              InputProps={{ readOnly }}
-            />
-          </Grid>
-          <Grid size={{ xs: 12 }}>
-            <TextField
-              fullWidth
-              label="Preferred meeting activity"
-              value={value.meetingActivity}
-              onChange={handleChange("meetingActivity")}
-              InputProps={{ readOnly }}
-            />
-          </Grid>
-          <Grid size={{ xs: 12 }}>
-            <TextField
-              fullWidth
-              label="Interests"
-              value={value.interests}
-              onChange={handleChange("interests")}
-              InputProps={{ readOnly }}
-            />
-          </Grid>
-        </Grid>
-      </Box>
+          return (
+            <Field key={key}>
+              <FieldLabel htmlFor={fieldId}>{label}</FieldLabel>
+              <FieldContent>
+                <Input
+                  id={fieldId}
+                  value={getFieldValue(key)}
+                  onChange={handleChange(key)}
+                  readOnly={readOnly}
+                />
+              </FieldContent>
+            </Field>
+          );
+        })}
+      </div>
+
+      <FieldSet>
+        <FieldLegend>Get to know me:</FieldLegend>
+        <FieldGroup>
+          <Field>
+            <FieldLabel htmlFor="profile-about">About me</FieldLabel>
+            <FieldContent>
+              <Textarea
+                id="profile-about"
+                value={value.about}
+                onChange={handleChange("about")}
+                readOnly={readOnly}
+                rows={4}
+              />
+            </FieldContent>
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="profile-hobbies">Hobbies</FieldLabel>
+            <FieldContent>
+              <Input
+                id="profile-hobbies"
+                value={getFieldValue("hobbies")}
+                onChange={handleChange("hobbies")}
+                readOnly={readOnly}
+              />
+            </FieldContent>
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="profile-meeting-activity">
+              Preferred meeting activity
+            </FieldLabel>
+            <FieldContent>
+              <Input
+                id="profile-meeting-activity"
+                value={value.meetingActivity}
+                onChange={handleChange("meetingActivity")}
+                readOnly={readOnly}
+              />
+            </FieldContent>
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="profile-interests">Interests</FieldLabel>
+            <FieldContent>
+              <Input
+                id="profile-interests"
+                value={value.interests}
+                onChange={handleChange("interests")}
+                readOnly={readOnly}
+              />
+            </FieldContent>
+          </Field>
+        </FieldGroup>
+      </FieldSet>
 
       {!readOnly && onSubmit && (
-        <Paper sx={{ mt: 4, p: 2, textAlign: "right" }} elevation={0}>
-          <Button type="submit" variant="contained">
-            {submitLabel}
-          </Button>
-        </Paper>
+        <div className="flex justify-end border-t border-border pt-4">
+          <Button type="submit">{submitLabel}</Button>
+        </div>
       )}
-    </Box>
+    </form>
   );
 };
 

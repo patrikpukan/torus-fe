@@ -31,7 +31,7 @@ Zdieľané UI a utility naprieč projektom:
 - `styles/` – globálne CSS, tokens
 
 
-# React + TypeScript + Vite
+# React + TypeScript + Vite + Pato
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

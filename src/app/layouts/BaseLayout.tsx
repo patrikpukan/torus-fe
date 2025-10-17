@@ -4,7 +4,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
@@ -16,32 +15,35 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Home, LogIn, User, Users } from "lucide-react";
+import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
-import logo from "../../assets/torus_logo.png";
 import { navConfig } from "../nav-config";
+import { Logo } from "./Logo";
+import { LogoText } from "./LogoText";
 
 const BaseLayout = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
   return (
-    <SidebarProvider>
+    <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
       <Sidebar collapsible="icon">
         <SidebarHeader>
-          <NavLink
-            to="/"
-            className="flex items-center gap-2 px-2 py-1.5 group-data-[collapsible=icon]:hidden"
-          >
-            <img
-              src={logo}
-              alt="Torus Logo"
-              className="h-9 rounded bg-white px-1.5 py-0.5 group-data-[collapsible=icon]:h-6"
-            />
-            <span className="text-base font-semibold group-data-[collapsible=icon]:hidden">
-              Torus
-            </span>
+          <NavLink to="/" className="flex items-center gap-2 px-2 py-1.5 ">
+            {sidebarOpen && (
+              <div className="w-full group-data-[collapsible=icon]:hidden">
+                <LogoText />
+              </div>
+            )}
+            {!sidebarOpen && (
+              <div className="w-full hidden group-data-[collapsible=icon]:block ">
+                <Logo />
+              </div>
+            )}
           </NavLink>
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>Main</SidebarGroupLabel>
+            {/* <SidebarGroupLabel>Main</SidebarGroupLabel> */}
             <SidebarGroupContent>
               <SidebarMenu>
                 {navConfig.map((item) => (

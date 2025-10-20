@@ -7,8 +7,8 @@ const UserListPage = () => {
   return (
     <div className="container py-4">
       <div className="space-y-3">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          User Directory
+        <h1 className="text-xl font-semibold tracking-tight">
+          Users
         </h1>
 
         <div className="space-y-2">

@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
 import { pairingContacts } from "@/mocks/mockPairings";
+import {useAuth} from "@/features/auth/context/AuthProvider.tsx";
 
 type HomeStats = {
   activeSince: string | null;
@@ -47,13 +48,14 @@ const getStats = (activeSince: string | null): HomeStats => {
 };
 
 const useHomeData = (): UseHomeDataResult => {
-  //TODO mock data
+    const authCtx = useAuth();
+
   return useMemo(() => {
     const currentPairing = getCurrentPairing();
     const stats = getStats(currentPairing?.lastPairedAt ?? null);
 
     return {
-      firstName: "Ferko",
+      firstName: authCtx.user?.user_metadata?.first_name,
       currentPairing,
       stats,
       isLoading: false,

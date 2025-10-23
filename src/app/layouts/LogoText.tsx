@@ -29,11 +29,11 @@ export const LogoText = () => {
           gradientTransform="matrix(-22.596 128.443 -131.424 -22.0835 123.023 67.855)"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset=".611" stop-color="#a9cada" />
-          <stop offset=".721" stop-color="#9ec1d4" />
-          <stop offset=".813" stop-color="#92b8ce" />
-          <stop offset=".909" stop-color="#81aac5" />
-          <stop offset="1" stop-color="#6190b5" />
+          <stop offset=".611" stopColor="#a9cada" />
+          <stop offset=".721" stopColor="#9ec1d4" />
+          <stop offset=".813" stopColor="#92b8ce" />
+          <stop offset=".909" stopColor="#81aac5" />
+          <stop offset="1" stopColor="#6190b5" />
         </radialGradient>
       </defs>
     </svg>

@@ -10,6 +10,8 @@ import PairingsRoute from "../pages/pairings/PairingsRoute";
 import RegisterOrgPage from "../pages/register-org/RegisterOrgPage";
 import RegisterPage from "../pages/register/RegisterPage";
 import ResetPasswordPage from "../pages/reset-password/ResetPasswordPage";
+import ConfirmResetPasswordPage from "../pages/reset-password/ConfirmResetPasswordPage";
+import AuthCallbackPage from "../pages/auth/AuthCallbackPage";
 import UserDetailPage from "../pages/user-list/UserDetailPage";
 import UserListPage from "../pages/user-list/UserListPage";
 import BaseLayout from "./layouts/BaseLayout";
@@ -32,6 +34,11 @@ const App = () => {
       <CssBaseline />
       <BrowserRouter>
         <Routes>
+          <Route path="/auth/callback" element={<AuthCallbackPage />} />
+          <Route
+            path="/reset-password/confirm"
+            element={<ConfirmResetPasswordPage />}
+          />
           <Route path="/" element={<BaseLayout />}>
             <Route index element={<LandingPage />} />
             <Route path="login" element={<LoginPage />} />
@@ -41,7 +48,7 @@ const App = () => {
             <Route path="home" element={<HomePage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="user-list" element={<UserListPage />} />
-            <Route path="user-list/:email" element={<UserDetailPage />} />
+            <Route path="user-list/:id" element={<UserDetailPage />} />
             <Route path="pairings">
               <Route index element={<PairingsRoute />} />
               <Route path=":id" element={<PairingsRoute />} />

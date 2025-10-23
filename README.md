@@ -31,6 +31,23 @@ Zdieľané UI a utility naprieč projektom:
 - `styles/` – globálne CSS, tokens
 
 
+## Supabase Authentication & GraphQL
+
+- Konfiguruj `.env` s hodnotami:
+  - `VITE_SUPABASE_URL`
+  - `VITE_SUPABASE_PUBLISHABLE_KEY`
+  - `VITE_GRAPHQL_API` (GraphQL endpoint backendu)
+  - `VITE_APP_URL` (origin FE, používa sa v e-mailových odkazoch – napr. `http://localhost:3000`)
+- Supabase klient žije v `src/lib/supabaseClient.ts`, session spravuje `AuthProvider`.
+- `ApolloClient` (`src/lib/apolloClient.ts`) posiela Supabase JWT v hlavičke `Authorization`, takže backend vie uplatniť RLS.
+- Emailové flow sú celé v Supabase – potvrdenie registrácie, reset hesla a magic linky. V Supabase Dashboard ➜ Authentication nastav `Site URL` + `Redirect URLs` (napr. `/auth/callback`, `/reset-password/confirm`).
+- Routing pre callbacky:
+  - `/auth/callback` – spracuje potvrdenie e-mailu po registrácii
+  - `/reset-password` – pošle reset email
+  - `/reset-password/confirm` – nastaví nové heslo po kliknutí na odkaz
+- `UserListPage` už číta dáta z GraphQL a zobrazuje chyby, ak RLS request odmietne.
+- `useAuth` hook poskytuje `signIn`, `signOut` a aktuálnu session pre komponenty; komponenty pre registráciu a reset pracujú priamo so Supabase SDK.
+
 # React + TypeScript + Vite + Pato
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

@@ -14,9 +14,9 @@ import {
   SidebarSeparator,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Handshake, Home, LogIn, User, Users } from "lucide-react";
-import { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { Handshake, Home, LogIn, LogOut, User, Users } from "lucide-react";
+import { useCallback, useState } from "react";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   Avatar,
   AvatarFallback,
@@ -25,9 +25,46 @@ import {
 import { navConfig } from "../nav-config";
 import { Logo } from "./Logo";
 import { LogoText } from "./LogoText";
+import { useAuth } from "@/features/auth/context/AuthProvider";
 
 const BaseLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+
+  const userDisplayName = (() => {
+    if (!user) {
+      return "Signed out";
+    }
+
+    const fullName = user.user_metadata?.full_name;
+    if (typeof fullName === "string" && fullName.trim().length > 0) {
+      return fullName;
+    }
+
+    const parts = [
+      user.user_metadata?.first_name,
+      user.user_metadata?.last_name,
+    ].filter(
+      (part): part is string =>
+        typeof part === "string" && part.trim().length > 0,
+    );
+
+    if (parts.length > 0) {
+      return parts.join(" ");
+    }
+
+    return user.email ?? "Signed out";
+  })();
+
+  const handleSignOut = useCallback(async () => {
+    try {
+      await signOut();
+      navigate("/login");
+    } catch (error) {
+      console.error("Failed to sign out", error);
+    }
+  }, [navigate, signOut]);
 
   return (
     <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
@@ -66,12 +103,19 @@ const BaseLayout = () => {
                 ))}
                 <SidebarSeparator />
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <NavLink to="/login">
-                      <LogIn />
-                      <span>Login</span>
-                    </NavLink>
-                  </SidebarMenuButton>
+                  {user ? (
+                    <SidebarMenuButton onClick={handleSignOut}>
+                      <LogOut />
+                      <span>Logout</span>
+                    </SidebarMenuButton>
+                  ) : (
+                    <SidebarMenuButton asChild>
+                      <NavLink to="/login">
+                        <LogIn />
+                        <span>Login</span>
+                      </NavLink>
+                    </SidebarMenuButton>
+                  )}
                 </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
@@ -83,18 +127,29 @@ const BaseLayout = () => {
               <div className="grid grid-cols-[auto_1fr] gap-2 items-center">
                 <div className="max-w-10">
                   <Avatar>
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>CN</AvatarFallback>
+                    <AvatarImage src={user?.user_metadata?.avatar_url ?? ""} />
+                    <AvatarFallback>
+                      {user?.email?.[0]?.toUpperCase() ?? "U"}
+                    </AvatarFallback>
                   </Avatar>
                 </div>
-                User name
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium">
+                    {userDisplayName}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {user?.email ?? ""}
+                  </span>
+                </div>
               </div>
             )}
             {!sidebarOpen && (
               <div className="max-w-10">
                 <Avatar>
-                  <AvatarImage src="https://github.com/shadcn.png" />
-                  <AvatarFallback>CN</AvatarFallback>
+                  <AvatarImage src={user?.user_metadata?.avatar_url ?? ""} />
+                  <AvatarFallback>
+                    {user?.email?.[0]?.toUpperCase() ?? "U"}
+                  </AvatarFallback>
                 </Avatar>
               </div>
             )}

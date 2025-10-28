@@ -1,26 +1,26 @@
-import { useMemo, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { supabaseClient } from '@/lib/supabaseClient';
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { supabaseClient } from "@/lib/supabaseClient";
 
 const ResetPasswordForm = () => {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   const appUrl = useMemo(() => {
     return (
-      import.meta.env.VITE_APP_URL?.replace(/\/$/, '') ??
-      window.location.origin.replace(/\/$/, '')
+      import.meta.env.VITE_APP_URL?.replace(/\/$/, "") ??
+      window.location.origin.replace(/\/$/, "")
     );
   }, []);
 
@@ -29,7 +29,7 @@ const ResetPasswordForm = () => {
     setError(null);
 
     if (!email) {
-      setError('Please enter your email address.');
+      setError("Please enter your email address.");
       return;
     }
 
@@ -51,7 +51,7 @@ const ResetPasswordForm = () => {
       const message =
         resetException instanceof Error
           ? resetException.message
-          : 'Unable to send reset email. Please try again.';
+          : "Unable to send reset email. Please try again.";
       setError(message);
     } finally {
       setIsSubmitting(false);
@@ -92,14 +92,15 @@ const ResetPasswordForm = () => {
 
           {success && (
             <div className="rounded border border-emerald-600/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-700">
-              If the email exists, we have sent password reset instructions. Please check your inbox.
+              If the email exists, we have sent password reset instructions.
+              Please check your inbox.
             </div>
           )}
         </CardContent>
 
         <CardFooter className="p-6 pt-0">
           <Button className="w-full" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Sending…' : 'Send reset password email'}
+            {isSubmitting ? "Sending…" : "Send reset password email"}
           </Button>
         </CardFooter>
       </form>

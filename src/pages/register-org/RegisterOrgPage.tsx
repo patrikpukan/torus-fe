@@ -8,8 +8,9 @@ const RegisterOrgPage = () => {
           Create a New Organization
         </h1>
         <p className="mt-3 text-base text-muted-foreground">
-          Please fill in the information about the organization you want to manage. 
-          After verification, we will grant you access to your organization's admin panel.
+          Please fill in the information about the organization you want to
+          manage. After verification, we will grant you access to your
+          organization's admin panel.
         </p>
       </header>
       <CreateOrganizationForm />

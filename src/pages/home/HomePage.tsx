@@ -3,7 +3,12 @@ import { Link } from "react-router-dom";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import useHomeData from "@/features/home/useHomeData";
 
@@ -45,7 +50,8 @@ const HomeSkeleton = () => (
 );
 
 const HomePage = () => {
-  const { firstName, currentPairing, stats, isLoading, isEmpty } = useHomeData();
+  const { firstName, currentPairing, stats, isLoading, isEmpty } =
+    useHomeData();
 
   if (isLoading) {
     return <HomeSkeleton />;
@@ -72,7 +78,9 @@ const HomePage = () => {
           {isEmpty ? (
             <div className="flex flex-1 flex-col items-start gap-4">
               <div>
-                <h2 className="text-xl font-semibold">No active pairings yet</h2>
+                <h2 className="text-xl font-semibold">
+                  No active pairings yet
+                </h2>
                 <p className="text-sm text-muted-foreground">
                   Once you&#39;re paired with a colleague, their details will
                   show up here.
@@ -160,7 +168,9 @@ const HomePage = () => {
                 <User />
               </div>
               <div>
-                <CardTitle className="text-base font-semibold">Profile</CardTitle>
+                <CardTitle className="text-base font-semibold">
+                  Profile
+                </CardTitle>
                 <CardDescription>
                   Review your details and availability.
                 </CardDescription>

@@ -30,10 +30,12 @@ export default function PairingsList({
   className,
 }: PairingsListProps) {
   const byPaired = [...contacts].sort(
-    (a, b) => new Date(b.lastPairedAt).getTime() - new Date(a.lastPairedAt).getTime()
+    (a, b) =>
+      new Date(b.lastPairedAt).getTime() - new Date(a.lastPairedAt).getTime()
   );
   const byMessage = [...contacts].sort(
-    (a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
+    (a, b) =>
+      new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
   );
 
   const renderList = (list: PairingContact[]) => (
@@ -85,17 +87,27 @@ export default function PairingsList({
 
   return (
     <div className={className}>
-      <Tabs value={sortMode} onValueChange={(v) => onChangeSortMode?.(v as SortMode)} className="flex h-full flex-col">
+      <Tabs
+        value={sortMode}
+        onValueChange={(v) => onChangeSortMode?.(v as SortMode)}
+        className="flex h-full flex-col"
+      >
         <div className="border-b px-4 py-4">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="paired">Sort by paired</TabsTrigger>
             <TabsTrigger value="message">Sort by message</TabsTrigger>
           </TabsList>
         </div>
-        <TabsContent value="paired" className="mt-0 flex-1 overflow-hidden px-0 pb-4">
+        <TabsContent
+          value="paired"
+          className="mt-0 flex-1 overflow-hidden px-0 pb-4"
+        >
           <div className="h-full overflow-y-auto">{renderList(byPaired)}</div>
         </TabsContent>
-        <TabsContent value="message" className="mt-0 flex-1 overflow-hidden px-0 pb-4">
+        <TabsContent
+          value="message"
+          className="mt-0 flex-1 overflow-hidden px-0 pb-4"
+        >
           <div className="h-full overflow-y-auto">{renderList(byMessage)}</div>
         </TabsContent>
       </Tabs>

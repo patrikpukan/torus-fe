@@ -17,13 +17,24 @@ export type PairingDetailProps = {
 
 const formatDateTime = (iso?: string) =>
   iso
-    ? new Date(iso).toLocaleString([], { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })
+    ? new Date(iso).toLocaleString([], {
+        day: "2-digit",
+        month: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
     : "";
 const formatMessageTime = (iso: string) =>
   new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-export default function PairingDetail({ contact, drafts = {}, onChangeDraft, onSend, onBack }: PairingDetailProps) {
-  const currentDraft = contact ? drafts[contact.id] ?? "" : "";
+export default function PairingDetail({
+  contact,
+  drafts = {},
+  onChangeDraft,
+  onSend,
+  onBack,
+}: PairingDetailProps) {
+  const currentDraft = contact ? (drafts[contact.id] ?? "") : "";
   const messages = contact?.messages ?? [];
 
   return (
@@ -36,7 +47,8 @@ export default function PairingDetail({ contact, drafts = {}, onChangeDraft, onS
                 {contact.profile.name} {contact.profile.surname}
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                {contact.profile.organization} · Last message {formatDateTime(contact.lastMessageAt)}
+                {contact.profile.organization} · Last message{" "}
+                {formatDateTime(contact.lastMessageAt)}
               </p>
             </div>
             {onBack && (
@@ -62,11 +74,26 @@ export default function PairingDetail({ contact, drafts = {}, onChangeDraft, onS
                       messages.map((m) => {
                         const isSelf = m.author === "self";
                         return (
-                          <div key={m.id} className={cn("flex flex-col gap-1", isSelf ? "items-end" : "items-start")}> 
-                            <div className={cn("max-w-[70%] rounded-2xl px-4 py-2 text-sm shadow-sm", isSelf ? "bg-primary text-primary-foreground" : "bg-muted")}> 
+                          <div
+                            key={m.id}
+                            className={cn(
+                              "flex flex-col gap-1",
+                              isSelf ? "items-end" : "items-start"
+                            )}
+                          >
+                            <div
+                              className={cn(
+                                "max-w-[70%] rounded-2xl px-4 py-2 text-sm shadow-sm",
+                                isSelf
+                                  ? "bg-primary text-primary-foreground"
+                                  : "bg-muted"
+                              )}
+                            >
                               <p>{m.content}</p>
                             </div>
-                            <span className="text-xs text-muted-foreground">{formatMessageTime(m.timestamp)}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {formatMessageTime(m.timestamp)}
+                            </span>
                           </div>
                         );
                       })
@@ -81,11 +108,17 @@ export default function PairingDetail({ contact, drafts = {}, onChangeDraft, onS
                     <Textarea
                       placeholder="Type your message..."
                       value={currentDraft}
-                      onChange={(e) => contact && onChangeDraft?.(contact.id, e.target.value)}
+                      onChange={(e) =>
+                        contact && onChangeDraft?.(contact.id, e.target.value)
+                      }
                       rows={3}
                     />
                     <div className="mt-3 flex justify-end">
-                      <Button type="button" onClick={() => onSend?.(contact)} disabled={!currentDraft.trim()}>
+                      <Button
+                        type="button"
+                        onClick={() => onSend?.(contact)}
+                        disabled={!currentDraft.trim()}
+                      >
                         Send message
                       </Button>
                     </div>
@@ -93,18 +126,26 @@ export default function PairingDetail({ contact, drafts = {}, onChangeDraft, onS
                 </div>
               </TabsContent>
 
-              <TabsContent value="profile" className="mt-0 flex-1 overflow-y-auto px-6 py-4">
+              <TabsContent
+                value="profile"
+                className="mt-0 flex-1 overflow-y-auto px-6 py-4"
+              >
                 <ProfileForm value={contact.profile} readOnly />
               </TabsContent>
 
-              <TabsContent value="calendar" className="mt-0 flex-1 overflow-y-auto px-6 py-4">
+              <TabsContent
+                value="calendar"
+                className="mt-0 flex-1 overflow-y-auto px-6 py-4"
+              >
                 <ProfileCalendar />
               </TabsContent>
             </Tabs>
           </CardContent>
         </>
       ) : (
-        <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">Select a contact to display details.</div>
+        <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
+          Select a contact to display details.
+        </div>
       )}
     </Card>
   );

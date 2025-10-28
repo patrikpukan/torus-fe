@@ -10,7 +10,7 @@ const UserDetailPage = () => {
   const userId = params.id ?? "";
 
   const { data, loading, error } = useUserByIdQuery(
-    userId ? decodeURIComponent(userId) : undefined,
+    userId ? decodeURIComponent(userId) : undefined
   );
 
   if (loading) {
@@ -53,7 +53,9 @@ const UserDetailPage = () => {
         {[user.firstName, user.lastName]
           .filter((part) => part && part.trim().length > 0)
           .join(" ")
-          .trim() || user.username || user.email}
+          .trim() ||
+          user.username ||
+          user.email}
       </h1>
       <Card className="p-6 mt-4">
         <div className="space-y-2">
@@ -66,7 +68,7 @@ const UserDetailPage = () => {
           <div
             className={cn(
               "inline-flex items-center rounded border px-2 py-1 text-xs font-medium capitalize",
-              "border-muted-foreground/20 bg-muted",
+              "border-muted-foreground/20 bg-muted"
             )}
           >
             {user.profileStatus ?? "unknown"}

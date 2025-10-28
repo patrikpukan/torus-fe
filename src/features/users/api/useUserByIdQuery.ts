@@ -1,12 +1,13 @@
-import { gql, useQuery } from '@apollo/client';
-import type { UsersQueryItem } from './useUsersQuery';
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
+import type { UsersQueryItem } from "./useUsersQuery";
 
 export type UserByIdQueryData = {
   userById: UsersQueryItem | null;
 };
 
 export type UserByIdQueryVariables = {
-  id: string;
+  id?: string;
 };
 
 export const USER_BY_ID_QUERY = gql`

@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { supabaseClient } from '@/lib/supabaseClient';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { supabaseClient } from "@/lib/supabaseClient";
 
 const AuthCallbackPage = () => {
   const navigate = useNavigate();
   const [statusMessage, setStatusMessage] = useState(
-    'Finishing sign-in… please wait.',
+    "Finishing sign-in… please wait."
   );
   const [hasError, setHasError] = useState(false);
 
@@ -16,12 +16,11 @@ const AuthCallbackPage = () => {
     const completeAuth = async () => {
       // Some Supabase flows deliver a `code` via query params that must be exchanged manually.
       const searchParams = new URLSearchParams(window.location.search);
-      const verificationCode = searchParams.get('code');
+      const verificationCode = searchParams.get("code");
 
       if (verificationCode) {
-        const { error } = await supabaseClient.auth.exchangeCodeForSession(
-          verificationCode,
-        );
+        const { error } =
+          await supabaseClient.auth.exchangeCodeForSession(verificationCode);
 
         if (!isMounted) {
           return;
@@ -47,13 +46,13 @@ const AuthCallbackPage = () => {
       }
 
       if (data.session) {
-        setStatusMessage('Email verified! Redirecting you to the app…');
+        setStatusMessage("Email verified! Redirecting you to the app…");
         setTimeout(() => {
-          navigate('/login', { replace: true });
+          navigate("/login", { replace: true });
         }, 2000);
       } else {
         setStatusMessage(
-          'Email verified! You can return to the application and sign in.',
+          "Email verified! You can return to the application and sign in."
         );
       }
     };
@@ -75,8 +74,8 @@ const AuthCallbackPage = () => {
           <p
             className={
               hasError
-                ? 'text-sm text-destructive'
-                : 'text-sm text-muted-foreground'
+                ? "text-sm text-destructive"
+                : "text-sm text-muted-foreground"
             }
           >
             {statusMessage}

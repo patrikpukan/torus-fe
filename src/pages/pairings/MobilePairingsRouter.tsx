@@ -1,7 +1,9 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
-import PairingsList, { type SortMode } from "@/features/pairings/components/PairingsList";
+import PairingsList, {
+  type SortMode,
+} from "@/features/pairings/components/PairingsList";
 import PairingDetail from "@/features/pairings/components/PairingDetail";
 import { pairingContacts } from "@/mocks/mockPairings";
 

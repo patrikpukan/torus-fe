@@ -1,29 +1,31 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { supabaseClient } from '@/lib/supabaseClient';
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { supabaseClient } from "@/lib/supabaseClient";
 
 const ConfirmResetPasswordPage = () => {
   const navigate = useNavigate();
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [status, setStatus] = useState<'pending' | 'ready' | 'error' | 'success'>('pending');
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [status, setStatus] = useState<
+    "pending" | "ready" | "error" | "success"
+  >("pending");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [redirectCountdown, setRedirectCountdown] = useState(3);
 
   const passwordMismatch = useMemo(
     () => newPassword !== confirmPassword && confirmPassword.length > 0,
-    [newPassword, confirmPassword],
+    [newPassword, confirmPassword]
   );
 
   useEffect(() => {
@@ -32,13 +34,13 @@ const ConfirmResetPasswordPage = () => {
     const hydrateSession = async () => {
       const hash = window.location.hash.substring(1);
       const params = new URLSearchParams(hash);
-      const hasType = params.get('type');
-      const hasAccessToken = params.get('access_token');
+      const hasType = params.get("type");
+      const hasAccessToken = params.get("access_token");
 
       // Supabase automatically parses hash fragments on load, but in case
       // the link uses ?code=, exchange it here.
       const searchParams = new URLSearchParams(window.location.search);
-      const code = searchParams.get('code');
+      const code = searchParams.get("code");
       if (code) {
         const { error: exchangeError } =
           await supabaseClient.auth.exchangeCodeForSession(code);
@@ -46,7 +48,7 @@ const ConfirmResetPasswordPage = () => {
           return;
         }
         if (exchangeError) {
-          setStatus('error');
+          setStatus("error");
           setError(exchangeError.message);
           return;
         }
@@ -65,20 +67,20 @@ const ConfirmResetPasswordPage = () => {
         await supabaseClient.auth.getSession();
 
       if (sessionError) {
-        setStatus('error');
+        setStatus("error");
         setError(sessionError.message);
         return;
       }
 
       if (!data.session) {
-        setStatus('error');
+        setStatus("error");
         setError(
-          'Could not find an active reset session. Please request a new password reset email.',
+          "Could not find an active reset session. Please request a new password reset email."
         );
         return;
       }
 
-      setStatus('ready');
+      setStatus("ready");
     };
 
     void hydrateSession();
@@ -89,7 +91,7 @@ const ConfirmResetPasswordPage = () => {
   }, []);
 
   useEffect(() => {
-    if (status !== 'success') {
+    if (status !== "success") {
       return;
     }
 
@@ -99,7 +101,7 @@ const ConfirmResetPasswordPage = () => {
           clearInterval(timer);
           void (async () => {
             await supabaseClient.auth.signOut();
-            navigate('/login', { replace: true });
+            navigate("/login", { replace: true });
           })();
           return 0;
         }
@@ -116,12 +118,12 @@ const ConfirmResetPasswordPage = () => {
     setError(null);
 
     if (!newPassword) {
-      setError('Please enter a new password.');
+      setError("Please enter a new password.");
       return;
     }
 
     if (passwordMismatch) {
-      setError('Passwords do not match.');
+      setError("Passwords do not match.");
       return;
     }
 
@@ -137,12 +139,12 @@ const ConfirmResetPasswordPage = () => {
         return;
       }
 
-      setStatus('success');
+      setStatus("success");
     } catch (updateException) {
       const message =
         updateException instanceof Error
           ? updateException.message
-          : 'Unable to update password. Please try again.';
+          : "Unable to update password. Please try again.";
       setError(message);
     } finally {
       setIsSubmitting(false);
@@ -150,7 +152,7 @@ const ConfirmResetPasswordPage = () => {
   };
 
   const renderContent = () => {
-    if (status === 'pending') {
+    if (status === "pending") {
       return (
         <CardContent>
           <p className="text-sm text-muted-foreground">
@@ -160,22 +162,22 @@ const ConfirmResetPasswordPage = () => {
       );
     }
 
-    if (status === 'error') {
+    if (status === "error") {
       return (
         <CardContent className="space-y-4">
           <p className="rounded border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
             {error ??
-              'Something went wrong while preparing your password reset link.'}
+              "Something went wrong while preparing your password reset link."}
           </p>
         </CardContent>
       );
     }
 
-    if (status === 'success') {
+    if (status === "success") {
       return (
         <CardContent>
           <p className="rounded border border-emerald-600/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-700">
-            Password updated successfully. Redirecting to the login page in{' '}
+            Password updated successfully. Redirecting to the login page in{" "}
             {redirectCountdown}…
           </p>
         </CardContent>
@@ -239,7 +241,7 @@ const ConfirmResetPasswordPage = () => {
             type="submit"
             disabled={isSubmitting || passwordMismatch}
           >
-            {isSubmitting ? 'Updating…' : 'Update password'}
+            {isSubmitting ? "Updating…" : "Update password"}
           </Button>
         </CardFooter>
       </form>

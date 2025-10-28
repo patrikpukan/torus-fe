@@ -25,7 +25,8 @@ import {
 import { navConfig } from "../nav-config";
 import { Logo } from "./Logo";
 import { LogoText } from "./LogoText";
-import { useAuth } from "@/features/auth/context/AuthProvider";
+
+import { useAuth } from "@/features/auth/context/UseAuth.tsx";
 
 const BaseLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -47,7 +48,7 @@ const BaseLayout = () => {
       user.user_metadata?.last_name,
     ].filter(
       (part): part is string =>
-        typeof part === "string" && part.trim().length > 0,
+        typeof part === "string" && part.trim().length > 0
     );
 
     if (parts.length > 0) {
@@ -134,9 +135,7 @@ const BaseLayout = () => {
                   </Avatar>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-medium">
-                    {userDisplayName}
-                  </span>
+                  <span className="text-sm font-medium">{userDisplayName}</span>
                   <span className="text-xs text-muted-foreground">
                     {user?.email ?? ""}
                   </span>

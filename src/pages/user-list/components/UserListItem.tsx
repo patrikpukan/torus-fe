@@ -28,7 +28,9 @@ const UserListItem = ({ user }: UserListItemProps) => {
                   {displayName?.[0]?.toUpperCase() ?? "U"}
                 </AvatarFallback>
               </Avatar>
-              <div className="text-base font-medium md:text-lg">{displayName}</div>
+              <div className="text-base font-medium md:text-lg">
+                {displayName}
+              </div>
             </div>
             <div className="text-sm text-muted-foreground">{user.email}</div>
           </div>

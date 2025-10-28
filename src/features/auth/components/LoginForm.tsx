@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "../context/AuthProvider";
+
+import { useAuth } from "@/features/auth/context/UseAuth.tsx";
 
 const LoginForm = () => {
   const navigate = useNavigate();

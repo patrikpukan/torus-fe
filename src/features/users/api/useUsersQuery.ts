@@ -1,4 +1,5 @@
-import { gql, useQuery } from '@apollo/client';
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 
 export type UsersQueryItem = {
   id: string;
@@ -36,5 +37,5 @@ export const USERS_QUERY = gql`
 export const useUsersQuery = (variables?: UsersQueryVariables) =>
   useQuery<UsersQueryData, UsersQueryVariables>(USERS_QUERY, {
     variables,
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: "cache-and-network",
   });

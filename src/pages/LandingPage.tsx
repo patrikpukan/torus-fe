@@ -1,5 +1,5 @@
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 
 const LandingPage = () => {
   return (
@@ -10,7 +10,7 @@ const LandingPage = () => {
         to explore the rest of the pages.
       </Typography>
     </Stack>
-  )
-}
+  );
+};
 
-export default LandingPage
+export default LandingPage;

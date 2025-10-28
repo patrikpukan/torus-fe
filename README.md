@@ -36,7 +36,6 @@ Zdieľané UI a utility naprieč projektom:
 - `assets/` – globálne ikony/ilustrácie
 - `styles/` – globálne CSS, tokens
 
-
 ## Supabase Authentication & GraphQL
 
 - Konfiguruj `.env` s hodnotami:

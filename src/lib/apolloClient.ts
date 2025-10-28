@@ -1,23 +1,16 @@
-import {
-  ApolloClient,
-  HttpLink,
-  InMemoryCache,
-  from,
-} from '@apollo/client';
-import { setContext } from '@apollo/client/link/context';
-import { supabaseClient } from './supabaseClient';
+import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
+import { SetContextLink } from "@apollo/client/link/context";
+import { supabaseClient } from "./supabaseClient";
 
 const graphqlEndpoint =
-  import.meta.env.VITE_GRAPHQL_API ?? 'http://localhost:4000/graphql';
+  import.meta.env.VITE_GRAPHQL_API ?? "http://localhost:4000/graphql";
 
 const httpLink = new HttpLink({
   uri: graphqlEndpoint,
-  fetchOptions: {
-    credentials: 'include',
-  },
+  credentials: "include",
 });
 
-const authLink = setContext(async (_, { headers }) => {
+const authLink = new SetContextLink(async (prevContext) => {
   const {
     data: { session },
   } = await supabaseClient.auth.getSession();
@@ -25,13 +18,15 @@ const authLink = setContext(async (_, { headers }) => {
   const token = session?.access_token;
 
   return {
+    ...prevContext,
     headers: {
-      ...headers,
+      ...(prevContext?.headers ?? {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   };
 });
 
 export const apolloClient = new ApolloClient({
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });

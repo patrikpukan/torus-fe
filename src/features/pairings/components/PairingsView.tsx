@@ -18,7 +18,6 @@ type ContactsState = PairingContact[];
 
 type ChatDrafts = Record<string, string>;
 
-
 const formatDateTime = (iso: string | undefined) => {
   if (!iso) return "";
   const date = new Date(iso);
@@ -103,7 +102,9 @@ const PairingsView = () => {
   // List rendering moved to PairingsList
 
   const currentMessages = selectedContact?.messages ?? [];
-  const currentDraft = selectedContact ? drafts[selectedContact.id] ?? "" : "";
+  const currentDraft = selectedContact
+    ? (drafts[selectedContact.id] ?? "")
+    : "";
 
   if (isMobile) {
     // Let mobile be handled by MobilePairingsRouter at the page level
@@ -135,9 +136,8 @@ const PairingsView = () => {
                   {selectedContact.profile.surname}
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  {selectedContact.profile.organization} ·
-                  {" "}
-                  Last message {formatDateTime(selectedContact.lastMessageAt)}
+                  {selectedContact.profile.organization} · Last message{" "}
+                  {formatDateTime(selectedContact.lastMessageAt)}
                 </p>
               </CardHeader>
               <CardContent className="flex flex-1 flex-col overflow-hidden p-0">
@@ -150,44 +150,41 @@ const PairingsView = () => {
                     </TabsList>
                   </div>
 
-                  <TabsContent
-                    value="chat"
-                    className="mt-0 flex-1 px-6 py-4"
-                  >
+                  <TabsContent value="chat" className="mt-0 flex-1 px-6 py-4">
                     <div className="flex h-full flex-col gap-4">
                       <div className="flex-1 space-y-3 overflow-y-auto rounded-lg bg-muted/20 p-4">
-                      {currentMessages.length ? (
-                        currentMessages.map((message) => {
-                          const isSelf = message.author === "self";
-                          return (
-                            <div
-                              key={message.id}
-                              className={cn(
-                                "flex flex-col gap-1",
-                                isSelf ? "items-end" : "items-start"
-                              )}
-                            >
+                        {currentMessages.length ? (
+                          currentMessages.map((message) => {
+                            const isSelf = message.author === "self";
+                            return (
                               <div
+                                key={message.id}
                                 className={cn(
-                                  "max-w-[70%] rounded-2xl px-4 py-2 text-sm shadow-sm",
-                                  isSelf
-                                    ? "bg-primary text-primary-foreground"
-                                    : "bg-muted"
+                                  "flex flex-col gap-1",
+                                  isSelf ? "items-end" : "items-start"
                                 )}
                               >
-                                <p>{message.content}</p>
+                                <div
+                                  className={cn(
+                                    "max-w-[70%] rounded-2xl px-4 py-2 text-sm shadow-sm",
+                                    isSelf
+                                      ? "bg-primary text-primary-foreground"
+                                      : "bg-muted"
+                                  )}
+                                >
+                                  <p>{message.content}</p>
+                                </div>
+                                <span className="text-xs text-muted-foreground">
+                                  {formatMessageTime(message.timestamp)}
+                                </span>
                               </div>
-                              <span className="text-xs text-muted-foreground">
-                                {formatMessageTime(message.timestamp)}
-                              </span>
-                            </div>
-                          );
-                        })
-                      ) : (
-                        <div className="flex h-full items-center justify-center rounded-md border border-dashed p-6 text-sm text-muted-foreground">
-                          Start the conversation by sending a message.
-                        </div>
-                      )}
+                            );
+                          })
+                        ) : (
+                          <div className="flex h-full items-center justify-center rounded-md border border-dashed p-6 text-sm text-muted-foreground">
+                            Start the conversation by sending a message.
+                          </div>
+                        )}
                       </div>
 
                       <div className="border-t pt-4">
@@ -196,7 +193,10 @@ const PairingsView = () => {
                           value={currentDraft}
                           onChange={(event) =>
                             selectedContact &&
-                            handleDraftChange(selectedContact.id, event.target.value)
+                            handleDraftChange(
+                              selectedContact.id,
+                              event.target.value
+                            )
                           }
                           rows={3}
                         />
@@ -236,7 +236,6 @@ const PairingsView = () => {
           )}
         </Card>
       </section>
-
     </div>
   );
 };

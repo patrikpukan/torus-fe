@@ -1,7 +1,8 @@
 import { useMemo } from "react";
 
 import { pairingContacts } from "@/mocks/mockPairings";
-import {useAuth} from "@/features/auth/context/AuthProvider.tsx";
+
+import { useAuth } from "@/features/auth/context/UseAuth.tsx";
 
 type HomeStats = {
   activeSince: string | null;
@@ -48,7 +49,7 @@ const getStats = (activeSince: string | null): HomeStats => {
 };
 
 const useHomeData = (): UseHomeDataResult => {
-    const authCtx = useAuth();
+  const authCtx = useAuth();
 
   return useMemo(() => {
     const currentPairing = getCurrentPairing();

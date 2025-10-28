@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,12 +15,23 @@ import { useAuth } from "@/features/auth/context/UseAuth.tsx";
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { signIn } = useAuth();
 
+  const [flashMessage, setFlashMessage] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const state = location.state as { passwordResetSuccess?: boolean } | null;
+
+    if (state?.passwordResetSuccess) {
+      setFlashMessage("Your password was updated successfully.");
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [location, navigate]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -45,6 +56,11 @@ const LoginForm = () => {
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
+          {flashMessage && (
+            <div className="rounded border border-emerald-600/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-700">
+              {flashMessage}
+            </div>
+          )}
           <div className="space-y-2">
             <Label htmlFor="login-email" className="font-semibold">
               Email

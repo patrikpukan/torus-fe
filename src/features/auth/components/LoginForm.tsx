@@ -16,13 +16,14 @@ import { useAuth } from "@/features/auth/context/UseAuth.tsx";
 const LoginForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { signIn } = useAuth();
+  const { signIn, signInWithGoogle } = useAuth();
 
   const [flashMessage, setFlashMessage] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   useEffect(() => {
     const state = location.state as { passwordResetSuccess?: boolean } | null;
@@ -46,6 +47,19 @@ const LoginForm = () => {
       setFormError(err.message ?? "Unable to sign in. Please try again.");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setFormError(null);
+    setIsGoogleLoading(true);
+
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      const err = error as { message?: string };
+      setFormError(err.message ?? "Unable to sign in with Google. Please try again.");
+      setIsGoogleLoading(false);
     }
   };
 
@@ -108,8 +122,14 @@ const LoginForm = () => {
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? "Logging in..." : "Log in"}
           </Button>
-          <Button variant="outline" className="w-full" disabled>
-            Log in with Google Account
+          <Button 
+            type="button"
+            variant="outline" 
+            className="w-full" 
+            onClick={handleGoogleSignIn}
+            disabled={isGoogleLoading || isSubmitting}
+          >
+            {isGoogleLoading ? "Signing in..." : "Log in with Google Account"}
           </Button>
           <Button asChild variant="outline" className="w-full">
             <Link to="/register">Register via invite code</Link>

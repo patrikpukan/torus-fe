@@ -59,6 +59,19 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     setUser(data.user ?? null);
   }, []);
 
+  const signInWithGoogle = useCallback(async () => {
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+
+    if (error) {
+      throw error;
+    }
+  }, []);
+
   const signOut = useCallback(async () => {
     const { error } = await supabaseClient.auth.signOut();
 
@@ -76,9 +89,10 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       user,
       loading,
       signIn,
+      signInWithGoogle,
       signOut,
     }),
-    [session, user, loading, signIn, signOut]
+    [session, user, loading, signIn, signInWithGoogle, signOut]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

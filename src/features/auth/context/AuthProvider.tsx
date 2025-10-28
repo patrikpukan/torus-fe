@@ -1,5 +1,5 @@
 import {
-  type ReactNode,
+  type PropsWithChildren,
   useCallback,
   useEffect,
   useMemo,
@@ -7,16 +7,10 @@ import {
 } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabaseClient } from "@/lib/supabaseClient.ts";
+import { AuthContext } from "@/features/auth/context/AuthContext.ts";
+import type { AuthContextValue } from "@/features/auth/context/AuthContext.ts";
 
-export type AuthContextValue = {
-  session: Session | null;
-  user: User | null;
-  loading: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
-};
-
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);

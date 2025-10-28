@@ -21,7 +21,6 @@ const ConfirmResetPasswordPage = () => {
   >("pending");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [redirectCountdown, setRedirectCountdown] = useState(3);
 
   const passwordMismatch = useMemo(
     () => newPassword !== confirmPassword && confirmPassword.length > 0,
@@ -90,28 +89,6 @@ const ConfirmResetPasswordPage = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (status !== "success") {
-      return;
-    }
-
-    const timer = setInterval(() => {
-      setRedirectCountdown((current) => {
-        if (current <= 1) {
-          clearInterval(timer);
-          void (async () => {
-            await supabaseClient.auth.signOut();
-            navigate("/login", { replace: true });
-          })();
-          return 0;
-        }
-
-        return current - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [navigate, status]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -140,6 +117,18 @@ const ConfirmResetPasswordPage = () => {
       }
 
       setStatus("success");
+
+      try {
+        await supabaseClient.auth.signOut();
+      } catch {
+        // Ignore sign-out errors to keep redirect snappy.
+      }
+
+      navigate("/login", {
+        replace: true,
+        state: { passwordResetSuccess: true },
+      });
+      return;
     } catch (updateException) {
       const message =
         updateException instanceof Error
@@ -177,8 +166,7 @@ const ConfirmResetPasswordPage = () => {
       return (
         <CardContent>
           <p className="rounded border border-emerald-600/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-700">
-            Password updated successfully. Redirecting to the login page in{" "}
-            {redirectCountdown}…
+            Password updated successfully. Redirecting to the login page...
           </p>
         </CardContent>
       );

@@ -15,14 +15,9 @@ export type UsersQueryData = {
   users: UsersQueryItem[];
 };
 
-export type UsersQueryVariables = {
-  offset?: number;
-  limit?: number;
-};
-
 export const USERS_QUERY = gql`
-  query Users($offset: Int, $limit: Int) {
-    users(offset: $offset, limit: $limit) {
+  query Users {
+    users {
       id
       email
       username
@@ -34,8 +29,7 @@ export const USERS_QUERY = gql`
   }
 `;
 
-export const useUsersQuery = (variables?: UsersQueryVariables) =>
-  useQuery<UsersQueryData, UsersQueryVariables>(USERS_QUERY, {
-    variables,
+export const useUsersQuery = () =>
+  useQuery<UsersQueryData>(USERS_QUERY, {
     fetchPolicy: "cache-and-network",
   });

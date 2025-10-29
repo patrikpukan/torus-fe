@@ -5,8 +5,9 @@ import {
   type CurrentUserData,
 } from "../auth/api/useGetCurrentUserQuery";
 import ProfileForm from "./ProfileForm";
+import SendResetPasswordButton from "../auth/components/SendResetPasswordButton";
 import { UPDATE_USER_PROFILE } from "./UpdateUserProfileMutation";
-import type { UserProfile } from "@/types/User.ts";
+import type { UserProfile } from "@/types/User";
 
 const ProfileView = () => {
   const { data, loading, error } = useGetCurrentUserQuery();
@@ -117,6 +118,11 @@ const ProfileView = () => {
         submitLabel={mutationLoading ? "Saving..." : "Save Changes"}
         onEditClick={!isEditing ? handleEditClick : undefined}
       />
+      {!isEditing && (
+        <div className="mt-6 flex justify-end">
+          <SendResetPasswordButton email={profile.email} variant="outline" />
+        </div>
+      )}
     </div>
   );
 };

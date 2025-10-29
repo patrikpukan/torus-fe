@@ -1,10 +1,13 @@
 import { useParams } from "react-router-dom";
 
 import ProfileForm from "@/features/profile/ProfileForm";
+import SendResetPasswordButton from "@/features/auth/components/SendResetPasswordButton";
 import { useUserByIdQuery } from "@/features/users/api/useUserByIdQuery";
 import type { UserProfile } from "@/types/User";
+import { useAuth } from "@/hooks/useAuth";
 
 const UserDetailPage = () => {
+  const { appRole } = useAuth();
   const params = useParams();
   const userId = params.id ?? "";
 
@@ -60,6 +63,11 @@ const UserDetailPage = () => {
   return (
     <div className="mx-auto max-w-3xl py-8">
       <ProfileForm value={profile} />
+      {appRole === "org_admin" && (
+        <div className="mt-6 flex justify-end">
+          <SendResetPasswordButton email={user.email} variant="outline" />
+        </div>
+      )}
     </div>
   );
 };

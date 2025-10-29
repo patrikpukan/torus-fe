@@ -96,16 +96,6 @@ const ProfileForm = ({
     return readOnly || readOnlyFields.has(String(key));
   };
 
-  type UserMetadata = {
-    avatar_url?: string;
-    first_name?: string;
-    last_name?: string;
-    full_name?: string;
-  };
-
-  const authAvatar = (user?.user_metadata as UserMetadata | undefined)
-    ?.avatar_url;
-
   const apiBaseFromGraphQL = (() => {
     const gql = import.meta.env.VITE_GRAPHQL_API as string | undefined;
     if (!gql) return undefined;
@@ -133,9 +123,8 @@ const ProfileForm = ({
     return `${base}/${src}`;
   };
 
-  const currentAvatarSrc = previewUrl
-    ? previewUrl
-    : normalizeUrl(value.profileImageUrl) || authAvatar || "";
+  const normalizedProfileAvatar = normalizeUrl(value.profileImageUrl);
+  const currentAvatarSrc = previewUrl || normalizedProfileAvatar || "";
 
   const handlePickFile = () => {
     fileInputRef.current?.click();
@@ -254,6 +243,8 @@ const ProfileForm = ({
         {fields.map(({ key, label }) => {
           const fieldId = `profile-${key}`;
 
+          const isReadonly = isFieldReadOnly(key);
+
           return (
             <Field key={key}>
               <FieldLabel htmlFor={fieldId}>{label}</FieldLabel>
@@ -262,7 +253,8 @@ const ProfileForm = ({
                   id={fieldId}
                   value={getFieldValue(key)}
                   onChange={handleChange(key)}
-                  readOnly={isFieldReadOnly(key)}
+                  readOnly={isReadonly}
+                  disabled={isReadonly}
                 />
               </FieldContent>
             </Field>
@@ -281,6 +273,7 @@ const ProfileForm = ({
                 value={value.about}
                 onChange={handleChange("about")}
                 readOnly={readOnly}
+                disabled={readOnly}
                 rows={4}
               />
             </FieldContent>
@@ -293,6 +286,7 @@ const ProfileForm = ({
                 value={getFieldValue("hobbies")}
                 onChange={handleChange("hobbies")}
                 readOnly={readOnly}
+                disabled={readOnly}
               />
             </FieldContent>
           </Field>
@@ -306,6 +300,7 @@ const ProfileForm = ({
                 value={value.meetingActivity}
                 onChange={handleChange("meetingActivity")}
                 readOnly={readOnly}
+                disabled={readOnly}
               />
             </FieldContent>
           </Field>
@@ -317,6 +312,7 @@ const ProfileForm = ({
                 value={value.interests}
                 onChange={handleChange("interests")}
                 readOnly={readOnly}
+                disabled={readOnly}
               />
             </FieldContent>
           </Field>

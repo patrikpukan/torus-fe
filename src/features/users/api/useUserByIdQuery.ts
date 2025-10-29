@@ -1,9 +1,18 @@
 import { useQuery } from "@apollo/client/react";
 import { graphql } from "gql.tada";
-import type { UsersQueryItem } from "./useUsersQuery";
+
+export type UserDetail = {
+  id: string;
+  email: string;
+  username?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  profileStatus?: string | null;
+  role?: string | null;
+};
 
 export type UserByIdQueryData = {
-  userById: UsersQueryItem | null;
+  userById: UserDetail | null;
 };
 
 export type UserByIdQueryVariables = {

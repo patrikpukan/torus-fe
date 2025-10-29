@@ -1,47 +1,121 @@
-import { useNavigate } from "react-router-dom";
-import { useGetCurrentUserQuery } from "../auth/api/useGetCurrentUserQuery";
+import { useEffect, useState } from "react";
+import { useMutation } from "@apollo/client/react";
+import {
+  useGetCurrentUserQuery,
+  type CurrentUserData,
+} from "../auth/api/useGetCurrentUserQuery";
 import ProfileForm from "./ProfileForm";
-
-import type { UserProfile } from "../../types/User";
+import { UPDATE_USER_PROFILE } from "./UpdateUserProfileMutation";
+import type { UserProfile } from "@/types/User.ts";
 
 const ProfileView = () => {
-  const navigate = useNavigate();
   const { data, loading, error } = useGetCurrentUserQuery();
+  const [isEditing, setIsEditing] = useState(false);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [updateProfile, { loading: mutationLoading }] =
+    useMutation(UPDATE_USER_PROFILE);
+
+  const user = data?.getCurrentUser ?? null;
+
+  const mapUserToProfile = (user: CurrentUserData) =>
+    ({
+      email: user.email,
+      name: user.firstName || undefined,
+      surname: user.lastName || undefined,
+      about: user.about || undefined,
+      hobbies: user.hobbies
+        ? user.hobbies.split(",").map((hobby) => hobby.trim())
+        : [],
+      meetingActivity: user.preferredActivity || undefined,
+      interests: user.interests || undefined,
+      username: user.username || undefined,
+      displayUsername: user.displayUsername || undefined,
+      profileImageUrl: user.profileImageUrl || undefined,
+      pairingStatus: user.profileStatus || undefined,
+      organization: user.organization?.name || undefined,
+      accountStatus:
+        user.isActive === undefined || user.isActive === null
+          ? undefined
+          : user.isActive
+            ? "Active"
+            : "Inactive",
+    }) satisfies UserProfile;
+
+  useEffect(() => {
+    if (user) {
+      setProfile(mapUserToProfile(user));
+    }
+  }, [user]);
 
   if (loading) {
     return <div className="text-center py-8">Loading profile...</div>;
   }
 
-  if (error || !data?.getCurrentUser) {
+  if (error) {
     return (
       <div className="text-center py-8 text-red-500">Error loading profile</div>
     );
   }
 
-  const user = data.getCurrentUser;
+  if (!user) {
+    return (
+      <div className="text-center py-8 text-red-500">Error loading profile</div>
+    );
+  }
 
-  const profile: UserProfile = {
-    email: user.email,
-    name: user.firstName || undefined,
-    surname: user.lastName || undefined,
-    about: user.about || undefined,
-    hobbies: user.hobbies ? user.hobbies.split(",").map((h) => h.trim()) : [],
-    meetingActivity: user.preferredActivity || undefined,
-    interests: user.interests || undefined,
-    username: user.username || undefined,
-    displayUsername: user.displayUsername || undefined,
-    profileImageUrl: user.profileImageUrl || undefined,
-    pairingStatus: user.profileStatus || undefined,
-    organization: user.organization?.name || undefined,
-    accountStatus: user.isActive ? "Active" : "Inactive",
+  if (!profile) {
+    return <div className="text-center py-8">Loading profile...</div>;
+  }
+
+  const handleChange = (updatedProfile: UserProfile) => {
+    setProfile(updatedProfile);
+  };
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+    setProfile(mapUserToProfile(user));
+  };
+
+  const handleSubmit = async (updatedProfile: UserProfile) => {
+    try {
+      const hobbiesArray = Array.isArray(updatedProfile.hobbies)
+        ? updatedProfile.hobbies
+        : updatedProfile.hobbies
+            ?.split(",")
+            .map((hobby) => hobby.trim())
+            .filter(Boolean) || [];
+
+      await updateProfile({
+        variables: {
+          input: {
+            firstName: updatedProfile.name || null,
+            lastName: updatedProfile.surname || null,
+            about: updatedProfile.about || null,
+            hobbies: hobbiesArray.join(", ") || null,
+            preferredActivity: updatedProfile.meetingActivity || null,
+            interests: updatedProfile.interests || null,
+            displayUsername: updatedProfile.displayUsername || null,
+            avatarUrl: updatedProfile.profileImageUrl || null,
+          },
+        },
+        refetchQueries: ["GetCurrentUser"],
+      });
+
+      setIsEditing(false);
+    } catch (submitError) {
+      console.error("Error updating profile:", submitError);
+    }
   };
 
   return (
     <div>
       <ProfileForm
         value={profile}
-        readOnly
-        onEditClick={() => navigate("/profile-edit")}
+        onChange={handleChange}
+        readOnly={!isEditing}
+        onSubmit={isEditing ? handleSubmit : undefined}
+        submitLabel={mutationLoading ? "Saving..." : "Save Changes"}
+        onEditClick={!isEditing ? handleEditClick : undefined}
       />
     </div>
   );

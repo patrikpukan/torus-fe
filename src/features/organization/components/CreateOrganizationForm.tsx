@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Check, X } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { useRegisterOrganization } from "../api/useRegisterOrganization";
 
 const employeeSizeOptions = [
   { value: "1-10", label: "1 - 10 employees" },
@@ -20,17 +21,8 @@ const employeeSizeOptions = [
   { value: "501+", label: "More than 500 employees" },
 ];
 
-const knownOrganizationNames = [
-  "Acme Corp",
-  "Globex",
-  "Initech",
-  "Umbrella",
-  "Wayne Enterprises",
-];
-
 type CreateOrganizationFormData = {
   adminEmail: string;
-  adminPassword: string;
   organizationName: string;
   organizationSize: string;
   organizationAddress: string;
@@ -42,9 +34,12 @@ const neutralFieldClass =
   "flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-base shadow-sm transition focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm";
 
 const CreateOrganizationForm = () => {
+  const navigate = useNavigate();
+  const [registerOrganization, { loading: isSubmitting }] =
+    useRegisterOrganization();
+
   const [formValues, setFormValues] = useState<CreateOrganizationFormData>({
     adminEmail: "",
-    adminPassword: "",
     organizationName: "",
     organizationSize: "",
     organizationAddress: "",
@@ -53,39 +48,8 @@ const CreateOrganizationForm = () => {
   const [touched, setTouched] = useState<
     Partial<Record<keyof CreateOrganizationFormData, boolean>>
   >({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
-  const passwordChecks = useMemo(
-    () => [
-      {
-        id: "length",
-        label: "At least 12 characters",
-        isValid: formValues.adminPassword.length >= 12,
-      },
-      {
-        id: "uppercase",
-        label: "Contains an uppercase letter",
-        isValid: /[A-Z]/.test(formValues.adminPassword),
-      },
-      {
-        id: "lowercase",
-        label: "Contains a lowercase letter",
-        isValid: /[a-z]/.test(formValues.adminPassword),
-      },
-      {
-        id: "number",
-        label: "Contains a number",
-        isValid: /\d/.test(formValues.adminPassword),
-      },
-      {
-        id: "symbol",
-        label: "Contains a special character",
-        isValid: /[^A-Za-z0-9]/.test(formValues.adminPassword),
-      },
-    ],
-    [formValues.adminPassword]
-  );
+  const [submitError, setSubmitError] = useState<string>("");
+  const [submitSuccess, setSubmitSuccess] = useState<string>("");
 
   const validateField = (
     field: keyof CreateOrganizationFormData,
@@ -100,23 +64,9 @@ const CreateOrganizationForm = () => {
           return "Enter a valid email";
         }
         return undefined;
-      case "adminPassword":
-        if (!value) {
-          return "Enter a password";
-        }
-        if (passwordChecks.some((check) => !check.isValid)) {
-          return "The password must meet all requirements";
-        }
-        return undefined;
       case "organizationName": {
         if (!value.trim()) {
           return "Enter the organization name";
-        }
-        const isKnownName = knownOrganizationNames.some(
-          (known) => known.toLowerCase() === value.trim().toLowerCase()
-        );
-        if (isKnownName) {
-          return "This name is already in use";
         }
         if (value.trim().length < 3) {
           return "The name must have at least 3 characters";
@@ -158,12 +108,12 @@ const CreateOrganizationForm = () => {
     }
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setIsSubmitting(true);
+    setSubmitError("");
+    setSubmitSuccess("");
     setTouched({
       adminEmail: true,
-      adminPassword: true,
       organizationName: true,
       organizationSize: true,
       organizationAddress: true,
@@ -184,12 +134,35 @@ const CreateOrganizationForm = () => {
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length === 0) {
-      setIsSubmitted(true);
-    } else {
-      setIsSubmitted(false);
-    }
+      try {
+        const result = await registerOrganization({
+          variables: {
+            input: {
+              adminEmail: formValues.adminEmail,
+              organizationName: formValues.organizationName,
+              organizationSize: formValues.organizationSize,
+              organizationAddress: formValues.organizationAddress,
+            },
+          },
+        });
 
-    setIsSubmitting(false);
+        if (result.data) {
+          setSubmitSuccess(result.data.registerOrganization.message);
+          // Optionally redirect after a few seconds
+          setTimeout(() => {
+            navigate("/login");
+          }, 3000);
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          setSubmitError(
+            error.message || "Failed to create organization. Please try again."
+          );
+        } else {
+          setSubmitError("An unexpected error occurred. Please try again.");
+        }
+      }
+    }
   };
 
   return (
@@ -197,7 +170,8 @@ const CreateOrganizationForm = () => {
       <CardHeader>
         <CardTitle>Organization registration</CardTitle>
         <CardDescription>
-          Fill in the details to create a new organization.
+          Fill in the details to create a new organization. The administrator
+          will receive an email to set up their password.
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit} noValidate>
@@ -224,55 +198,6 @@ const CreateOrganizationForm = () => {
                 {errors.adminEmail}
               </p>
             )}
-          </div>
-
-          <div className="space-y-3">
-            <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="adminPassword">
-                Administrator password
-              </label>
-              <Input
-                id="adminPassword"
-                name="adminPassword"
-                type="password"
-                autoComplete="new-password"
-                value={formValues.adminPassword}
-                onChange={(event) =>
-                  handleInputChange("adminPassword", event.target.value)
-                }
-                onBlur={() => handleFieldBlur("adminPassword")}
-                aria-invalid={Boolean(errors.adminPassword)}
-                aria-describedby="adminPassword-error"
-              />
-              {errors.adminPassword && (
-                <p
-                  id="adminPassword-error"
-                  className="text-sm text-destructive"
-                >
-                  {errors.adminPassword}
-                </p>
-              )}
-            </div>
-            <ul className="space-y-1 rounded-md border bg-muted/40 p-3 text-sm">
-              {passwordChecks.map((check) => (
-                <li key={check.id} className="flex items-center gap-2 text-sm">
-                  {check.isValid ? (
-                    <Check className="h-4 w-4 text-green-600" aria-hidden />
-                  ) : (
-                    <X className="h-4 w-4 text-muted-foreground" aria-hidden />
-                  )}
-                  <span
-                    className={
-                      check.isValid
-                        ? "text-foreground"
-                        : "text-muted-foreground"
-                    }
-                  >
-                    {check.label}
-                  </span>
-                </li>
-              ))}
-            </ul>
           </div>
 
           <div className="space-y-2">
@@ -373,16 +298,21 @@ const CreateOrganizationForm = () => {
             )}
           </div>
 
-          {isSubmitted && (
+          {submitError && (
+            <div className="rounded-md border border-red-500 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {submitError}
+            </div>
+          )}
+
+          {submitSuccess && (
             <div className="rounded-md border border-green-500 bg-green-50 px-4 py-3 text-sm text-green-700">
-              The organization has been successfully prepared for creation.
-              Please continue with submitting it to the backend.
+              {submitSuccess}
             </div>
           )}
         </CardContent>
         <CardFooter className="justify-end">
           <Button type="submit" disabled={isSubmitting}>
-            Create organization
+            {isSubmitting ? "Creating..." : "Create organization"}
           </Button>
         </CardFooter>
       </form>

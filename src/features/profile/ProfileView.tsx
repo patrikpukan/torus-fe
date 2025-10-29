@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useGetCurrentUserQuery } from "../auth/api/useGetCurrentUserQuery";
 import ProfileForm from "./ProfileForm";
-import { Button } from "@/components/ui/button";
+ 
 import type { UserProfile } from "../../types/User";
 
 const ProfileView = () => {
@@ -38,10 +38,11 @@ const ProfileView = () => {
 
   return (
     <div>
-      <div className="flex justify-end mb-4">
-        <Button onClick={() => navigate("/profile-edit")}>Edit Profile</Button>
-      </div>
-      <ProfileForm value={profile} readOnly />
+      <ProfileForm
+        value={profile}
+        readOnly
+        onEditClick={() => navigate("/profile-edit")}
+      />
     </div>
   );
 };

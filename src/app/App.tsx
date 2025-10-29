@@ -53,7 +53,14 @@ const App = () => {
             <Route index element={<LandingPage />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="register" element={<RegisterPage />} />
-            <Route path="register-org" element={<RegisterOrgPage />} />
+            <Route
+              path="register-org"
+              element={
+                <ProtectedRoute allowedRoles={["super_admin"]}>
+                  <RegisterOrgPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="reset-password" element={<ResetPasswordPage />} />
             <Route
               path="home"

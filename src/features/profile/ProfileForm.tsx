@@ -42,6 +42,7 @@ const ProfileForm = ({
 }: ProfileFormProps) => {
   const { user } = useAuth();
   const [uploading, setUploading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   // Fields that are always read-only
   const readOnlyFields = useMemo(
@@ -104,7 +105,37 @@ const ProfileForm = ({
 
   const authAvatar = (user?.user_metadata as UserMetadata | undefined)
     ?.avatar_url;
-  const currentAvatarSrc = value.profileImageUrl || authAvatar || "";
+
+  const apiBaseFromGraphQL = (() => {
+    const gql = import.meta.env.VITE_GRAPHQL_API as string | undefined;
+    if (!gql) return undefined;
+    try {
+      const u = new URL(gql);
+      // strip trailing /graphql
+      if (u.pathname.endsWith("/graphql")) {
+        u.pathname = u.pathname.replace(/\/graphql$/, "");
+      }
+      return u.toString().replace(/\/$/, "");
+    } catch {
+      return undefined;
+    }
+  })();
+
+  const normalizeUrl = (src?: string | null): string => {
+    if (!src) return "";
+    if (/^blob:/i.test(src)) return ""; // stale local preview persisted in DB; ignore
+    if (/^https?:\/\//i.test(src)) return src;
+    const base =
+      (import.meta.env.VITE_API_BASE as string | undefined) ??
+      apiBaseFromGraphQL;
+    if (!base) return src; // best effort
+    if (src.startsWith("/")) return `${base}${src}`;
+    return `${base}/${src}`;
+  };
+
+  const currentAvatarSrc = previewUrl
+    ? previewUrl
+    : normalizeUrl(value.profileImageUrl) || authAvatar || "";
 
   const handlePickFile = () => {
     fileInputRef.current?.click();
@@ -117,8 +148,23 @@ const ProfileForm = ({
 
     try {
       setUploading(true);
+      // show immediate local preview
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewUrl(objectUrl);
       // Upload to Supabase Storage (bucket: profile-pictures)
-      const userId = user?.id ?? "anonymous";
+      // The bucket must allow authenticated users to write to their own folder.
+      // Set up Supabase Storage policies:
+      //   1. Go to Storage → Policies → profile-pictures bucket
+      //   2. CREATE NEW POLICY for INSERT (authenticated users upload to their folder)
+      //      - Allowed for: (bucket_id = 'profile-pictures' AND auth.uid()::text = (storage.foldername(name))[1])
+      //   3. CREATE NEW POLICY for SELECT (public read access)
+      //      - Allowed for: (bucket_id = 'profile-pictures')
+      const userId = user?.id;
+      if (!userId) {
+        console.error("User not authenticated; cannot upload avatar");
+        setPreviewUrl(null);
+        return;
+      }
       const path = `${userId}/${Date.now()}-${file.name}`;
       const { error: uploadError } = await supabaseClient.storage
         .from("profile-pictures")
@@ -126,9 +172,10 @@ const ProfileForm = ({
 
       if (uploadError) {
         console.error("Supabase upload error:", uploadError);
-        // Fallback: create a temporary preview URL so at least the user sees it
-        const objectUrl = URL.createObjectURL(file);
-        onChange({ ...value, profileImageUrl: objectUrl });
+        console.error(
+          "Hint: Check profile-pictures bucket RLS policies. Ensure authenticated users can INSERT into their own folder."
+        );
+        // Keep local preview visible but do not persist blob URL into value
         return;
       }
 
@@ -137,8 +184,11 @@ const ProfileForm = ({
         .getPublicUrl(path);
       const publicUrl = data.publicUrl;
       onChange({ ...value, profileImageUrl: publicUrl });
+      // Clear preview since we have a real public URL now
+      setPreviewUrl(null);
     } catch (err) {
       console.error("Failed to upload avatar:", err);
+      setPreviewUrl(null);
     } finally {
       setUploading(false);
       // Clear file input so the same file can be re-selected
@@ -169,7 +219,7 @@ const ProfileForm = ({
               <Button
                 type="button"
                 size="sm"
-                variant="secondary"
+                variant="outline"
                 onClick={onEditClick}
               >
                 <Pencil className="mr-2 h-4 w-4" />

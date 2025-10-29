@@ -39,6 +39,12 @@ export const navConfig: NavItem[] = [
     roles: ["org_admin", "super_admin"],
   },
 
+  // Super Admin only
+  {
+    label: "Register Organization",
+    path: "/register-org",
+    roles: ["super_admin"],
+  },
+
   // Only for non-authenticated users (shown in auth pages)
-  { label: "Register Organization", path: "/register-org" },
 ];

@@ -27,19 +27,16 @@ import { Logo } from "./Logo";
 import { LogoText } from "./LogoText";
 
 import { useAuth } from "@/hooks/useAuth";
+import { useGetCurrentUserQuery } from "@/features/auth/api/useGetCurrentUserQuery";
 
 const BaseLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const navigate = useNavigate();
   const { user, signOut, appRole } = useAuth();
+  const { data: currentUserData } = useGetCurrentUserQuery();
 
   const filteredNavConfig = navConfig.filter((item) => {
-    // Show register-org only for non-authenticated users
-    if (item.path === "/register-org") {
-      return !appRole; // Only show if not logged in
-    }
-
-    // Other items: check role restriction
+    // Check role restriction
     if (!item.roles) return true; // No role restriction
     return item.roles.includes(appRole || "");
   });
@@ -47,6 +44,17 @@ const BaseLayout = () => {
   const userDisplayName = (() => {
     if (!user) {
       return "Signed out";
+    }
+
+    const dbUser = currentUserData?.getCurrentUser;
+    if (dbUser?.firstName || dbUser?.lastName) {
+      const parts = [dbUser?.firstName, dbUser?.lastName].filter(
+        (part): part is string =>
+          typeof part === "string" && part.trim().length > 0
+      );
+      if (parts.length > 0) {
+        return parts.join(" ");
+      }
     }
 
     const fullName = user.user_metadata?.full_name;
@@ -77,6 +85,40 @@ const BaseLayout = () => {
       console.error("Failed to sign out", error);
     }
   }, [navigate, signOut]);
+
+  const apiBaseFromGraphQL = (() => {
+    const gql = import.meta.env.VITE_GRAPHQL_API as string | undefined;
+    if (!gql) return undefined;
+    try {
+      const u = new URL(gql);
+      if (u.pathname.endsWith("/graphql")) {
+        u.pathname = u.pathname.replace(/\/graphql$/, "");
+      }
+      return u.toString().replace(/\/$/, "");
+    } catch {
+      return undefined;
+    }
+  })();
+
+  const normalizeUrl = (src?: string | null): string => {
+    if (!src) return "";
+    if (/^blob:/i.test(src)) return ""; // stale local preview; ignore
+    if (/^https?:\/\//i.test(src)) return src;
+    const base =
+      (import.meta.env.VITE_API_BASE as string | undefined) ??
+      apiBaseFromGraphQL;
+    if (!base) return src;
+    if (src.startsWith("/")) return `${base}${src}`;
+    return `${base}/${src}`;
+  };
+
+  const dbUser = currentUserData?.getCurrentUser;
+  const profileImageUrl =
+    normalizeUrl(dbUser?.profileImageUrl) ||
+    (user?.user_metadata?.avatar_url as string | undefined) ||
+    "";
+  const userRole = dbUser?.role || appRole || "";
+  const userOrganization = dbUser?.organization?.name || "";
 
   return (
     <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
@@ -139,7 +181,7 @@ const BaseLayout = () => {
               <div className="grid grid-cols-[auto_1fr] gap-2 items-center">
                 <div className="max-w-10">
                   <Avatar>
-                    <AvatarImage src={user?.user_metadata?.avatar_url ?? ""} />
+                    <AvatarImage src={profileImageUrl} />
                     <AvatarFallback>
                       {user?.email?.[0]?.toUpperCase() ?? "U"}
                     </AvatarFallback>
@@ -147,16 +189,23 @@ const BaseLayout = () => {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm font-medium">{userDisplayName}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {user?.email ?? ""}
-                  </span>
+                  {userRole && (
+                    <span className="text-xs text-muted-foreground capitalize">
+                      {userRole.replace(/_/g, " ")}
+                    </span>
+                  )}
+                  {userOrganization && (
+                    <span className="text-xs text-muted-foreground">
+                      {userOrganization}
+                    </span>
+                  )}
                 </div>
               </div>
             )}
             {!sidebarOpen && (
               <div className="max-w-10">
                 <Avatar>
-                  <AvatarImage src={user?.user_metadata?.avatar_url ?? ""} />
+                  <AvatarImage src={profileImageUrl} />
                   <AvatarFallback>
                     {user?.email?.[0]?.toUpperCase() ?? "U"}
                   </AvatarFallback>

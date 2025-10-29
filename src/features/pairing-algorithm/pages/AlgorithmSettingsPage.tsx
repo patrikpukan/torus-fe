@@ -18,7 +18,36 @@ export function AlgorithmSettingsPage() {
     return <Navigate to="/login" replace />;
   }
 
-  if (user.role !== "admin") {
+  type Metadata = {
+    role?: string;
+    appRole?: string;
+    organizationId?: string;
+    organization_id?: string;
+  };
+
+  const metadata = (user.user_metadata ?? {}) as Metadata;
+  const appMetadata = (user.app_metadata ?? {}) as Metadata;
+
+  const normalizeRole = (value: string | undefined | null) =>
+    value
+      ?.replace(/([a-z])([A-Z])/g, "$1_$2")
+      .replace(/[\s-]+/g, "_")
+      .toLowerCase() ?? null;
+
+  const rawRole =
+    metadata.role ??
+    metadata.appRole ??
+    appMetadata.role ??
+    appMetadata.appRole ??
+    null;
+
+  const normalizedRole = normalizeRole(rawRole);
+  const isAdminRole =
+    normalizedRole === "admin" ||
+    normalizedRole === "org_admin" ||
+    normalizedRole === "super_admin";
+
+  if (!isAdminRole) {
     return <Navigate to="/home" replace />;
   }
 
@@ -27,19 +56,19 @@ export function AlgorithmSettingsPage() {
     organization_id?: string;
   };
 
-  const metadata = (userWithOrg.user_metadata ?? null) as
-    | {
-        organizationId?: string;
-        organization_id?: string;
-      }
-    | null;
-
-  const organizationId =
+  const organizationIdRaw =
     userWithOrg.organizationId ??
     userWithOrg.organization_id ??
-    metadata?.organizationId ??
-    metadata?.organization_id ??
+    metadata.organizationId ??
+    metadata.organization_id ??
+    appMetadata.organizationId ??
+    appMetadata.organization_id ??
     null;
+
+  const organizationId =
+    typeof organizationIdRaw === "string" && organizationIdRaw.length > 0
+      ? organizationIdRaw
+      : null;
 
   if (!organizationId) {
     return (

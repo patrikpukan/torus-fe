@@ -26,7 +26,14 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    "plugins": [
+      {
+        "name": "gql.tada/ts-plugin",
+        "schema": "./src/schema.graphql"
+      }
+    ]
   },
-  "include": ["src"]
+  "include": ["src", "src/graphql-env.d.ts"]
 }

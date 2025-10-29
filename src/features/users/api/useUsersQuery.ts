@@ -1,5 +1,5 @@
-import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
+import { graphql } from "gql.tada";
 
 export type UsersQueryItem = {
   id: string;
@@ -15,7 +15,7 @@ export type UsersQueryData = {
   users: UsersQueryItem[];
 };
 
-export const USERS_QUERY = gql`
+export const USERS_QUERY = graphql(`
   query Users {
     users {
       id
@@ -27,7 +27,7 @@ export const USERS_QUERY = gql`
       role
     }
   }
-`;
+`);
 
 export const useUsersQuery = () =>
   useQuery<UsersQueryData>(USERS_QUERY, {

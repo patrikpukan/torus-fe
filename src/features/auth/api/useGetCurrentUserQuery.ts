@@ -1,5 +1,5 @@
-import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
+import { graphql } from "gql.tada";
 
 export type CurrentUserData = {
   id: string;
@@ -29,7 +29,7 @@ export type GetCurrentUserResponse = {
   getCurrentUser: CurrentUserData | null;
 };
 
-export const GET_CURRENT_USER = gql`
+export const GET_CURRENT_USER = graphql(`
   query GetCurrentUser {
     getCurrentUser {
       id
@@ -55,7 +55,7 @@ export const GET_CURRENT_USER = gql`
       }
     }
   }
-`;
+`);
 
 export const useGetCurrentUserQuery = (options?: { skip?: boolean }) =>
   useQuery<GetCurrentUserResponse>(GET_CURRENT_USER, {

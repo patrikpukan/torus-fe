@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client";
+import { graphql } from "gql.tada";
 
-export const UPDATE_USER_PROFILE = gql`
+export const UPDATE_USER_PROFILE = graphql(`
   mutation UpdateUserProfile($input: UpdateCurrentUserProfileInputType!) {
     updateCurrentUserProfile(input: $input) {
       id
@@ -18,4 +18,4 @@ export const UPDATE_USER_PROFILE = gql`
       isActive
     }
   }
-`;
+`);

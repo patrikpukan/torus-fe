@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client";
 import { useMutation, useQuery } from "@apollo/client/react";
 
+import { graphql } from "gql.tada";
 import type {
   AlgorithmSettings,
   AlgorithmSettingsResponse,
@@ -32,7 +32,7 @@ type ExecutePairingAlgorithmVariables = {
   organizationId: string;
 };
 
-export const GET_ALGORITHM_SETTINGS = gql`
+export const GET_ALGORITHM_SETTINGS = graphql(`
   query GetAlgorithmSettings($organizationId: String!) {
     getAlgorithmSettings(organizationId: $organizationId) {
       id
@@ -43,9 +43,9 @@ export const GET_ALGORITHM_SETTINGS = gql`
       updatedAt
     }
   }
-`;
+`);
 
-export const UPDATE_ALGORITHM_SETTINGS = gql`
+export const UPDATE_ALGORITHM_SETTINGS = graphql(`
   mutation UpdateAlgorithmSettings($input: UpdateAlgorithmSettingsInput!) {
     updateAlgorithmSettings(input: $input) {
       id
@@ -56,9 +56,9 @@ export const UPDATE_ALGORITHM_SETTINGS = gql`
       updatedAt
     }
   }
-`;
+`);
 
-export const EXECUTE_PAIRING_ALGORITHM = gql`
+export const EXECUTE_PAIRING_ALGORITHM = graphql(`
   mutation ExecutePairingAlgorithm($organizationId: String!) {
     executePairingAlgorithm(organizationId: $organizationId) {
       success
@@ -67,7 +67,7 @@ export const EXECUTE_PAIRING_ALGORITHM = gql`
       unpairedUsers
     }
   }
-`;
+`);
 
 export const useGetAlgorithmSettings = (organizationId: string) => {
   return useQuery<GetAlgorithmSettingsData, GetAlgorithmSettingsVariables>(

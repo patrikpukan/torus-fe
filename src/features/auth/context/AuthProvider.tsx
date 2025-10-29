@@ -119,7 +119,10 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       user,
       appRole,
       organizationId,
-      loading: loading || currentUserLoading || (sessionLoaded && !appRole && !!session),
+      loading:
+        loading ||
+        currentUserLoading ||
+        (sessionLoaded && !appRole && !!session),
       signIn,
       signInWithGoogle,
       signOut,

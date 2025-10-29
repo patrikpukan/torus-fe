@@ -58,7 +58,9 @@ const buildDefaultValues = (today: Date): FormValues => ({
   randomSeed: 12345,
 });
 
-export function AlgorithmSettingsForm({ organizationId }: AlgorithmSettingsFormProps) {
+export function AlgorithmSettingsForm({
+  organizationId,
+}: AlgorithmSettingsFormProps) {
   const today = React.useMemo(() => startOfToday(), []);
   const defaultValues = React.useMemo(() => buildDefaultValues(today), [today]);
 
@@ -135,7 +137,7 @@ export function AlgorithmSettingsForm({ organizationId }: AlgorithmSettingsFormP
         description: "Failed to update settings",
         variant: "destructive",
       });
-      // eslint-disable-next-line no-console
+
       console.error(error);
     }
   };
@@ -205,9 +207,7 @@ export function AlgorithmSettingsForm({ organizationId }: AlgorithmSettingsFormP
 
             <div className="space-y-8">
               <div className="space-y-4">
-                <Label className="text-base font-medium">
-                  Period Length
-                </Label>
+                <Label className="text-base font-medium">Period Length</Label>
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
@@ -289,9 +289,7 @@ export function AlgorithmSettingsForm({ organizationId }: AlgorithmSettingsFormP
 
           {warning && (
             <Alert className="border-amber-500 bg-amber-50 text-amber-900">
-              <AlertDescription className="text-sm">
-                {warning}
-              </AlertDescription>
+              <AlertDescription className="text-sm">{warning}</AlertDescription>
             </Alert>
           )}
 

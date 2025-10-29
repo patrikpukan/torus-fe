@@ -229,14 +229,26 @@ const PairingsView = () => {
                     <PairingProfileCard
                       profile={selectedContact.profile}
                       pairingStatus={
-                        Object.prototype.hasOwnProperty.call(selectedContact, "pairingStatus")
-                          ? String((selectedContact as Record<string, unknown>).pairingStatus)
+                        Object.prototype.hasOwnProperty.call(
+                          selectedContact,
+                          "pairingStatus"
+                        )
+                          ? String(
+                              (selectedContact as Record<string, unknown>)
+                                .pairingStatus
+                            )
                           : "planned"
                       }
                       pairingDate={selectedContact.lastPairedAt}
                       isCurrentlyMatched={
-                        Object.prototype.hasOwnProperty.call(selectedContact, "isCurrentlyMatched")
-                          ? Boolean((selectedContact as Record<string, unknown>).isCurrentlyMatched)
+                        Object.prototype.hasOwnProperty.call(
+                          selectedContact,
+                          "isCurrentlyMatched"
+                        )
+                          ? Boolean(
+                              (selectedContact as Record<string, unknown>)
+                                .isCurrentlyMatched
+                            )
                           : false
                       }
                     />

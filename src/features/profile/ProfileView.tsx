@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useGetCurrentUserQuery } from "../auth/api/useGetCurrentUserQuery";
 import ProfileForm from "./ProfileForm";
- 
+
 import type { UserProfile } from "../../types/User";
 
 const ProfileView = () => {

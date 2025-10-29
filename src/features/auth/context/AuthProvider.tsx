@@ -22,13 +22,14 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     undefined
   );
   const [loading, setLoading] = useState(true);
+  const [sessionLoaded, setSessionLoaded] = useState(false);
 
-  // Query current user to get role and organization
+  // Query current user to get role and organization - only start after session is loaded
   const {
     data: currentUserData,
     loading: currentUserLoading,
     refetch: refetchCurrentUser,
-  } = useGetCurrentUserQuery();
+  } = useGetCurrentUserQuery({ skip: !sessionLoaded });
 
   useEffect(() => {
     let mounted = true;
@@ -41,6 +42,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       if (mounted) {
         setSession(initialSession ?? null);
         setUser(initialSession?.user ?? null);
+        setSessionLoaded(true);
         setLoading(false);
       }
     };
@@ -117,7 +119,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       user,
       appRole,
       organizationId,
-      loading: loading || currentUserLoading,
+      loading: loading || currentUserLoading || (sessionLoaded && !appRole && !!session),
       signIn,
       signInWithGoogle,
       signOut,
@@ -129,6 +131,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       organizationId,
       loading,
       currentUserLoading,
+      sessionLoaded,
       signIn,
       signInWithGoogle,
       signOut,

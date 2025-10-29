@@ -57,7 +57,8 @@ export const GET_CURRENT_USER = gql`
   }
 `;
 
-export const useGetCurrentUserQuery = () =>
+export const useGetCurrentUserQuery = (options?: { skip?: boolean }) =>
   useQuery<GetCurrentUserResponse>(GET_CURRENT_USER, {
     fetchPolicy: "cache-first",
+    skip: options?.skip,
   });

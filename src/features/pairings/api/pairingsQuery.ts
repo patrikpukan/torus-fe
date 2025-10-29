@@ -1,0 +1,65 @@
+import { gql } from "@apollo/client";
+
+export type PairingQueryItem = {
+  id: string;
+  userAId: string;
+  userBId: string;
+  status: "planned" | "matched" | "met" | "not_met" | "cancelled";
+  createdAt: string;
+  userA: {
+    id: string;
+    email: string;
+    username: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    profileImageUrl?: string | null;
+    profileStatus: string;
+  };
+  userB: {
+    id: string;
+    email: string;
+    username: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    profileImageUrl?: string | null;
+    profileStatus: string;
+  };
+};
+
+export type PairingsQueryData = {
+  getPairingHistory: PairingQueryItem[];
+};
+
+/**
+ * Query to get current user's pairing history with detailed pairing information
+ * including: paired user profiles, pairing date, pairing status, and whether currently matched
+ */
+export const PAIRINGS_QUERY = gql`
+  query GetPairingHistory {
+    getPairingHistory {
+      id
+      userAId
+      userBId
+      status
+      createdAt
+      userA {
+        id
+        email
+        username
+        firstName
+        lastName
+        profileImageUrl
+        profileStatus
+      }
+      userB {
+        id
+        email
+        username
+        firstName
+        lastName
+        profileImageUrl
+        profileStatus
+      }
+    }
+  }
+`;

@@ -1,7 +1,8 @@
 import { type ReactNode } from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
-import type { UserRoleType } from "../features/auth/context/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
+import type { UserRoleType } from "@/features/auth/context/AuthContext";
+import { Box, CircularProgress } from "@mui/material";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -35,7 +36,16 @@ export function ProtectedRoute({
 
   // While loading, show nothing (or a spinner)
   if (loading) {
-    return null;
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+      >
+        <CircularProgress />
+      </Box>
+    );
   }
 
   // If user doesn't have one of the allowed roles, redirect

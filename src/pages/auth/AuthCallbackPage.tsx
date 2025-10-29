@@ -48,7 +48,7 @@ const AuthCallbackPage = () => {
       if (data.session) {
         setStatusMessage("Email verified! Redirecting you to the app…");
         setTimeout(() => {
-          navigate("/login", { replace: true });
+          navigate("/home", { replace: true });
         }, 2000);
       } else {
         setStatusMessage(

@@ -9,4 +9,5 @@ export const navConfig: NavItem[] = [
   { label: "Profile", path: "/profile" },
   { label: "User List", path: "/user-list" },
   { label: "Register Organization", path: "/register-org" },
+  { label: "Algorithm Settings", path: "/algorithm-settings" },
 ];

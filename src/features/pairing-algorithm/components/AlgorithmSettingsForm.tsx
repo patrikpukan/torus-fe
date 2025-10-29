@@ -23,6 +23,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
@@ -204,9 +205,9 @@ export function AlgorithmSettingsForm({ organizationId }: AlgorithmSettingsFormP
 
             <div className="space-y-8">
               <div className="space-y-4">
-                <FormLabel className="text-base font-medium">
+                <Label className="text-base font-medium">
                   Period Length
-                </FormLabel>
+                </Label>
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}

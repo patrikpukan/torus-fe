@@ -89,7 +89,6 @@ const ConfirmResetPasswordPage = () => {
     };
   }, []);
 
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);

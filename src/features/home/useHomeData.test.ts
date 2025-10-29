@@ -2,7 +2,7 @@ import { renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import useHomeData from "./useHomeData";
-import { pairingContacts } from "@/mocks/mockPairings";
+//import { pairingContacts } from "@/mocks/mockPairings";
 
 vi.mock("@/mocks/mockPairings", () => ({
   pairingContacts: [

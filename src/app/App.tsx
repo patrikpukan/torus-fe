@@ -15,6 +15,8 @@ import AuthCallbackPage from "../pages/auth/AuthCallbackPage";
 import UserDetailPage from "../pages/user-list/UserDetailPage";
 import UserListPage from "../pages/user-list/UserListPage";
 import BaseLayout from "./layouts/BaseLayout";
+import { Toaster } from "@/components/ui/toaster";
+import { AlgorithmSettingsPage } from "@/features/pairing-algorithm/pages/AlgorithmSettingsPage";
 
 const theme = createTheme({
   palette: {
@@ -53,9 +55,11 @@ const App = () => {
               <Route index element={<PairingsRoute />} />
               <Route path=":id" element={<PairingsRoute />} />
             </Route>
+            <Route path="algorithm-settings" element={<AlgorithmSettingsPage />}/>
           </Route>
         </Routes>
       </BrowserRouter>
+      <Toaster />
     </ThemeProvider>
   );
 };

@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useMemo } from "react";
 
-import { pairingContacts } from "@/mocks/mockPairings";
-
 import { useAuth } from "@/features/auth/context/UseAuth.tsx";
+import { usePairingsQuery } from "@/features/pairings/api/usePairingsQuery";
+import type { PairingContact } from "@/mocks/mockPairings";
 
 type HomeStats = {
   activeSince: string | null;
@@ -13,33 +13,25 @@ type HomeStats = {
 
 type UseHomeDataResult = {
   firstName: string;
-  currentPairing: (typeof pairingContacts)[number] | null;
+  currentPairing: PairingContact | null;
   stats: HomeStats;
   isLoading: boolean;
   isEmpty: boolean;
 };
 
-const getCurrentPairing = () => {
-  if (!pairingContacts.length) {
-    return null;
-  }
-
-  return [...pairingContacts].sort((a, b) => {
-    return (
-      new Date(b.lastPairedAt).getTime() - new Date(a.lastPairedAt).getTime()
-    );
-  })[0];
-};
-
-const getStats = (activeSince: string | null): HomeStats => {
+const getStats = (
+  pairings: PairingContact[],
+  activeSince: string | null
+): HomeStats => {
   const referenceYear = new Date().getFullYear();
 
-  const pairingsThisYear = pairingContacts.filter((contact) => {
-    return new Date(contact.lastPairedAt).getFullYear() === referenceYear;
+  const pairingsThisYear = pairings.filter((pairing) => {
+    return new Date(pairing.lastPairedAt).getFullYear() === referenceYear;
   });
 
-  const successfulPairingsThisYear = pairingsThisYear.filter((contact) => {
-    return contact.profile.pairingStatus === "Paired";
+  // Successful pairings are those with status 'met'
+  const successfulPairingsThisYear = pairingsThisYear.filter((pairing) => {
+    return pairing.profile.pairingStatus === "met";
   });
 
   return {
@@ -51,19 +43,26 @@ const getStats = (activeSince: string | null): HomeStats => {
 
 const useHomeData = (): UseHomeDataResult => {
   const authCtx = useAuth();
+  const { pairingContacts, loading } = usePairingsQuery();
 
   return useMemo(() => {
-    const currentPairing = getCurrentPairing();
-    const stats = getStats(currentPairing?.lastPairedAt ?? null);
+    // Get the latest pairing (most recent)
+    const currentPairing =
+      pairingContacts.length > 0 ? pairingContacts[0] : null;
+
+    const stats = getStats(
+      pairingContacts,
+      currentPairing?.lastPairedAt ?? null
+    );
 
     return {
       firstName: authCtx.user?.user_metadata?.first_name,
       currentPairing,
       stats,
-      isLoading: false,
+      isLoading: loading,
       isEmpty: !currentPairing,
     };
-  }, []);
+  }, [pairingContacts, loading]);
 };
 
 export default useHomeData;

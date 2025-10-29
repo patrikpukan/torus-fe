@@ -3,6 +3,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import type { PairingContact } from "@/mocks/mockPairings";
 import { formatDate } from "@/features/pairings/components/dateUtils";
+import {
+  getDisplayName,
+  getInitials,
+} from "@/features/pairings/utils/displayName";
 
 export type SortMode = "paired" | "message";
 
@@ -14,9 +18,6 @@ export type PairingsListProps = {
   onSelect?: (id: string) => void;
   className?: string;
 };
-
-const getInitials = (name?: string | null, surname?: string | null) =>
-  `${name?.[0] ?? ""}${surname?.[0] ?? ""}`.toUpperCase();
 
 const getLatestMessagePreview = (contact: PairingContact) =>
   contact.messages.at(-1)?.content ?? "No messages yet";
@@ -54,12 +55,12 @@ export default function PairingsList({
               )}
             >
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-semibold">
-                {getInitials(contact.profile.name, contact.profile.surname)}
+                {getInitials(contact.profile)}
               </div>
               <div className="flex flex-1 flex-col gap-1">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-sm font-medium">
-                    {contact.profile.name} {contact.profile.surname}
+                    {getDisplayName(contact.profile)}
                   </span>
                   <span className="text-xs text-muted-foreground">
                     {sortMode === "message"

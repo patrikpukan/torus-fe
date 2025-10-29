@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-import { CircleUser } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -14,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { UserProfile } from "@/types/User";
 import { formatDate } from "@/features/pairings/components/dateUtils";
+import { getInitials } from "@/features/pairings/utils/displayName";
 
 export type PairingProfileCardProps = {
   profile: UserProfile;
@@ -63,14 +62,6 @@ export default function PairingProfileCard({
     return String(fieldValue);
   };
 
-  // Get display name - use name+surname if available, fallback to email
-  const displayName = useMemo(() => {
-    if (profile.name || profile.surname) {
-      return `${profile.name || ""} ${profile.surname || ""}`.trim();
-    }
-    return profile.email || "";
-  }, [profile.name, profile.surname, profile.email]);
-
   const apiBaseFromGraphQL = (() => {
     const gql = import.meta.env.VITE_GRAPHQL_API as string | undefined;
     if (!gql) return undefined;
@@ -110,8 +101,8 @@ export default function PairingProfileCard({
             {currentAvatarSrc ? (
               <AvatarImage src={currentAvatarSrc} alt="Profile picture" />
             ) : (
-              <AvatarFallback>
-                <CircleUser className="h-16 w-16" strokeWidth={1.5} />
+              <AvatarFallback className="bg-muted text-xl font-semibold">
+                {getInitials(profile)}
               </AvatarFallback>
             )}
           </Avatar>

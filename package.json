@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "regenerate": "graphql get-schema --endpoint https://voiceless-tedda-torus-bd3c6e6a.koyeb.app/graphql --output schema.graphql"
+    "regenerate": "npx graphql-codegen -c graphql.config.ts"
   },
   "dependencies": {
     "@apollo/client": "^4.0.7",
@@ -54,6 +54,10 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
+    "@graphql-codegen/cli": "^6.0.1",
+    "@graphql-codegen/typescript": "^5.0.2",
+    "@graphql-codegen/typescript-graphql-request": "^6.3.0",
+    "@graphql-codegen/typescript-operations": "^5.0.2",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",

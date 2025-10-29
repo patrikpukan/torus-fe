@@ -1,3 +1,4 @@
+import { type GetCurrentUserQuery } from "@/graphql/generated/schema";
 import { useQuery } from "@apollo/client/react";
 import { graphql } from "gql.tada";
 
@@ -58,7 +59,7 @@ export const GET_CURRENT_USER = graphql(`
 `);
 
 export const useGetCurrentUserQuery = (options?: { skip?: boolean }) =>
-  useQuery<GetCurrentUserResponse>(GET_CURRENT_USER, {
+  useQuery<GetCurrentUserQuery>(GET_CURRENT_USER, {
     fetchPolicy: "cache-first",
     skip: options?.skip,
   });

@@ -1,5 +1,5 @@
-import { gql } from "@apollo/client";
 import { useMutation } from "@apollo/client/react";
+import { graphql } from "gql.tada";
 
 export type RegisterOrganizationInput = {
   adminEmail: string;
@@ -24,7 +24,7 @@ export type RegisterOrganizationResponse = {
   };
 };
 
-export const REGISTER_ORGANIZATION_MUTATION = gql`
+export const REGISTER_ORGANIZATION_MUTATION = graphql(`
   mutation RegisterOrganization($input: RegisterOrganizationInputType!) {
     registerOrganization(input: $input) {
       organization {
@@ -40,7 +40,7 @@ export const REGISTER_ORGANIZATION_MUTATION = gql`
       message
     }
   }
-`;
+`);
 
 export const useRegisterOrganization = () => {
   return useMutation<

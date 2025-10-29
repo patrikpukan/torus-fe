@@ -8,7 +8,7 @@ import prettierPlugin from "eslint-plugin-prettier";
 import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
-  globalIgnores(["dist"]),
+  globalIgnores(["dist", "src/components/ui/**"]),
   {
     files: ["**/*.{ts,tsx,js,jsx}"],
     extends: [
@@ -22,7 +22,6 @@ export default defineConfig([
       prettier: prettierPlugin,
     },
     rules: {
-      "prettier/prettier": "warn", // runs Prettier as an ESLint rule
       "prettier/prettier": ["warn", { endOfLine: "auto" }], // handle different OS line endings
     },
     languageOptions: {

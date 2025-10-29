@@ -58,7 +58,9 @@ const LoginForm = () => {
       await signInWithGoogle();
     } catch (error) {
       const err = error as { message?: string };
-      setFormError(err.message ?? "Unable to sign in with Google. Please try again.");
+      setFormError(
+        err.message ?? "Unable to sign in with Google. Please try again."
+      );
       setIsGoogleLoading(false);
     }
   };
@@ -122,10 +124,10 @@ const LoginForm = () => {
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? "Logging in..." : "Log in"}
           </Button>
-          <Button 
+          <Button
             type="button"
-            variant="outline" 
-            className="w-full" 
+            variant="outline"
+            className="w-full"
             onClick={handleGoogleSignIn}
             disabled={isGoogleLoading || isSubmitting}
           >

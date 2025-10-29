@@ -6,6 +6,7 @@ import HomePage from "../pages/home/HomePage";
 import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/login/LoginPage";
 import ProfilePage from "../pages/profile/ProfilePage";
+import ProfileEditPage from "../pages/profile/ProfileEditPage";
 import PairingsRoute from "../pages/pairings/PairingsRoute";
 import RegisterOrgPage from "../pages/register-org/RegisterOrgPage";
 import RegisterPage from "../pages/register/RegisterPage";
@@ -14,9 +15,15 @@ import ConfirmResetPasswordPage from "../pages/reset-password/ConfirmResetPasswo
 import AuthCallbackPage from "../pages/auth/AuthCallbackPage";
 import UserDetailPage from "../pages/user-list/UserDetailPage";
 import UserListPage from "../pages/user-list/UserListPage";
+import AccessDeniedPage from "../pages/AccessDeniedPage";
 import BaseLayout from "./layouts/BaseLayout";
 import { Toaster } from "@/components/ui/toaster";
 import { AlgorithmSettingsPage } from "@/features/pairing-algorithm/pages/AlgorithmSettingsPage";
+import { ProtectedRoute } from "../components/ProtectedRoute";
+
+// Role shortcuts for route protection
+const AUTHENTICATED_ROLES = ["user", "org_admin", "super_admin"] as const;
+const ADMIN_ROLES = ["org_admin", "super_admin"] as const;
 
 const theme = createTheme({
   palette: {
@@ -41,21 +48,69 @@ const App = () => {
             path="/reset-password/confirm"
             element={<ConfirmResetPasswordPage />}
           />
+          <Route path="/access-denied" element={<AccessDeniedPage />} />
           <Route path="/" element={<BaseLayout />}>
             <Route index element={<LandingPage />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="register" element={<RegisterPage />} />
             <Route path="register-org" element={<RegisterOrgPage />} />
             <Route path="reset-password" element={<ResetPasswordPage />} />
-            <Route path="home" element={<HomePage />} />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="user-list" element={<UserListPage />} />
-            <Route path="user-list/:id" element={<UserDetailPage />} />
-            <Route path="pairings">
-              <Route index element={<PairingsRoute />} />
-              <Route path=":id" element={<PairingsRoute />} />
-            </Route>
-            <Route path="algorithm-settings" element={<AlgorithmSettingsPage />}/>
+            <Route
+              path="home"
+              element={
+                <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
+                  <HomePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="profile"
+              element={
+                <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="profile-edit"
+              element={
+                <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
+                  <ProfileEditPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="user-list"
+              element={
+                <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
+                  <UserListPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="user-list/:id"
+              element={
+                <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
+                  <UserDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="pairings"
+              element={
+                <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
+                  <PairingsRoute />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="algorithm-settings"
+              element={
+                <ProtectedRoute allowedRoles={ADMIN_ROLES}>
+                  <AlgorithmSettingsPage />
+                </ProtectedRoute>
+              }
+            />
           </Route>
         </Routes>
       </BrowserRouter>

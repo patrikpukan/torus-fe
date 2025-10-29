@@ -15,7 +15,7 @@ export type PairingsListProps = {
   className?: string;
 };
 
-const getInitials = (name: string, surname: string) =>
+const getInitials = (name?: string | null, surname?: string | null) =>
   `${name?.[0] ?? ""}${surname?.[0] ?? ""}`.toUpperCase();
 
 const getLatestMessagePreview = (contact: PairingContact) =>

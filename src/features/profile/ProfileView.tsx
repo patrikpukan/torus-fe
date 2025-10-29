@@ -1,25 +1,49 @@
-import Box from "@mui/material/Box";
+import { useNavigate } from "react-router-dom";
+import { useGetCurrentUserQuery } from "../auth/api/useGetCurrentUserQuery";
 import ProfileForm from "./ProfileForm";
+import { Button } from "@/components/ui/button";
 import type { UserProfile } from "../../types/User";
 
-const mockProfile: UserProfile = {
-  organization: "Dezider Design Solutions a.s.",
-  email: "email@email.com",
-  name: "Jozef",
-  surname: "Testerovic",
-  accountStatus: "Active",
-  pairingStatus: "Active",
-  about:
-    'I like aligning shoes in other people\'s hallways, vacuuming carpets into a chessboard pattern, clicking "Accept Cookies" just for fun.',
-  hobbies: ["Stalking", "Running", "Crossdressing"],
-  meetingActivity: "Coffee, Walk",
-  interests: "Metalica, Marvel movies",
-};
+const ProfileView = () => {
+  const navigate = useNavigate();
+  const { data, loading, error } = useGetCurrentUserQuery();
 
-const ProfileView = () => (
-  <Box>
-    <ProfileForm value={mockProfile} readOnly />
-  </Box>
-);
+  if (loading) {
+    return <div className="text-center py-8">Loading profile...</div>;
+  }
+
+  if (error || !data?.getCurrentUser) {
+    return (
+      <div className="text-center py-8 text-red-500">Error loading profile</div>
+    );
+  }
+
+  const user = data.getCurrentUser;
+
+  const profile: UserProfile = {
+    email: user.email,
+    name: user.firstName || undefined,
+    surname: user.lastName || undefined,
+    about: user.about || undefined,
+    hobbies: user.hobbies ? user.hobbies.split(",").map((h) => h.trim()) : [],
+    meetingActivity: user.preferredActivity || undefined,
+    interests: user.interests || undefined,
+    username: user.username || undefined,
+    displayUsername: user.displayUsername || undefined,
+    profileImageUrl: user.profileImageUrl || undefined,
+    pairingStatus: user.profileStatus || undefined,
+    organization: user.organization?.name || undefined,
+    accountStatus: user.isActive ? "Active" : "Inactive",
+  };
+
+  return (
+    <div>
+      <div className="flex justify-end mb-4">
+        <Button onClick={() => navigate("/profile-edit")}>Edit Profile</Button>
+      </div>
+      <ProfileForm value={profile} readOnly />
+    </div>
+  );
+};
 
 export default ProfileView;

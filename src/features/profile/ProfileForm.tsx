@@ -29,6 +29,18 @@ const ProfileForm = ({
   onSubmit,
   submitLabel = "Save",
 }: ProfileFormProps) => {
+  // Fields that are always read-only
+  const readOnlyFields = useMemo(
+    () =>
+      new Set<string>([
+        "email",
+        "accountStatus",
+        "organization",
+        "pairingStatus",
+      ]),
+    []
+  );
+
   const fields = useMemo(
     () =>
       [
@@ -56,7 +68,17 @@ const ProfileForm = ({
 
   const getFieldValue = (key: keyof UserProfile) => {
     const fieldValue = value[key];
-    return Array.isArray(fieldValue) ? fieldValue.join(", ") : fieldValue;
+    if (fieldValue === undefined || fieldValue === null) {
+      return "";
+    }
+    if (Array.isArray(fieldValue)) {
+      return fieldValue.join(", ");
+    }
+    return String(fieldValue);
+  };
+
+  const isFieldReadOnly = (key: string | symbol | number): boolean => {
+    return readOnly || readOnlyFields.has(String(key));
   };
 
   return (
@@ -83,7 +105,7 @@ const ProfileForm = ({
                   id={fieldId}
                   value={getFieldValue(key)}
                   onChange={handleChange(key)}
-                  readOnly={readOnly}
+                  readOnly={isFieldReadOnly(key)}
                 />
               </FieldContent>
             </Field>

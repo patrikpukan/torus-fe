@@ -26,12 +26,23 @@ import { navConfig } from "../nav-config";
 import { Logo } from "./Logo";
 import { LogoText } from "./LogoText";
 
-import { useAuth } from "@/features/auth/context/UseAuth.tsx";
+import { useAuth } from "@/hooks/useAuth";
 
 const BaseLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user, signOut, appRole } = useAuth();
+
+  const filteredNavConfig = navConfig.filter((item) => {
+    // Show register-org only for non-authenticated users
+    if (item.path === "/register-org") {
+      return !appRole; // Only show if not logged in
+    }
+
+    // Other items: check role restriction
+    if (!item.roles) return true; // No role restriction
+    return item.roles.includes(appRole || "");
+  });
 
   const userDisplayName = (() => {
     if (!user) {
@@ -89,7 +100,7 @@ const BaseLayout = () => {
             {/* <SidebarGroupLabel>Main</SidebarGroupLabel> */}
             <SidebarGroupContent>
               <SidebarMenu>
-                {navConfig.map((item) => (
+                {filteredNavConfig.map((item) => (
                   <SidebarMenuItem key={item.path}>
                     <SidebarMenuButton asChild>
                       <NavLink to={item.path}>

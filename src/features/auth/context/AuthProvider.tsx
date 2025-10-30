@@ -24,12 +24,12 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [loading, setLoading] = useState(true);
   const [sessionLoaded, setSessionLoaded] = useState(false);
 
-  // Query current user to get role and organization - only start after session is loaded
+  // Query current user to get role and organization - only start after session is loaded and user has a session
   const {
     data: currentUserData,
     loading: currentUserLoading,
     refetch: refetchCurrentUser,
-  } = useGetCurrentUserQuery({ skip: !sessionLoaded });
+  } = useGetCurrentUserQuery({ skip: !sessionLoaded || !session });
 
   useEffect(() => {
     let mounted = true;

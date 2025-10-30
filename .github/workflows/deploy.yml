@@ -17,6 +17,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      VITE_GRAPHQL_API: ${{ secrets.VITE_GRAPHQL_API }}
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+      VITE_BETTER_AUTH_URL: ${{ secrets.VITE_BETTER_AUTH }}
+      VITE_UPLOADS: ${{ secrets.VITE_UPLOADS }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

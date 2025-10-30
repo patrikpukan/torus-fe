@@ -28,10 +28,9 @@ const SendResetPasswordButton = ({
   const { toast } = useToast();
 
   const appUrl = useMemo(() => {
-    return (
-      import.meta.env.VITE_APP_URL?.replace(/\/$/, "") ??
-      window.location.origin.replace(/\/$/, "")
-    );
+    return "https://pukan.tech";
+    // import.meta.env.VITE_APP_URL?.replace(/\/$/, "") ??
+    // window.location.origin.replace(/\/$/, "")
   }, []);
 
   const handleSendReset = async () => {

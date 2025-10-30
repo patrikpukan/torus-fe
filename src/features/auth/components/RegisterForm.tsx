@@ -23,9 +23,9 @@ const RegisterForm = () => {
   const [success, setSuccess] = useState(false);
 
   const appUrl = useMemo(() => {
-    const BASE_URL = (
-      import.meta.env.VITE_APP_URL?.trim() || window.location.origin
-    ).replace(/\/+$/, "");
+    const BASE_URL = "https://pukan.tech";
+    //   import.meta.env.VITE_APP_URL?.trim() || window.location.origin
+    // ).replace(/\/+$/, "");
 
     return BASE_URL;
   }, []);

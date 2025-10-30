@@ -102,9 +102,9 @@ jobs:
           PORT="${SSH_PORT:-22}"
           DEST_PATH="${PROJECT_PATH:-public_html}"
           sshpass -p "$SSH_PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" "cat > \"$DEST_PATH/.env\" << 'EOF'
-          VITE_GRAPHQL_API=${{ vars.VITE_GRAPHQL_API }}
-          VITE_SUPABASE_URL=${{ vars.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_PUBLISHABLE_KEY=${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
-          VITE_BETTER_AUTH_URL=${{ vars.VITE_BETTER_AUTH }}
-          VITE_UPLOADS=${{ vars.VITE_UPLOADS }}
+          VITE_GRAPHQL_API=${{ secrets.VITE_GRAPHQL_API }}
+          VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY=${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_BETTER_AUTH_URL=${{ secrets.VITE_BETTER_AUTH }}
+          VITE_UPLOADS=${{ secrets.VITE_UPLOADS }}
           EOF"

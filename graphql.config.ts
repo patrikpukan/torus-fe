@@ -1,6 +1,6 @@
 const config = {
   overwrite: true,
-  schema: "https://voiceless-tedda-torus-bd3c6e6a.koyeb.app/graphql",
+  schema: "../torus-be/src/schema.gql",
   documents: ["src/**/*.ts", "src/**/*.graphql"],
   generates: {
     "src/graphql/generated/schema.ts": {

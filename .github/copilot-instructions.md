@@ -75,3 +75,8 @@ const useProfile = (userId: string) => {
 
 - Document non obvious utilities with short JSDoc comments; for components, annotate props when behavior is complex.
 - Update `README.md` or feature level docs when adding new flows, especially those that affect routing, API contracts, or environment variables.
+
+## GraphQL Type Generation
+
+- On the frontend (`./torus-fe`), we run `npm run regenerate` to generate GraphQL types from the backend (`./torus-be`) using the shared GraphQL configuration.  
+- Keep types up to date by re-running this command whenever the backend schema changes.

@@ -15,6 +15,8 @@ import ConfirmResetPasswordPage from "../pages/reset-password/ConfirmResetPasswo
 import AuthCallbackPage from "../pages/auth/AuthCallbackPage";
 import UserDetailPage from "../pages/user-list/UserDetailPage";
 import UserListPage from "../pages/user-list/UserListPage";
+import OrganizationListPage from "../pages/organization-list/OrganizationListPage";
+import OrganizationDetailPage from "../pages/organization-list/OrganizationDetailPage";
 import AccessDeniedPage from "../pages/AccessDeniedPage";
 import BaseLayout from "./layouts/BaseLayout";
 import { Toaster } from "@/components/ui/toaster";
@@ -99,6 +101,30 @@ const App = () => {
               element={
                 <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
                   <UserDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="organization-list"
+              element={
+                <ProtectedRoute allowedRoles={["super_admin"]}>
+                  <OrganizationListPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="org-detail/:id"
+              element={
+                <ProtectedRoute allowedRoles={["super_admin"]}>
+                  <OrganizationDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="my-org"
+              element={
+                <ProtectedRoute allowedRoles={["org_admin"]}>
+                  <OrganizationDetailPage />
                 </ProtectedRoute>
               }
             />

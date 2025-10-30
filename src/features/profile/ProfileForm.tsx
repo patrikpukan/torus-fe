@@ -208,6 +208,7 @@ const ProfileForm = ({
               <Button
                 type="button"
                 size="sm"
+                className="mt-4"
                 variant="outline"
                 onClick={onEditClick}
               >

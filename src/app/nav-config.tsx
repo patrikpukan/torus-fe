@@ -1,7 +1,18 @@
+import type { ReactNode } from "react";
+import {
+  Home,
+  Handshake,
+  User,
+  Users,
+  Settings2,
+  Building,
+  Wrench,
+} from "lucide-react";
 export type NavItem = {
   label: string;
   path: string;
   roles?: string[]; // If undefined, visible to all
+  icon?: ReactNode;
 };
 
 export const navConfig: NavItem[] = [
@@ -10,40 +21,59 @@ export const navConfig: NavItem[] = [
     label: "Home",
     path: "/home",
     roles: ["user", "org_admin", "super_admin"],
+    icon: <Home />,
   },
   {
     label: "Pairings",
     path: "/pairings",
-    roles: ["user", "org_admin", "super_admin"],
+    roles: ["user"],
+    icon: <Handshake />,
   },
   {
     label: "Profile",
     path: "/profile",
     roles: ["user", "org_admin", "super_admin"],
+    icon: <User />,
   },
   {
     label: "Users",
     path: "/user-list",
-    roles: ["user", "org_admin", "super_admin"],
+    roles: ["user"],
+    icon: <Users />,
   },
-
-  // Admin only
   {
     label: "User Management",
-    path: "/user-management",
+    path: "/user-list",
     roles: ["org_admin", "super_admin"],
+    icon: <Users />,
   },
+
+  // Admin+ only
   {
     label: "Algorithm Settings",
     path: "/algorithm-settings",
-    roles: ["org_admin", "super_admin"],
+    roles: ["org_admin"],
+    icon: <Settings2 />,
+  },
+  {
+    label: "My Organization",
+    path: "/my-org",
+    roles: ["org_admin"],
+    icon: <Building />,
   },
 
-  // Super Admin only
+  // Super Admin+ only
   {
     label: "Register Organization",
     path: "/register-org",
     roles: ["super_admin"],
+    icon: <Building />,
+  },
+  {
+    label: "Organizations Management",
+    path: "/organization-list",
+    roles: ["super_admin"],
+    icon: <Wrench />,
   },
 
   // Only for non-authenticated users (shown in auth pages)

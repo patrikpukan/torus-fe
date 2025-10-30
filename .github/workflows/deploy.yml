@@ -89,3 +89,22 @@ jobs:
           DEST_PATH="${PROJECT_PATH:-public_html}"
           sshpass -p "$SSH_PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" "mkdir -p \"$DEST_PATH\""
           sshpass -p "$SSH_PASSWORD" rsync -az --delete --exclude ".git/" --exclude ".htaccess" -e "ssh -p $PORT -o StrictHostKeyChecking=no" ./build_branch/ "$SSH_USER@$SSH_HOST:$DEST_PATH/"
+
+      - name: Create .env on server
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          PROJECT_PATH: ${{ secrets.PROJECT_PATH }}
+        run: |
+          set -euo pipefail
+          PORT="${SSH_PORT:-22}"
+          DEST_PATH="${PROJECT_PATH:-public_html}"
+          sshpass -p "$SSH_PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" "cat > \"$DEST_PATH/.env\" << 'EOF'
+          VITE_GRAPHQL_API=${{ vars.VITE_GRAPHQL_API }}
+          VITE_SUPABASE_URL=${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY=${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_BETTER_AUTH_URL=${{ vars.VITE_BETTER_AUTH }}
+          VITE_UPLOADS=${{ vars.VITE_UPLOADS }}
+          EOF"

@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { graphql } from "gql.tada";
 
 export type PairingQueryItem = {
   id: string;
@@ -34,7 +34,7 @@ export type PairingsQueryData = {
  * Query to get current user's pairing history with detailed pairing information
  * including: paired user profiles, pairing date, pairing status, and whether currently matched
  */
-export const PAIRINGS_QUERY = gql`
+export const PAIRINGS_QUERY = graphql(`
   query GetPairingHistory {
     getPairingHistory {
       id
@@ -62,4 +62,4 @@ export const PAIRINGS_QUERY = gql`
       }
     }
   }
-`;
+`);

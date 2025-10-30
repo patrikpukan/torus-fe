@@ -1,11 +1,13 @@
 import { useParams } from "react-router-dom";
 
-import { Card } from "@/components/ui/card";
-
+import ProfileForm from "@/features/profile/ProfileForm";
+import SendResetPasswordButton from "@/features/auth/components/SendResetPasswordButton";
 import { useUserByIdQuery } from "@/features/users/api/useUserByIdQuery";
-import { cn } from "@/lib/utils";
+import type { UserProfile } from "@/types/User";
+import { useAuth } from "@/hooks/useAuth";
 
 const UserDetailPage = () => {
+  const { appRole } = useAuth();
   const params = useParams();
   const userId = params.id ?? "";
 
@@ -15,15 +17,17 @@ const UserDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="container py-8">
-        <h1 className="text-2xl font-semibold tracking-tight">Loading user…</h1>
+      <div className="mx-auto max-w-3xl py-8 text-center">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Loading user...
+        </h1>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="container py-8">
+      <div className="mx-auto max-w-3xl py-8">
         <h1 className="text-2xl font-semibold tracking-tight">
           Unable to load user
         </h1>
@@ -36,48 +40,34 @@ const UserDetailPage = () => {
 
   if (!user) {
     return (
-      <div className="container py-8">
+      <div className="mx-auto max-w-3xl py-8">
         <h1 className="text-2xl font-semibold tracking-tight">
           User not found
         </h1>
-        <p className="text-sm text-muted-foreground mt-2">
+        <p className="mt-2 text-sm text-muted-foreground">
           We couldn't find a user for that link.
         </p>
       </div>
     );
   }
 
+  const profile: UserProfile = {
+    email: user.email,
+    name: user.firstName ?? undefined,
+    surname: user.lastName ?? undefined,
+    username: user.username ?? undefined,
+    displayUsername: user.username ?? undefined,
+    pairingStatus: user.profileStatus ?? undefined,
+  };
+
   return (
-    <div className="container py-8">
-      <h1 className="text-2xl font-semibold tracking-tight">
-        {[user.firstName, user.lastName]
-          .filter((part) => part && part.trim().length > 0)
-          .join(" ")
-          .trim() ||
-          user.username ||
-          user.email}
-      </h1>
-      <Card className="p-6 mt-4">
-        <div className="space-y-2">
-          <div className="text-sm text-muted-foreground">Email</div>
-          <div className="text-base">{user.email}</div>
-
-          <div className="text-sm text-muted-foreground mt-4">
-            Profile Status
-          </div>
-          <div
-            className={cn(
-              "inline-flex items-center rounded border px-2 py-1 text-xs font-medium capitalize",
-              "border-muted-foreground/20 bg-muted"
-            )}
-          >
-            {user.profileStatus ?? "unknown"}
-          </div>
-
-          <div className="text-sm text-muted-foreground mt-4">Role</div>
-          <div className="text-base capitalize">{user.role ?? "user"}</div>
+    <div className="mx-auto max-w-3xl py-8">
+      <ProfileForm value={profile} />
+      {appRole === "org_admin" && (
+        <div className="mt-6 flex justify-end">
+          <SendResetPasswordButton email={user.email} variant="outline" />
         </div>
-      </Card>
+      )}
     </div>
   );
 };

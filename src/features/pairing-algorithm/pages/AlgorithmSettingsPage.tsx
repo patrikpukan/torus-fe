@@ -1,10 +1,10 @@
 import { Navigate } from "react-router-dom";
 
 import { AlgorithmSettingsForm } from "../components/AlgorithmSettingsForm";
-import { useAuth } from "@/features/auth/context/UseAuth";
+import { useAuth } from "@/hooks/useAuth";
 
 export function AlgorithmSettingsPage() {
-  const { user, loading } = useAuth();
+  const { appRole, organizationId, loading } = useAuth();
 
   if (loading) {
     return (
@@ -14,61 +14,12 @@ export function AlgorithmSettingsPage() {
     );
   }
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  type Metadata = {
-    role?: string;
-    appRole?: string;
-    organizationId?: string;
-    organization_id?: string;
-  };
-
-  const metadata = (user.user_metadata ?? {}) as Metadata;
-  const appMetadata = (user.app_metadata ?? {}) as Metadata;
-
-  const normalizeRole = (value: string | undefined | null) =>
-    value
-      ?.replace(/([a-z])([A-Z])/g, "$1_$2")
-      .replace(/[\s-]+/g, "_")
-      .toLowerCase() ?? null;
-
-  const rawRole =
-    metadata.role ??
-    metadata.appRole ??
-    appMetadata.role ??
-    appMetadata.appRole ??
-    null;
-
-  const normalizedRole = normalizeRole(rawRole);
-  const isAdminRole =
-    normalizedRole === "admin" ||
-    normalizedRole === "org_admin" ||
-    normalizedRole === "super_admin";
+  // Check if user is an admin (org_admin or super_admin)
+  const isAdminRole = appRole === "org_admin" || appRole === "super_admin";
 
   if (!isAdminRole) {
     return <Navigate to="/home" replace />;
   }
-
-  const userWithOrg = user as typeof user & {
-    organizationId?: string;
-    organization_id?: string;
-  };
-
-  const organizationIdRaw =
-    userWithOrg.organizationId ??
-    userWithOrg.organization_id ??
-    metadata.organizationId ??
-    metadata.organization_id ??
-    appMetadata.organizationId ??
-    appMetadata.organization_id ??
-    null;
-
-  const organizationId =
-    typeof organizationIdRaw === "string" && organizationIdRaw.length > 0
-      ? organizationIdRaw
-      : null;
 
   if (!organizationId) {
     return (

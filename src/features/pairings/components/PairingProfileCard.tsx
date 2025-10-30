@@ -1,3 +1,4 @@
+import { CircleUser } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -134,7 +135,9 @@ export default function PairingProfileCard({
               <span className="text-xs font-medium text-muted-foreground">
                 Paired Date
               </span>
-              <p className="text-sm text-foreground">{formatDate(pairingDate)}</p>
+              <p className="text-sm text-foreground">
+                {formatDate(pairingDate)}
+              </p>
             </div>
           )}
 
@@ -189,7 +192,9 @@ export default function PairingProfileCard({
         </Field>
 
         <Field>
-          <FieldLabel htmlFor="profile-account-status">Account status</FieldLabel>
+          <FieldLabel htmlFor="profile-account-status">
+            Account status
+          </FieldLabel>
           <FieldContent>
             <Input
               id="profile-account-status"
@@ -200,7 +205,9 @@ export default function PairingProfileCard({
         </Field>
 
         <Field>
-          <FieldLabel htmlFor="profile-pairing-status">Pairing status</FieldLabel>
+          <FieldLabel htmlFor="profile-pairing-status">
+            Pairing status
+          </FieldLabel>
           <FieldContent>
             <Input
               id="profile-pairing-status"

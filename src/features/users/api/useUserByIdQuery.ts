@@ -1,16 +1,25 @@
-import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
-import type { UsersQueryItem } from "./useUsersQuery";
+import { graphql } from "gql.tada";
+
+export type UserDetail = {
+  id: string;
+  email: string;
+  username?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  profileStatus?: string | null;
+  role?: string | null;
+};
 
 export type UserByIdQueryData = {
-  userById: UsersQueryItem | null;
+  userById: UserDetail | null;
 };
 
 export type UserByIdQueryVariables = {
   id?: string;
 };
 
-export const USER_BY_ID_QUERY = gql`
+export const USER_BY_ID_QUERY = graphql(`
   query UserById($id: ID!) {
     userById(id: $id) {
       id
@@ -22,7 +31,7 @@ export const USER_BY_ID_QUERY = gql`
       role
     }
   }
-`;
+`);
 
 export const useUserByIdQuery = (id?: string) =>
   useQuery<UserByIdQueryData, UserByIdQueryVariables>(USER_BY_ID_QUERY, {

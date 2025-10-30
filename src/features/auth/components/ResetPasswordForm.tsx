@@ -18,9 +18,10 @@ const ResetPasswordForm = () => {
   const [success, setSuccess] = useState(false);
 
   const appUrl = useMemo(() => {
-    return "https://pukan.tech";
-    // import.meta.env.VITE_APP_URL?.replace(/\/$/, "") ??
-    // window.location.origin.replace(/\/$/, "")
+    return (
+      import.meta.env.VITE_APP_URL?.replace(/\/$/, "") ??
+      window.location.origin.replace(/\/$/, "")
+    );
   }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {

@@ -6,6 +6,7 @@ import ProfileCalendar from "@/features/calendar/ProfileCalendar";
 import ProfileForm from "@/features/profile/ProfileForm";
 import { cn } from "@/lib/utils";
 import type { PairingContact } from "@/mocks/mockPairings";
+import { getDisplayName } from "@/features/pairings/utils/displayName";
 
 export type PairingDetailProps = {
   contact: PairingContact | undefined;
@@ -44,7 +45,7 @@ export default function PairingDetail({
           <CardHeader className="flex flex-row items-start justify-between gap-2 border-b pb-4">
             <div>
               <CardTitle className="text-xl">
-                {contact.profile.name} {contact.profile.surname}
+                {getDisplayName(contact.profile)}
               </CardTitle>
               <p className="text-sm text-muted-foreground">
                 {contact.profile.organization} · Last message{" "}

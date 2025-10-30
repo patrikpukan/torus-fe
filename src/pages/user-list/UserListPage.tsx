@@ -6,9 +6,9 @@ const UserListPage = () => {
   const users = data?.users ?? [];
 
   return (
-    <div className="container py-4">
+    <div className="container">
       <div className="space-y-3">
-        <h1 className="text-3xl font-semibold tracking-tight">Users</h1>
+        <h1 className="text-3xl font-semibold tracking-tight mb-8">Users</h1>
 
         {loading && (
           <div className="rounded border border-muted-foreground/20 bg-muted/50 px-4 py-3 text-sm text-muted-foreground">

@@ -38,7 +38,7 @@ export function AlgorithmSettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <AlgorithmSettingsForm organizationId={organizationId} />
     </div>
   );

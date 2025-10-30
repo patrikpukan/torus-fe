@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import useHomeData from "@/features/home/useHomeData";
+import { getInitials } from "@/features/pairings/utils/displayName";
 
 const formatDate = (iso: string | null) => {
   if (!iso) return "—";
@@ -20,12 +21,6 @@ const formatDate = (iso: string | null) => {
     month: "2-digit",
     day: "2-digit",
   });
-};
-
-const getInitials = (name?: string, surname?: string) => {
-  const first = name?.charAt(0) ?? "";
-  const last = surname?.charAt(0) ?? "";
-  return `${first}${last}`.toUpperCase() || "?";
 };
 
 const HomeSkeleton = () => (
@@ -58,8 +53,8 @@ const HomePage = () => {
   }
 
   const activeSince = formatDate(stats.activeSince);
-  const pairName = currentPairing
-    ? `${currentPairing.profile.name} ${currentPairing.profile.surname}`.trim()
+  const pairName = currentPairing?.profile
+    ? `${currentPairing.profile.name || currentPairing.profile.displayUsername || currentPairing.profile.username || currentPairing.profile.email} ${currentPairing.profile.surname || ""}`.trim()
     : null;
 
   return (
@@ -96,13 +91,12 @@ const HomePage = () => {
                 <Avatar className="h-20 w-20 border">
                   <AvatarImage
                     alt={pairName ?? "Paired colleague"}
-                    src={undefined}
+                    src={currentPairing?.profile?.profileImageUrl || undefined}
                   />
-                  <AvatarFallback className="text-2xl">
-                    {getInitials(
-                      currentPairing?.profile.name,
-                      currentPairing?.profile.surname
-                    )}
+                  <AvatarFallback className="bg-muted text-2xl font-semibold">
+                    {currentPairing?.profile
+                      ? getInitials(currentPairing.profile)
+                      : "?"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="space-y-1">
@@ -119,10 +113,7 @@ const HomePage = () => {
                   Stay in touch and keep collaborating.
                 </CardDescription>
                 <Button asChild variant="outline">
-                  <Link
-                    to={`/pairings/${currentPairing?.id}`}
-                    aria-label="Open pairing conversation"
-                  >
+                  <Link to="/pairings" aria-label="Browse pairings">
                     Message Now
                   </Link>
                 </Button>

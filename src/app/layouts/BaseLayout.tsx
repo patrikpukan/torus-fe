@@ -14,7 +14,7 @@ import {
   SidebarSeparator,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Handshake, Home, LogIn, LogOut, User, Users } from "lucide-react";
+import { LogIn, LogOut } from "lucide-react";
 import { useCallback, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
@@ -146,10 +146,7 @@ const BaseLayout = () => {
                   <SidebarMenuItem key={item.path}>
                     <SidebarMenuButton asChild>
                       <NavLink to={item.path}>
-                        {item.path === "/home" && <Home />}
-                        {item.path === "/pairings" && <Handshake />}
-                        {item.path === "/profile" && <User />}
-                        {item.path === "/user-list" && <Users />}
+                        {item.icon}
                         <span>{item.label}</span>
                       </NavLink>
                     </SidebarMenuButton>
@@ -217,12 +214,14 @@ const BaseLayout = () => {
         <SidebarRail />
       </Sidebar>
       <SidebarInset>
-        <div className="sticky top-0 z-10 flex h-12 items-center gap-2 border-b bg-background px-3">
+        <div className="sticky top-0 z-10 flex h-12 items-center gap-2 border-b px-3">
           <SidebarTrigger />
           <div className="ml-auto" />
         </div>
         <div className="container mx-auto flex-1 p-4">
-          <Outlet />
+          <div className="rounded-xl bg-white shadow-sm p-6 min-h-[80vh]">
+            <Outlet />
+          </div>
         </div>
         <footer className="mt-auto border-t bg-muted/30">
           <div className="container mx-auto py-3 text-center text-sm text-muted-foreground">

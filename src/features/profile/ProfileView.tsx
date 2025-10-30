@@ -119,7 +119,7 @@ const ProfileView = () => {
         onEditClick={!isEditing ? handleEditClick : undefined}
       />
       {!isEditing && (
-        <div className="mt-6 flex justify-end">
+        <div className="mt-6 flex justify-center">
           <SendResetPasswordButton email={profile.email} variant="outline" />
         </div>
       )}

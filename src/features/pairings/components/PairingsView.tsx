@@ -11,6 +11,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import PairingsList from "./PairingsList";
 import PairingProfileCard from "./PairingProfileCard";
 import { usePairingsQuery } from "@/features/pairings/api/usePairingsQuery";
+import { getDisplayName } from "@/features/pairings/utils/displayName";
 
 type SortMode = "paired" | "message";
 
@@ -122,7 +123,7 @@ const PairingsView = () => {
 
   return (
     <div className="flex h-[calc(100vh-8rem)] gap-6">
-      <aside className="flex basis-1/4 min-w-[240px] flex-col">
+      <aside className="flex basis-2/6 min-w-[240px] flex-col">
         <Card className="flex h-full flex-col">
           <PairingsList
             contacts={contacts}
@@ -135,18 +136,16 @@ const PairingsView = () => {
         </Card>
       </aside>
 
-      <section className="flex basis-3/4 flex-col">
+      <section className="flex basis-4/6 flex-col">
         <Card className="flex h-full flex-col">
           {selectedContact ? (
             <>
               <CardHeader className="flex flex-col gap-1 border-b pb-4">
                 <CardTitle className="text-xl">
-                  {selectedContact.profile.name}{" "}
-                  {selectedContact.profile.surname}
+                  {getDisplayName(selectedContact.profile)}
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  {selectedContact.profile.organization} · Last message{" "}
-                  {formatDateTime(selectedContact.lastMessageAt)}
+                  Last message {formatDateTime(selectedContact.lastMessageAt)}
                 </p>
               </CardHeader>
               <CardContent className="flex flex-1 flex-col overflow-hidden p-0">
@@ -224,7 +223,7 @@ const PairingsView = () => {
 
                   <TabsContent
                     value="profile"
-                    className="mt-0 flex-1 overflow-y-auto px-6 py-4"
+                    className="mt-0 flex-1 overflow-y-auto px-6 py-12"
                   >
                     <PairingProfileCard
                       profile={selectedContact.profile}

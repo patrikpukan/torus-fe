@@ -28,7 +28,7 @@ export default function AccessDeniedPage() {
           an error, please contact your administrator.
         </Typography>
         <Box display="flex" gap={2}>
-          <Button variant="contained" onClick={() => navigate("/home")}>
+          <Button variant="contained" onClick={() => navigate("/")}>
             Go to Home
           </Button>
           <Button variant="outlined" onClick={() => navigate(-1)}>

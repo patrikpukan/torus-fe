@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { UserProfile } from "@/types/User";
 import { formatDate } from "@/features/pairings/components/dateUtils";
+import { getInitials } from "@/features/pairings/utils/displayName";
 
 export type PairingProfileCardProps = {
   profile: UserProfile;
@@ -101,8 +102,8 @@ export default function PairingProfileCard({
             {currentAvatarSrc ? (
               <AvatarImage src={currentAvatarSrc} alt="Profile picture" />
             ) : (
-              <AvatarFallback>
-                <CircleUser className="h-16 w-16" strokeWidth={1.5} />
+              <AvatarFallback className="bg-muted text-xl font-semibold">
+                {getInitials(profile)}
               </AvatarFallback>
             )}
           </Avatar>

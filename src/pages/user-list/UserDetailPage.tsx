@@ -64,7 +64,7 @@ const UserDetailPage = () => {
     <div className="mx-auto max-w-3xl py-8">
       <ProfileForm value={profile} />
       {appRole === "org_admin" && (
-        <div className="mt-6 flex justify-end">
+        <div className="mt-6 flex justify-center">
           <SendResetPasswordButton email={user.email} variant="outline" />
         </div>
       )}

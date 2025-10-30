@@ -1,40 +1,37 @@
 type AlgorithmSettings {
-  createdAt: DateTime!
-  id: String!
-  organizationId: String!
-  periodLengthDays: Int!
-  randomSeed: Int!
-  updatedAt: DateTime!
+    createdAt: DateTime!
+    id: String!
+    organizationId: String!
+    periodLengthDays: Int!
+    randomSeed: Int!
+    updatedAt: DateTime!
 }
 
 type AlgorithmSettingsResponse {
-  createdAt: DateTime!
-  id: String!
-  organizationId: String!
-  periodLengthDays: Int!
-  randomSeed: Int!
-  updatedAt: DateTime!
-  warning: String
+    createdAt: DateTime!
+    id: String!
+    organizationId: String!
+    periodLengthDays: Int!
+    randomSeed: Int!
+    updatedAt: DateTime!
+    warning: String
 }
 
 type CurrentUser {
-  about: String
-  displayUsername: String
-  email: String!
-  firstName: String
-  hobbies: String
-  id: ID!
-  interests: String
-  isActive: Boolean!
-  lastName: String
-  organization: Organization!
-  organizationId: ID!
-  preferredActivity: String
-  profileImageUrl: String
-  profileStatus: ProfileStatusEnum!
-  role: UserRoleEnum!
-  supabaseUserId: String
-  username: String
+    about: String
+    email: String!
+    firstName: String
+    hobbies: String
+    id: ID!
+    interests: String
+    isActive: Boolean!
+    lastName: String
+    organization: Organization!
+    organizationId: ID!
+    profileImageUrl: String
+    profileStatus: ProfileStatusEnum!
+    role: UserRoleEnum!
+    supabaseUserId: String
 }
 
 """
@@ -42,147 +39,166 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+input InviteUserInputType {
+    email: String!
+    organizationId: String!
+}
+
+type InviteUserResponseType {
+    message: String!
+    success: Boolean!
+    userId: String
+}
+
 type Mutation {
-  deleteUser(id: ID!): User!
-  executePairingAlgorithm(organizationId: String!): PairingExecutionResult!
-  registerOrganization(input: RegisterOrganizationInputType!): RegisterOrganizationResponseType!
-  signUp(data: SignUpInputType!): User!
-  updateAlgorithmSettings(input: UpdateAlgorithmSettingsInput!): AlgorithmSettingsResponse!
-  updateCurrentUserProfile(input: UpdateCurrentUserProfileInputType!): CurrentUser!
-  updateUser(data: UpdateUserInputType!): User!
+    deleteUser(id: ID!): User!
+    executePairingAlgorithm(organizationId: String!): PairingExecutionResult!
+    inviteUserToOrganization(input: InviteUserInputType!): InviteUserResponseType!
+    registerOrganization(input: RegisterOrganizationInputType!): RegisterOrganizationResponseType!
+    signUp(data: SignUpInputType!): User!
+    updateAlgorithmSettings(input: UpdateAlgorithmSettingsInput!): AlgorithmSettingsResponse!
+    updateCurrentUserProfile(input: UpdateCurrentUserProfileInputType!): CurrentUser!
+    updateOrganization(input: UpdateOrganizationInputType!): OrganizationType!
+    updateUser(data: UpdateUserInputType!): User!
 }
 
 type Organization {
-  code: String!
-  id: ID!
-  imageUrl: String
-  name: String!
+    code: String!
+    id: ID!
+    imageUrl: String
+    name: String!
 }
 
 type OrganizationType {
-  address: String
-  code: String!
-  createdAt: DateTime!
-  id: ID!
-  imageUrl: String
-  name: String!
-  size: Float
-  updatedAt: DateTime!
+    address: String
+    code: String!
+    createdAt: DateTime!
+    id: ID!
+    imageUrl: String
+    name: String!
+    size: Float
+    updatedAt: DateTime!
 }
 
 type PairingExecutionResult {
-  message: String!
-  pairingsCreated: Int!
-  success: Boolean!
-  unpairedUsers: Int
+    message: String!
+    pairingsCreated: Int!
+    success: Boolean!
+    unpairedUsers: Int
 }
 
 type PairingHistory {
-  createdAt: DateTime!
-  id: ID!
-  status: PairingStatusEnum!
-  userA: User!
-  userAId: ID!
-  userB: User!
-  userBId: ID!
+    createdAt: DateTime!
+    id: ID!
+    status: PairingStatusEnum!
+    userA: User!
+    userAId: ID!
+    userB: User!
+    userBId: ID!
 }
 
 """Pairing status"""
 enum PairingStatusEnum {
-  cancelled
-  matched
-  met
-  not_met
-  planned
+    cancelled
+    matched
+    met
+    not_met
+    planned
 }
 
 """Profile onboarding status"""
 enum ProfileStatusEnum {
-  active
-  pending
-  suspended
+    active
+    pending
+    suspended
 }
 
 type Query {
-  getAlgorithmSettings(organizationId: String!): AlgorithmSettings!
-  getCurrentUser: CurrentUser
-  getPairedUsers: [User!]!
-  getPairingHistory: [PairingHistory!]!
-  user(username: String!): User
-  userById(id: ID!): User
-  users: [User!]!
+    getAlgorithmSettings(organizationId: String!): AlgorithmSettings!
+    getCurrentUser: CurrentUser
+    getPairedUsers: [User!]!
+    getPairingHistory: [PairingHistory!]!
+    myOrganization: OrganizationType
+    organizationById(id: ID!): OrganizationType
+    organizations: [OrganizationType!]!
+    userById(id: ID!): User
+    users: [User!]!
 }
 
 input RegisterOrganizationInputType {
-  adminEmail: String!
-  organizationAddress: String!
-  organizationName: String!
-  organizationSize: String!
+    adminEmail: String!
+    organizationAddress: String!
+    organizationName: String!
+    organizationSize: String!
 }
 
 type RegisterOrganizationResponseType {
-  adminEmail: String!
-  message: String!
-  organization: OrganizationType!
+    adminEmail: String!
+    message: String!
+    organization: OrganizationType!
 }
 
 input SignUpInputType {
-  email: String!
-  firstName: String
-  lastName: String
-  password: String!
-  profilePicture: Upload
-  username: String!
+    email: String!
+    firstName: String
+    lastName: String
+    password: String!
+    profilePicture: Upload
 }
 
 input UpdateAlgorithmSettingsInput {
-  organizationId: String!
-  periodLengthDays: Int
-  randomSeed: Int
+    organizationId: String!
+    periodLengthDays: Int
+    randomSeed: Int
 }
 
 input UpdateCurrentUserProfileInputType {
-  about: String
-  avatarUrl: String
-  displayUsername: String
-  firstName: String
-  hobbies: String
-  interests: String
-  lastName: String
-  preferredActivity: String
+    about: String
+    avatarUrl: String
+    firstName: String
+    hobbies: String
+    interests: String
+    lastName: String
+    preferredActivity: String
+}
+
+input UpdateOrganizationInputType {
+    address: String
+    id: ID!
+    imageUrl: String
+    name: String
+    size: Float
 }
 
 input UpdateUserInputType {
-  about: String
-  email: String
-  firstName: String
-  hobbies: String
-  id: ID!
-  interests: String
-  lastName: String
-  preferredActivity: String
-  profileImageUrl: String
-  role: UserRoleEnum
-  username: String
+    about: String
+    email: String
+    firstName: String
+    hobbies: String
+    id: ID!
+    interests: String
+    lastName: String
+    preferredActivity: String
+    profileImageUrl: String
+    role: UserRoleEnum
 }
 
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
 
 type User {
-  email: String!
-  firstName: String
-  id: ID!
-  lastName: String
-  profileImageUrl: String
-  profileStatus: ProfileStatusEnum!
-  role: UserRoleEnum!
-  username: String
+    email: String!
+    firstName: String
+    id: ID!
+    lastName: String
+    profileImageUrl: String
+    profileStatus: ProfileStatusEnum!
+    role: UserRoleEnum!
 }
 
 """User role"""
 enum UserRoleEnum {
-  org_admin
-  super_admin
-  user
+    org_admin
+    super_admin
+    user
 }

@@ -175,7 +175,7 @@ export default function PairingProfileCard({
         <Field>
           <FieldLabel htmlFor="profile-name">Name</FieldLabel>
           <FieldContent>
-            <Input id="profile-name" value={getFieldValue("name")} readOnly />
+            <Input id="profile-name" value={getFieldValue("firstName")} readOnly />
           </FieldContent>
         </Field>
 
@@ -184,7 +184,7 @@ export default function PairingProfileCard({
           <FieldContent>
             <Input
               id="profile-surname"
-              value={getFieldValue("surname")}
+              value={getFieldValue("lastName")}
               readOnly
             />
           </FieldContent>
@@ -237,18 +237,6 @@ export default function PairingProfileCard({
               <Input
                 id="profile-hobbies"
                 value={getFieldValue("hobbies")}
-                readOnly
-              />
-            </FieldContent>
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="profile-meeting-activity">
-              Preferred meeting activity
-            </FieldLabel>
-            <FieldContent>
-              <Input
-                id="profile-meeting-activity"
-                value={profile.meetingActivity || ""}
                 readOnly
               />
             </FieldContent>

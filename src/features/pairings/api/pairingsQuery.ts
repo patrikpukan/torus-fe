@@ -9,7 +9,6 @@ export type PairingQueryItem = {
   userA: {
     id: string;
     email: string;
-    username: string;
     firstName?: string | null;
     lastName?: string | null;
     profileImageUrl?: string | null;
@@ -18,7 +17,6 @@ export type PairingQueryItem = {
   userB: {
     id: string;
     email: string;
-    username: string;
     firstName?: string | null;
     lastName?: string | null;
     profileImageUrl?: string | null;
@@ -45,7 +43,6 @@ export const PAIRINGS_QUERY = graphql(`
       userA {
         id
         email
-        username
         firstName
         lastName
         profileImageUrl
@@ -54,7 +51,6 @@ export const PAIRINGS_QUERY = graphql(`
       userB {
         id
         email
-        username
         firstName
         lastName
         profileImageUrl

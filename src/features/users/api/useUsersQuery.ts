@@ -4,7 +4,6 @@ import { graphql } from "gql.tada";
 export type UsersQueryItem = {
   id: string;
   email: string;
-  username: string;
   firstName?: string | null;
   lastName?: string | null;
   profileStatus?: string | null;
@@ -20,7 +19,6 @@ export const USERS_QUERY = graphql(`
     users {
       id
       email
-      username
       firstName
       lastName
       profileStatus

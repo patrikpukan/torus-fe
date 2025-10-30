@@ -31,17 +31,14 @@ export const usePairingsQuery = () => {
           profile: {
             organization: "", // Will be filled from other sources if needed
             email: contactUser.email,
-            name: contactUser.firstName || "",
-            surname: contactUser.lastName || "",
+            firstName: contactUser.firstName || "",
+            lastName: contactUser.lastName || "",
             accountStatus: contactUser.profileStatus,
             pairingStatus: pairing.status,
             about: "",
             hobbies: [],
-            meetingActivity: "",
             interests: "",
-            username: contactUser.username,
             profileImageUrl: contactUser.profileImageUrl || "",
-            displayUsername: contactUser.username,
           },
           lastPairedAt: pairing.createdAt,
           lastMessageAt: pairing.createdAt, // Will be updated when messages are implemented

@@ -21,16 +21,13 @@ const ProfileView = () => {
   const mapUserToProfile = (user: CurrentUserData) =>
     ({
       email: user.email,
-      name: user.firstName || undefined,
-      surname: user.lastName || undefined,
+      firstName: user.firstName || undefined,
+      lastName: user.lastName || undefined,
       about: user.about || undefined,
       hobbies: user.hobbies
         ? user.hobbies.split(",").map((hobby) => hobby.trim())
         : [],
-      meetingActivity: user.preferredActivity || undefined,
       interests: user.interests || undefined,
-      username: user.username || undefined,
-      displayUsername: user.displayUsername || undefined,
       profileImageUrl: user.profileImageUrl || undefined,
       pairingStatus: user.profileStatus || undefined,
       organization: user.organization?.name || undefined,
@@ -89,13 +86,11 @@ const ProfileView = () => {
       await updateProfile({
         variables: {
           input: {
-            firstName: updatedProfile.name || null,
-            lastName: updatedProfile.surname || null,
+            firstName: updatedProfile.firstName || null,
+            lastName: updatedProfile.lastName || null,
             about: updatedProfile.about || null,
             hobbies: hobbiesArray.join(", ") || null,
-            preferredActivity: updatedProfile.meetingActivity || null,
             interests: updatedProfile.interests || null,
-            displayUsername: updatedProfile.displayUsername || null,
             avatarUrl: updatedProfile.profileImageUrl || null,
           },
         },

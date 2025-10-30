@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@apollo/client/react";
-import { useGetCurrentUserQuery } from "../../features/auth/api/useGetCurrentUserQuery";
+import { useGetCurrentUserQuery } from "@/features/auth/api/useGetCurrentUserQuery.ts";
 import ProfileForm from "../../features/profile/ProfileForm";
-import { UPDATE_USER_PROFILE } from "../../features/profile/UpdateUserProfileMutation";
-import type { UserProfile } from "../../types/User";
+import { UPDATE_USER_PROFILE } from "@/features/profile/UpdateUserProfileMutation.ts";
+import type { UserProfile } from "@/types/User.ts";
 
 const ProfileEditPage = () => {
   const navigate = useNavigate();
@@ -28,14 +28,11 @@ const ProfileEditPage = () => {
 
   const initialProfile: UserProfile = profile || {
     email: user.email,
-    name: user.firstName || undefined,
-    surname: user.lastName || undefined,
+    firstName: user.firstName || undefined,
+    lastName: user.lastName || undefined,
     about: user.about || undefined,
     hobbies: user.hobbies ? user.hobbies.split(",").map((h) => h.trim()) : [],
-    meetingActivity: user.preferredActivity || undefined,
     interests: user.interests || undefined,
-    username: user.username || undefined,
-    displayUsername: user.displayUsername || undefined,
     profileImageUrl: user.profileImageUrl || undefined,
     organization: user.organization?.name || undefined,
     accountStatus: user.isActive ? "Active" : "Inactive",
@@ -55,13 +52,11 @@ const ProfileEditPage = () => {
       await updateProfile({
         variables: {
           input: {
-            firstName: updatedProfile.name || null,
-            lastName: updatedProfile.surname || null,
+            firstName: updatedProfile.firstName || null,
+            lastName: updatedProfile.lastName || null,
             about: updatedProfile.about || null,
             hobbies: hobbiesArray.join(", ") || null,
-            preferredActivity: updatedProfile.meetingActivity || null,
             interests: updatedProfile.interests || null,
-            displayUsername: updatedProfile.displayUsername || null,
             avatarUrl: updatedProfile.profileImageUrl || null,
           },
         },

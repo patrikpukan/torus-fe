@@ -14,7 +14,7 @@ const UserListItem = ({ user }: UserListItemProps) => {
     .join(" ")
     .trim();
 
-  const displayName = computedName || user.username || user.email;
+  const displayName = computedName || user.email;
 
   return (
     <Link to={`/user-list/${encodeURIComponent(user.id)}`} className="block">

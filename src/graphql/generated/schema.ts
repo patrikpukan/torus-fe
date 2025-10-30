@@ -60,7 +60,6 @@ export type AlgorithmSettingsResponse = {
 export type CurrentUser = {
   __typename?: "CurrentUser";
   about: Maybe<Scalars["String"]["output"]>;
-  displayUsername: Maybe<Scalars["String"]["output"]>;
   email: Scalars["String"]["output"];
   firstName: Maybe<Scalars["String"]["output"]>;
   hobbies: Maybe<Scalars["String"]["output"]>;
@@ -75,7 +74,6 @@ export type CurrentUser = {
   profileStatus: ProfileStatusEnum;
   role: UserRoleEnum;
   supabaseUserId: Maybe<Scalars["String"]["output"]>;
-  username: Maybe<Scalars["String"]["output"]>;
 };
 
 export type InviteUserInputType = {
@@ -211,10 +209,6 @@ export type QueryOrganizationByIdArgs = {
   id: Scalars["ID"]["input"];
 };
 
-export type QueryUserArgs = {
-  username: Scalars["String"]["input"];
-};
-
 export type QueryUserByIdArgs = {
   id: Scalars["ID"]["input"];
 };
@@ -239,7 +233,6 @@ export type SignUpInputType = {
   lastName?: InputMaybe<Scalars["String"]["input"]>;
   password: Scalars["String"]["input"];
   profilePicture?: InputMaybe<Scalars["Upload"]["input"]>;
-  username: Scalars["String"]["input"];
 };
 
 export type UpdateAlgorithmSettingsInput = {
@@ -251,7 +244,6 @@ export type UpdateAlgorithmSettingsInput = {
 export type UpdateCurrentUserProfileInputType = {
   about?: InputMaybe<Scalars["String"]["input"]>;
   avatarUrl?: InputMaybe<Scalars["String"]["input"]>;
-  displayUsername?: InputMaybe<Scalars["String"]["input"]>;
   firstName?: InputMaybe<Scalars["String"]["input"]>;
   hobbies?: InputMaybe<Scalars["String"]["input"]>;
   interests?: InputMaybe<Scalars["String"]["input"]>;
@@ -278,7 +270,6 @@ export type UpdateUserInputType = {
   preferredActivity?: InputMaybe<Scalars["String"]["input"]>;
   profileImageUrl?: InputMaybe<Scalars["String"]["input"]>;
   role?: InputMaybe<UserRoleEnum>;
-  username?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type User = {
@@ -290,7 +281,6 @@ export type User = {
   profileImageUrl: Maybe<Scalars["String"]["output"]>;
   profileStatus: ProfileStatusEnum;
   role: UserRoleEnum;
-  username: Maybe<Scalars["String"]["output"]>;
 };
 
 /** User role */
@@ -304,7 +294,6 @@ export type GetCurrentUserQuery = {
     __typename?: "CurrentUser";
     id: string;
     email: string;
-    username: string | null;
     organizationId: string;
     role: UserRoleEnum;
     firstName: string | null;
@@ -314,7 +303,6 @@ export type GetCurrentUserQuery = {
     preferredActivity: string | null;
     interests: string | null;
     profileImageUrl: string | null;
-    displayUsername: string | null;
     profileStatus: ProfileStatusEnum;
     isActive: boolean;
     organization: {
@@ -486,7 +474,6 @@ export type GetPairingHistoryQuery = {
       __typename?: "User";
       id: string;
       email: string;
-      username: string | null;
       firstName: string | null;
       lastName: string | null;
       profileImageUrl: string | null;
@@ -496,7 +483,6 @@ export type GetPairingHistoryQuery = {
       __typename?: "User";
       id: string;
       email: string;
-      username: string | null;
       firstName: string | null;
       lastName: string | null;
       profileImageUrl: string | null;
@@ -515,7 +501,6 @@ export type UpdateUserProfileMutation = {
     __typename?: "CurrentUser";
     id: string;
     email: string;
-    username: string | null;
     firstName: string | null;
     lastName: string | null;
     about: string | null;
@@ -523,7 +508,6 @@ export type UpdateUserProfileMutation = {
     preferredActivity: string | null;
     interests: string | null;
     profileImageUrl: string | null;
-    displayUsername: string | null;
     profileStatus: ProfileStatusEnum;
     isActive: boolean;
   };
@@ -537,7 +521,6 @@ export type GetPairedUsersQuery = {
     __typename?: "User";
     id: string;
     email: string;
-    username: string | null;
     firstName: string | null;
     lastName: string | null;
     profileStatus: ProfileStatusEnum;
@@ -555,7 +538,6 @@ export type UserByIdQuery = {
     __typename?: "User";
     id: string;
     email: string;
-    username: string | null;
     firstName: string | null;
     lastName: string | null;
     profileStatus: ProfileStatusEnum;
@@ -571,7 +553,6 @@ export type UsersQuery = {
     __typename?: "User";
     id: string;
     email: string;
-    username: string | null;
     firstName: string | null;
     lastName: string | null;
     profileStatus: ProfileStatusEnum;
@@ -584,17 +565,14 @@ export const GetCurrentUserDocument = gql`
     getCurrentUser {
       id
       email
-      username
       organizationId
       role
       firstName
       lastName
       about
       hobbies
-      preferredActivity
       interests
       profileImageUrl
-      displayUsername
       profileStatus
       isActive
       organization {
@@ -724,7 +702,6 @@ export const GetPairingHistoryDocument = gql`
       userA {
         id
         email
-        username
         firstName
         lastName
         profileImageUrl
@@ -733,7 +710,6 @@ export const GetPairingHistoryDocument = gql`
       userB {
         id
         email
-        username
         firstName
         lastName
         profileImageUrl
@@ -747,7 +723,6 @@ export const UpdateUserProfileDocument = gql`
     updateCurrentUserProfile(input: $input) {
       id
       email
-      username
       firstName
       lastName
       about
@@ -755,7 +730,6 @@ export const UpdateUserProfileDocument = gql`
       preferredActivity
       interests
       profileImageUrl
-      displayUsername
       profileStatus
       isActive
     }
@@ -766,7 +740,6 @@ export const GetPairedUsersDocument = gql`
     getPairedUsers {
       id
       email
-      username
       firstName
       lastName
       profileStatus
@@ -779,7 +752,6 @@ export const UserByIdDocument = gql`
     userById(id: $id) {
       id
       email
-      username
       firstName
       lastName
       profileStatus
@@ -792,7 +764,6 @@ export const UsersDocument = gql`
     users {
       id
       email
-      username
       firstName
       lastName
       profileStatus

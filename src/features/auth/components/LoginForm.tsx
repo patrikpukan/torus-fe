@@ -84,7 +84,7 @@ const LoginForm = () => {
             <Input
               id="login-email"
               name="email"
-              autoComplete="username"
+              autoComplete="email"
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}

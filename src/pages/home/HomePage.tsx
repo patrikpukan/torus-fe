@@ -54,7 +54,7 @@ const HomePage = () => {
 
   const activeSince = formatDate(stats.activeSince);
   const pairName = currentPairing?.profile
-    ? `${currentPairing.profile.name || currentPairing.profile.displayUsername || currentPairing.profile.username || currentPairing.profile.email} ${currentPairing.profile.surname || ""}`.trim()
+    ? `${currentPairing.profile.firstName || currentPairing.profile.email} ${currentPairing.profile.lastName || ""}`.trim()
     : null;
 
   return (

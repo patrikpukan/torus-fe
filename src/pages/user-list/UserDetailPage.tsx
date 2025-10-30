@@ -53,10 +53,8 @@ const UserDetailPage = () => {
 
   const profile: UserProfile = {
     email: user.email,
-    name: user.firstName ?? undefined,
-    surname: user.lastName ?? undefined,
-    username: user.username ?? undefined,
-    displayUsername: user.username ?? undefined,
+    firstName: user.firstName ?? undefined,
+    lastName: user.lastName ?? undefined,
     pairingStatus: user.profileStatus ?? undefined,
   };
 

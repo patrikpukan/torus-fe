@@ -11,7 +11,6 @@ export const GET_PAIRED_USERS_QUERY = graphql(`
     getPairedUsers {
       id
       email
-      username
       firstName
       lastName
       profileStatus

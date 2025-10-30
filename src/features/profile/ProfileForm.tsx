@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import type { UserProfile } from "../../types/User";
+import type { UserProfile } from "@/types/User.ts";
 import { useAuth } from "@/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabaseClient } from "@/lib/supabaseClient";
@@ -61,8 +61,8 @@ const ProfileForm = ({
       [
         { key: "organization", label: "Organization" },
         { key: "email", label: "Email" },
-        { key: "name", label: "Name" },
-        { key: "surname", label: "Surname" },
+        { key: "firstName", label: "Name" },
+        { key: "lastName", label: "Surname" },
         { key: "accountStatus", label: "Account status" },
         { key: "pairingStatus", label: "Pairing status" },
       ] as const,
@@ -286,20 +286,6 @@ const ProfileForm = ({
                 id="profile-hobbies"
                 value={getFieldValue("hobbies")}
                 onChange={handleChange("hobbies")}
-                readOnly={readOnly}
-                disabled={readOnly}
-              />
-            </FieldContent>
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="profile-meeting-activity">
-              Preferred meeting activity
-            </FieldLabel>
-            <FieldContent>
-              <Input
-                id="profile-meeting-activity"
-                value={value.meetingActivity}
-                onChange={handleChange("meetingActivity")}
                 readOnly={readOnly}
                 disabled={readOnly}
               />

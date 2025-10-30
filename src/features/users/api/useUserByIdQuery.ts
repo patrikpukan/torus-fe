@@ -4,7 +4,6 @@ import { graphql } from "gql.tada";
 export type UserDetail = {
   id: string;
   email: string;
-  username?: string | null;
   firstName?: string | null;
   lastName?: string | null;
   profileStatus?: string | null;
@@ -24,7 +23,6 @@ export const USER_BY_ID_QUERY = graphql(`
     userById(id: $id) {
       id
       email
-      username
       firstName
       lastName
       profileStatus

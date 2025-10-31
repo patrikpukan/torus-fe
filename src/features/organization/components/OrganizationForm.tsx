@@ -58,7 +58,7 @@ const OrganizationForm = ({
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       if (!onChange) return;
       const newValue = event.target.value;
-      
+
       // Handle number conversion for size field
       if (key === "size") {
         const numValue = newValue === "" ? null : Number(newValue);

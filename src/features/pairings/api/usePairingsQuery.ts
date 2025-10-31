@@ -40,7 +40,7 @@ export const usePairingsQuery = () => {
             interests: "",
             profileImageUrl: contactUser.profileImageUrl || "",
           },
-          lastPairedAt: pairing.createdAt,
+          pairedAt: pairing.createdAt,
           lastMessageAt: pairing.createdAt, // Will be updated when messages are implemented
           messages: [], // Will be populated when messages are implemented
           pairingId: pairing.id, // Store pairing ID for status reference
@@ -52,16 +52,12 @@ export const usePairingsQuery = () => {
           isCurrentlyMatched: boolean;
         };
       })
-      .sort(
-        (a, b) =>
-          new Date(b.lastPairedAt).getTime() -
-          new Date(a.lastPairedAt).getTime()
-      );
   }, [data?.getPairingHistory, user]);
 
   return {
     pairingContacts,
     loading,
     error,
+    pairings: data?.getPairingHistory ?? [],
   };
 };

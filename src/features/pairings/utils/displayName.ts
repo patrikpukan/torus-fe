@@ -18,9 +18,7 @@ export function getDisplayName(profile: UserProfile): string {
   if (lastName) return lastName;
 
   // Fall back to email
-  return (
-    profile.email || "Unknown"
-  );
+  return profile.email || "Unknown";
 }
 
 /**

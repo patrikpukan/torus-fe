@@ -26,7 +26,7 @@ const getStats = (
   const referenceYear = new Date().getFullYear();
 
   const pairingsThisYear = pairings.filter((pairing) => {
-    return new Date(pairing.lastPairedAt).getFullYear() === referenceYear;
+    return new Date(pairing.pairedAt).getFullYear() === referenceYear;
   });
 
   // Successful pairings are those with status 'met'
@@ -50,10 +50,7 @@ const useHomeData = (): UseHomeDataResult => {
     const currentPairing =
       pairingContacts.length > 0 ? pairingContacts[0] : null;
 
-    const stats = getStats(
-      pairingContacts,
-      currentPairing?.lastPairedAt ?? null
-    );
+    const stats = getStats(pairingContacts, currentPairing?.pairedAt ?? null);
 
     return {
       firstName: authCtx.user?.user_metadata?.first_name,

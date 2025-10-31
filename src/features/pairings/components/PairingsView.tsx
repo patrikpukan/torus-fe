@@ -238,7 +238,7 @@ const PairingsView = () => {
                             )
                           : "planned"
                       }
-                      pairingDate={selectedContact.lastPairedAt}
+                      pairingDate={selectedContact.pairedAt}
                       isCurrentlyMatched={
                         Object.prototype.hasOwnProperty.call(
                           selectedContact,

@@ -122,7 +122,7 @@ const BaseLayout = () => {
 
   return (
     <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
-      <Sidebar collapsible="icon">
+      <Sidebar className="text-foreground" collapsible="icon">
         <SidebarHeader>
           <NavLink to="/" className="flex items-center gap-2 px-2 py-1.5 ">
             {sidebarOpen && (
@@ -214,12 +214,12 @@ const BaseLayout = () => {
         <SidebarRail />
       </Sidebar>
       <SidebarInset>
-        <div className="sticky top-0 z-10 flex h-12 items-center gap-2 border-b px-3">
+        <div className="sticky top-0 z-10 flex h-12 items-center gap-2 border-b px-3 bg-muted/40">
           <SidebarTrigger />
           <div className="ml-auto" />
         </div>
         <div className="container mx-auto flex-1 p-4">
-          <div className="rounded-xl bg-white shadow-sm p-6 min-h-[80vh]">
+          <div className="rounded-xl bg-card text-card-foreground border border-border shadow-sm p-6 min-h-[80vh]">
             <Outlet />
           </div>
         </div>

@@ -175,7 +175,11 @@ export default function PairingProfileCard({
         <Field>
           <FieldLabel htmlFor="profile-name">Name</FieldLabel>
           <FieldContent>
-            <Input id="profile-name" value={getFieldValue("firstName")} readOnly />
+            <Input
+              id="profile-name"
+              value={getFieldValue("firstName")}
+              readOnly
+            />
           </FieldContent>
         </Field>
 

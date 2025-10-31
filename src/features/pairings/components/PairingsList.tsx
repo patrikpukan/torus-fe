@@ -31,8 +31,7 @@ export default function PairingsList({
   className,
 }: PairingsListProps) {
   const byPaired = [...contacts].sort(
-    (a, b) =>
-      new Date(b.lastPairedAt).getTime() - new Date(a.lastPairedAt).getTime()
+    (a, b) => new Date(b.pairedAt).getTime() - new Date(a.pairedAt).getTime()
   );
   const byMessage = [...contacts].sort(
     (a, b) =>
@@ -65,7 +64,7 @@ export default function PairingsList({
                   <span className="text-xs text-muted-foreground">
                     {sortMode === "message"
                       ? formatDate(contact.lastMessageAt)
-                      : formatDate(contact.lastPairedAt)}
+                      : formatDate(contact.pairedAt)}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">

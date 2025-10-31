@@ -13,7 +13,7 @@ vi.mock("@/mocks/mockPairings", () => ({
         surname: "Doe",
         pairingStatus: "Paired",
       },
-      lastPairedAt: "2025-01-01T12:00:00Z",
+      pairedAt: "2025-01-01T12:00:00Z",
     },
     {
       id: "2",
@@ -22,7 +22,7 @@ vi.mock("@/mocks/mockPairings", () => ({
         surname: "Doe",
         pairingStatus: "Paired",
       },
-      lastPairedAt: "2025-02-01T12:00:00Z",
+      pairedAt: "2025-02-01T12:00:00Z",
     },
     {
       id: "3",
@@ -31,7 +31,7 @@ vi.mock("@/mocks/mockPairings", () => ({
         surname: "Jones",
         pairingStatus: "Seeking Pair",
       },
-      lastPairedAt: "2024-01-01T12:00:00Z",
+      pairedAt: "2024-01-01T12:00:00Z",
     },
   ],
 }));

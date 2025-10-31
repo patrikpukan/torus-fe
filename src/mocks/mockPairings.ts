@@ -12,7 +12,7 @@ export type PairingMessage = {
 export type PairingContact = {
   id: string;
   profile: UserProfile;
-  lastPairedAt: string;
+  pairedAt: string;
   lastMessageAt: string;
   messages: PairingMessage[];
 };
@@ -42,7 +42,7 @@ export const pairingContacts: PairingContact[] = [
       hobbies: ["cycling", "woodworking"],
       interests: "Team growth, refactoring, guitar",
     }),
-    lastPairedAt: "2025-04-12T10:30:00Z",
+    pairedAt: "2025-04-12T10:30:00Z",
     lastMessageAt: "2025-04-15T08:05:00Z",
     messages: [
       {
@@ -76,7 +76,7 @@ export const pairingContacts: PairingContact[] = [
       hobbies: ["running", "espresso"],
       interests: "Observability, new frameworks, travel",
     }),
-    lastPairedAt: "2025-04-10T14:00:00Z",
+    pairedAt: "2025-04-10T14:00:00Z",
     lastMessageAt: "2025-04-11T16:30:00Z",
     messages: [
       {
@@ -104,7 +104,7 @@ export const pairingContacts: PairingContact[] = [
       hobbies: ["sketching", "bouldering"],
       interests: "Microinteractions, inclusive design",
     }),
-    lastPairedAt: "2025-03-21T09:30:00Z",
+    pairedAt: "2025-03-21T09:30:00Z",
     lastMessageAt: "2025-03-30T12:10:00Z",
     messages: [
       {
@@ -126,7 +126,7 @@ export const pairingContacts: PairingContact[] = [
       hobbies: ["board games", "gardening"],
       interests: "Automation, empathy, story telling",
     }),
-    lastPairedAt: "2025-03-28T11:45:00Z",
+    pairedAt: "2025-03-28T11:45:00Z",
     lastMessageAt: "2025-03-29T08:15:00Z",
     messages: [
       {
@@ -154,7 +154,7 @@ export const pairingContacts: PairingContact[] = [
       hobbies: ["cooking", "travel"],
       interests: "Journey mapping, facilitation",
     }),
-    lastPairedAt: "2025-03-05T10:00:00Z",
+    pairedAt: "2025-03-05T10:00:00Z",
     lastMessageAt: "2025-03-12T17:20:00Z",
     messages: [
       {
@@ -176,7 +176,7 @@ export const pairingContacts: PairingContact[] = [
       hobbies: ["photography", "snowboarding"],
       interests: "Automation, observability",
     }),
-    lastPairedAt: "2025-02-19T15:30:00Z",
+    pairedAt: "2025-02-19T15:30:00Z",
     lastMessageAt: "2025-03-02T10:05:00Z",
     messages: [
       {
@@ -198,7 +198,7 @@ export const pairingContacts: PairingContact[] = [
       hobbies: ["ski touring", "podcasts"],
       interests: "Experimentation, storytelling",
     }),
-    lastPairedAt: "2025-01-30T09:00:00Z",
+    pairedAt: "2025-01-30T09:00:00Z",
     lastMessageAt: "2025-02-02T13:45:00Z",
     messages: [
       {

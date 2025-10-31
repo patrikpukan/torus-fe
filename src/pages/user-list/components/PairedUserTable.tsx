@@ -2,13 +2,11 @@ import { useMemo, useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
-  getSortedRowModel,
   type ColumnDef,
-  type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
-import { ArrowDown, ArrowUp, ArrowUpDown, Eye } from "lucide-react";
+import { Eye } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -40,30 +38,11 @@ type PairedUserTableProps = {
 const columns: ColumnDef<PairedUserRow>[] = [
   {
     accessorKey: "displayName",
-    enableSorting: true,
-    header: ({ column }) => {
-      const sorted = column.getIsSorted();
-
-      return (
-        <Button
-          type="button"
-          variant="ghost"
-          className="flex items-center gap-1 px-0 text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:text-sm"
-          onClick={(event) =>
-            column.toggleSorting(undefined, event.shiftKey && column.getCanMultiSort())
-          }
-        >
-          Name
-          {sorted === "asc" ? (
-            <ArrowUp className="h-3.5 w-3.5" />
-          ) : sorted === "desc" ? (
-            <ArrowDown className="h-3.5 w-3.5" />
-          ) : (
-            <ArrowUpDown className="h-3.5 w-3.5 opacity-40" />
-          )}
-        </Button>
-      );
-    },
+    header: () => (
+      <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:text-sm">
+        Name
+      </span>
+    ),
     cell: ({ row }) => {
       const user = row.original;
 
@@ -94,65 +73,20 @@ const columns: ColumnDef<PairedUserRow>[] = [
   },
   {
     accessorKey: "email",
-    enableSorting: true,
-    header: ({ column }) => {
-      const sorted = column.getIsSorted();
-
-      return (
-        <Button
-          type="button"
-          variant="ghost"
-          className="flex items-center gap-1 px-0 text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:text-sm"
-          onClick={(event) =>
-            column.toggleSorting(undefined, event.shiftKey && column.getCanMultiSort())
-          }
-        >
-          Email
-          {sorted === "asc" ? (
-            <ArrowUp className="h-3.5 w-3.5" />
-          ) : sorted === "desc" ? (
-            <ArrowDown className="h-3.5 w-3.5" />
-          ) : (
-            <ArrowUpDown className="h-3.5 w-3.5 opacity-40" />
-          )}
-        </Button>
-      );
-    },
+    header: () => (
+      <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:text-sm">
+        Email
+      </span>
+    ),
     cell: ({ row }) => row.original.email ?? "-",
   },
   {
     accessorKey: "pairedAt",
-    enableSorting: true,
-    sortingFn: (rowA, rowB, columnId) => {
-      const valueA = rowA.getValue<string | null | undefined>(columnId);
-      const valueB = rowB.getValue<string | null | undefined>(columnId);
-      const timeA = valueA ? new Date(valueA).getTime() : 0;
-      const timeB = valueB ? new Date(valueB).getTime() : 0;
-      return timeA - timeB;
-    },
-    header: ({ column }) => {
-      const sorted = column.getIsSorted();
-
-      return (
-        <Button
-          type="button"
-          variant="ghost"
-          className="flex items-center gap-1 px-0 text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:text-sm"
-          onClick={(event) =>
-            column.toggleSorting(undefined, event.shiftKey && column.getCanMultiSort())
-          }
-        >
-          Paired On
-          {sorted === "asc" ? (
-            <ArrowUp className="h-3.5 w-3.5" />
-          ) : sorted === "desc" ? (
-            <ArrowDown className="h-3.5 w-3.5" />
-          ) : (
-            <ArrowUpDown className="h-3.5 w-3.5 opacity-40" />
-          )}
-        </Button>
-      );
-    },
+    header: () => (
+      <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:text-sm">
+        Paired On
+      </span>
+    ),
     cell: ({ row }) =>
       row.original.pairedAt ? formatDate(row.original.pairedAt) : "Unknown",
   },
@@ -190,7 +124,6 @@ const PairedUserTable = ({
   loading,
   errorMessage,
 }: PairedUserTableProps) => {
-  const [sorting, setSorting] = useState<SortingState>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredData = useMemo(() => {
@@ -209,13 +142,7 @@ const PairedUserTable = ({
   const table = useReactTable({
     data: filteredData,
     columns,
-    state: {
-      sorting,
-    },
-    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    enableSortingRemoval: false,
     autoResetAll: false,
   });
 

@@ -36,6 +36,7 @@ import {
   GET_ALGORITHM_SETTINGS,
   useGetAlgorithmSettings,
   useUpdateAlgorithmSettings,
+  useExecutePairingAlgorithm,
 } from "../api/queries";
 
 interface AlgorithmSettingsFormProps {
@@ -67,7 +68,14 @@ export function AlgorithmSettingsForm({
   const { toast } = useToast();
   const { data, loading } = useGetAlgorithmSettings(organizationId);
   const [updateSettings, { loading: updating }] = useUpdateAlgorithmSettings();
+  const [executePairing, { loading: executing }] = useExecutePairingAlgorithm();
   const [warning, setWarning] = React.useState<string | null>(null);
+  const [executionResult, setExecutionResult] = React.useState<{
+    success: boolean;
+    message: string;
+    pairingsCreated?: number;
+    unpairedUsers?: number;
+  } | null>(null);
 
   const settings = data?.getAlgorithmSettings;
 
@@ -142,6 +150,51 @@ export function AlgorithmSettingsForm({
     }
   };
 
+  const handleExecutePairing = async () => {
+    try {
+      setExecutionResult(null);
+
+      const result = await executePairing({
+        variables: { organizationId },
+      });
+
+      const data = result.data?.executePairingAlgorithm;
+
+      if (data) {
+        setExecutionResult({
+          success: data.success,
+          message: data.message,
+          pairingsCreated: data.pairingsCreated,
+          unpairedUsers: data.unpairedUsers,
+        });
+
+        if (data.success) {
+          toast({
+            title: "Pairing Executed Successfully",
+            description: `Created ${data.pairingsCreated} pairings${
+              data.unpairedUsers
+                ? `, ${data.unpairedUsers} user(s) unpaired`
+                : ""
+            }`,
+          });
+        } else {
+          toast({
+            title: "Execution Failed",
+            description: data.message,
+            variant: "destructive",
+          });
+        }
+      }
+    } catch (error) {
+      toast({
+        title: "Execution Error",
+        description: "Failed to execute pairing algorithm",
+        variant: "destructive",
+      });
+      console.error(error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -153,6 +206,59 @@ export function AlgorithmSettingsForm({
   return (
     <div className="mx-auto w-full max-w-5xl px-8 py-12">
       <h1 className="mb-12 text-3xl font-bold">Algorithm settings</h1>
+
+      {/* Execute Pairing Section */}
+      <div className="mb-12 rounded-lg border border-gray-200 bg-gray-50 p-6">
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Execute Pairing Algorithm
+            </h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Run the pairing algorithm now to create new pairings for the
+              current period. This will use the current settings configured
+              below.
+            </p>
+          </div>
+          <Button
+            type="button"
+            onClick={handleExecutePairing}
+            disabled={executing || loading}
+            className="ml-6 bg-blue-600 hover:bg-blue-700"
+          >
+            {executing ? "Executing..." : "Execute Now"}
+          </Button>
+        </div>
+
+        {/* Execution Result */}
+        {executionResult && (
+          <Alert
+            className={
+              executionResult.success
+                ? "mt-4 border-green-500 bg-green-50 text-green-900"
+                : "mt-4 border-red-500 bg-red-50 text-red-900"
+            }
+          >
+            <AlertDescription className="text-sm">
+              <div className="font-medium">{executionResult.message}</div>
+              {executionResult.success &&
+                executionResult.pairingsCreated !== undefined && (
+                  <div className="mt-2 space-y-1">
+                    <div>
+                      ✓ Pairings created: {executionResult.pairingsCreated}
+                    </div>
+                    {executionResult.unpairedUsers !== undefined &&
+                      executionResult.unpairedUsers > 0 && (
+                        <div>
+                          ⚠ Unpaired users: {executionResult.unpairedUsers}
+                        </div>
+                      )}
+                  </div>
+                )}
+            </AlertDescription>
+          </Alert>
+        )}
+      </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-12">

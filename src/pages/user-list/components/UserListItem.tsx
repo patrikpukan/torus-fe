@@ -201,3 +201,34 @@ export const columns: ColumnDef<UserTableRow>[] = [
     },
   },
 ];
+
+const ADMIN_ONLY_COLUMN_KEYS = new Set<string>(["role", "profileStatus"]);
+
+const getColumnIdentifier = (
+  column: ColumnDef<UserTableRow>
+): string | undefined => {
+  if (typeof column.id === "string" && column.id.trim().length > 0) {
+    return column.id;
+  }
+
+  const accessorKey = (column as { accessorKey?: unknown }).accessorKey;
+  if (typeof accessorKey === "string" && accessorKey.trim().length > 0) {
+    return accessorKey;
+  }
+
+  return undefined;
+};
+
+export const getUserListColumns = (
+  options?: { includeAdminColumns?: boolean }
+): ColumnDef<UserTableRow>[] => {
+  if (options?.includeAdminColumns) {
+    return columns;
+  }
+
+  return columns.filter((column) => {
+    const identifier = getColumnIdentifier(column);
+
+    return !identifier || !ADMIN_ONLY_COLUMN_KEYS.has(identifier);
+  });
+};

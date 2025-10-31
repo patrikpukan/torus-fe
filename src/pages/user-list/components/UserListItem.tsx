@@ -1,10 +1,16 @@
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { UsersQueryItem } from "@/features/users/api/useUsersQuery";
 
 export type UserTableRow = UsersQueryItem & {
@@ -66,7 +72,7 @@ export const columns: ColumnDef<UserTableRow>[] = [
       </Button>
     ),
     enableSorting: true,
-    cell: ({ row }) => row.original.email ?? "—",
+    cell: ({ row }) => row.original.email ?? "-",
   },
   {
     accessorKey: "role",
@@ -84,7 +90,7 @@ export const columns: ColumnDef<UserTableRow>[] = [
     cell: ({ row }) => {
       const role = row.original.role;
       if (!role) {
-        return <span className="text-muted-foreground">—</span>;
+        return <span className="text-muted-foreground">-</span>;
       }
 
       return (
@@ -110,13 +116,47 @@ export const columns: ColumnDef<UserTableRow>[] = [
     cell: ({ row }) => {
       const status = row.original.profileStatus;
       if (!status) {
-        return <span className="text-muted-foreground">—</span>;
+        return <span className="text-muted-foreground">-</span>;
       }
 
       return (
         <Badge variant="secondary" className="capitalize">
           {status}
         </Badge>
+      );
+    },
+  },
+  {
+    id: "actions",
+    header: () => <span className="sr-only">Actions</span>,
+    enableSorting: false,
+    enableHiding: false,
+    cell: ({ row }) => {
+      const user = row.original;
+
+      return (
+        <div className="flex justify-end">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-10 text-muted-foreground hover:text-foreground [&_svg]:size-6"
+                  asChild
+                >
+                  <Link
+                    to={`/user-list/${encodeURIComponent(user.id)}`}
+                    aria-label={`View details for ${user.displayName}`}
+                  >
+                    <Eye />
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="left">User detail</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       );
     },
   },

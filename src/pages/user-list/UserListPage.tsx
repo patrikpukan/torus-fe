@@ -29,7 +29,12 @@ import {
   type UsersQueryItem,
 } from "@/features/users/api/useUsersQuery";
 
-import { columns, type UserTableRow } from "./components/UserListItem.tsx";
+import { useAuth } from "@/hooks/useAuth.ts";
+
+import {
+  getUserListColumns,
+  type UserTableRow,
+} from "./components/UserListItem.tsx";
 
 const EMPTY_USERS: UsersQueryItem[] = [];
 
@@ -46,6 +51,9 @@ const UserListPage = () => {
   const { data, loading, error } = useUsersQuery();
   const users = data?.users ?? EMPTY_USERS;
 
+  const { appRole } = useAuth();
+  const isAdmin = appRole === "org_admin" || appRole === "super_admin";
+
   const [sorting, setSorting] = useState<SortingState>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
@@ -58,6 +66,11 @@ const UserListPage = () => {
         displayName: buildDisplayName(user),
       })),
     [users]
+  );
+
+  const columnDefs = useMemo(
+    () => getUserListColumns({ includeAdminColumns: isAdmin }),
+    [isAdmin]
   );
 
   const availableRoles = useMemo(() => {
@@ -84,15 +97,20 @@ const UserListPage = () => {
 
   const filteredData = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
+    const effectiveRoleFilter = isAdmin ? roleFilter : "all";
+    const effectiveStatusFilter = isAdmin ? statusFilter : "all";
 
     return tableData.filter((user) => {
       const role = user.role?.trim() ?? "";
-      if (roleFilter !== "all" && role !== roleFilter) {
+      if (effectiveRoleFilter !== "all" && role !== effectiveRoleFilter) {
         return false;
       }
 
       const status = user.profileStatus?.trim() ?? "";
-      if (statusFilter !== "all" && status !== statusFilter) {
+      if (
+        effectiveStatusFilter !== "all" &&
+        status !== effectiveStatusFilter
+      ) {
         return false;
       }
 
@@ -107,11 +125,11 @@ const UserListPage = () => {
 
       return displayNameMatches || emailMatches;
     });
-  }, [roleFilter, searchTerm, statusFilter, tableData]);
+  }, [isAdmin, roleFilter, searchTerm, statusFilter, tableData]);
 
   const table = useReactTable({
     data: filteredData,
-    columns,
+    columns: columnDefs,
     state: {
       sorting,
     },
@@ -127,7 +145,13 @@ const UserListPage = () => {
           <h1 className="text-3xl font-semibold tracking-tight">Users</h1>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_repeat(2,minmax(0,220px))]">
+        <div
+          className={`grid gap-4${
+            isAdmin
+              ? " md:grid-cols-[minmax(0,1fr)_repeat(2,minmax(0,220px))]"
+              : ""
+          }`}
+        >
           <div className="flex flex-col gap-2">
             <label
               htmlFor="user-search"
@@ -142,42 +166,46 @@ const UserListPage = () => {
               onChange={(event) => setSearchTerm(event.target.value)}
             />
           </div>
-          <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-muted-foreground">
-              Role
-            </span>
-            <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="All roles" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All roles</SelectItem>
-                {availableRoles.map((role) => (
-                  <SelectItem key={role} value={role}>
-                    {role}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-muted-foreground">
-              Status
-            </span>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="All statuses" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All statuses</SelectItem>
-                {availableStatuses.map((status) => (
-                  <SelectItem key={status} value={status}>
-                    {status}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {isAdmin ? (
+            <div className="flex flex-col gap-2">
+              <span className="text-sm font-medium text-muted-foreground">
+                Role
+              </span>
+              <Select value={roleFilter} onValueChange={setRoleFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All roles" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All roles</SelectItem>
+                  {availableRoles.map((role) => (
+                    <SelectItem key={role} value={role}>
+                      {role}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : null}
+          {isAdmin ? (
+            <div className="flex flex-col gap-2">
+              <span className="text-sm font-medium text-muted-foreground">
+                Status
+              </span>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All statuses" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All statuses</SelectItem>
+                  {availableStatuses.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : null}
         </div>
 
         {error && (
@@ -221,7 +249,7 @@ const UserListPage = () => {
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={columns.length}
+                    colSpan={columnDefs.length}
                     className="h-24 text-center text-sm text-muted-foreground"
                   >
                     {!loading

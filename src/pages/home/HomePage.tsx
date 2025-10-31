@@ -64,7 +64,7 @@ const HomePage = () => {
   return (
     <div className="space-y-6">
       <header className="space-y-1">
-        <h1 className="text-3xl font-semibold tracking-tight">
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
           {welcomeMessage}
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -85,7 +85,7 @@ const HomePage = () => {
                   show up here.
                 </p>
               </div>
-              <Button asChild>
+              <Button asChild variant="secondary">
                 <Link to="/pairings">Browse pairings</Link>
               </Button>
             </div>

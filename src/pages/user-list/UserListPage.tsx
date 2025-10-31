@@ -29,7 +29,7 @@ import {
   type UsersQueryItem,
 } from "@/features/users/api/useUsersQuery";
 
-import { columns, type UserTableRow } from "./components/userlistitem";
+import { columns, type UserTableRow } from "./components/UserListItem.tsx";
 
 const EMPTY_USERS: UsersQueryItem[] = [];
 

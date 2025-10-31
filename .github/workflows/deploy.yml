@@ -96,7 +96,7 @@ jobs:
           PORT="${SSH_PORT:-22}"
           DEST_PATH="${PROJECT_PATH:-public_html}"
           sshpass -p "$SSH_PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" "mkdir -p \"$DEST_PATH\""
-          sshpass -p "$SSH_PASSWORD" rsync -az --delete --exclude ".git/" --exclude ".htaccess" -e "ssh -p $PORT -o StrictHostKeyChecking=no" ./build_branch/ "$SSH_USER@$SSH_HOST:$DEST_PATH/"
+          sshpass -p "$SSH_PASSWORD" rsync -az --delete --exclude ".git/" -e "ssh -p $PORT -o StrictHostKeyChecking=no" ./build_branch/ "$SSH_USER@$SSH_HOST:$DEST_PATH/"
 
       # - name: Create .env on server
       #   env:

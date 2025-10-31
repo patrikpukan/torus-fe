@@ -121,7 +121,11 @@ const LoginForm = () => {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <Button
+            type="submit"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? "Logging in..." : "Log in"}
           </Button>
           <Button

@@ -57,11 +57,15 @@ const HomePage = () => {
     ? `${currentPairing.profile.firstName || currentPairing.profile.email} ${currentPairing.profile.lastName || ""}`.trim()
     : null;
 
+  const welcomeMessage = firstName
+    ? `Welcome back, ${firstName}!`
+    : "Welcome back!";
+
   return (
     <div className="space-y-6">
       <header className="space-y-1">
         <h1 className="text-3xl font-semibold tracking-tight">
-          Welcome back, {firstName}!
+          {welcomeMessage}
         </h1>
         <p className="text-sm text-muted-foreground">
           See what&#39;s happening with your colleagues.

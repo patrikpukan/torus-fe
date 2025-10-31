@@ -142,7 +142,7 @@ const UserListPage = () => {
     <div className="container py-8">
       <div className="space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-3xl font-semibold tracking-tight">Users</h1>
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">Users</h1>
         </div>
 
         <div
@@ -214,7 +214,7 @@ const UserListPage = () => {
           </div>
         )}
 
-        <div className="rounded-md border border-muted-foreground/20">
+        <div className="rounded-md border border-muted-foreground/20 bg-muted">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (

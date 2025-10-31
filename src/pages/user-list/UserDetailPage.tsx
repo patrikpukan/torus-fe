@@ -18,7 +18,7 @@ const UserDetailPage = () => {
   if (loading) {
     return (
       <div className="mx-auto max-w-3xl py-8 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           Loading user...
         </h1>
       </div>
@@ -28,7 +28,7 @@ const UserDetailPage = () => {
   if (error) {
     return (
       <div className="mx-auto max-w-3xl py-8">
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           Unable to load user
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
@@ -41,7 +41,7 @@ const UserDetailPage = () => {
   if (!user) {
     return (
       <div className="mx-auto max-w-3xl py-8">
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           User not found
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">

@@ -1,5 +1,5 @@
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, Eye } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,16 +20,26 @@ export type UserTableRow = UsersQueryItem & {
 export const columns: ColumnDef<UserTableRow>[] = [
   {
     accessorKey: "displayName",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="flex items-center gap-1 px-0 text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:text-sm"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Name
-        <ArrowUpDown className="h-3.5 w-3.5" />
-      </Button>
-    ),
+    header: ({ column }) => {
+      const sorted = column.getIsSorted();
+
+      return (
+        <Button
+          variant="ghost"
+          className="flex items-center gap-1 px-0 text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:text-sm"
+          onClick={() => column.toggleSorting(sorted === "asc")}
+        >
+          Name
+          {sorted === "asc" ? (
+            <ArrowUp className="h-3.5 w-3.5" />
+          ) : sorted === "desc" ? (
+            <ArrowDown className="h-3.5 w-3.5" />
+          ) : (
+            <ArrowUpDown className="h-3.5 w-3.5 opacity-40" />
+          )}
+        </Button>
+      );
+    },
     enableSorting: true,
     cell: ({ row }) => {
       const user = row.original;
@@ -61,31 +71,51 @@ export const columns: ColumnDef<UserTableRow>[] = [
   },
   {
     accessorKey: "email",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="flex items-center gap-1 px-0 text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:text-sm"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Email
-        <ArrowUpDown className="h-3.5 w-3.5" />
-      </Button>
-    ),
+    header: ({ column }) => {
+      const sorted = column.getIsSorted();
+
+      return (
+        <Button
+          variant="ghost"
+          className="flex items-center gap-1 px-0 text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:text-sm"
+          onClick={() => column.toggleSorting(sorted === "asc")}
+        >
+          Email
+          {sorted === "asc" ? (
+            <ArrowUp className="h-3.5 w-3.5" />
+          ) : sorted === "desc" ? (
+            <ArrowDown className="h-3.5 w-3.5" />
+          ) : (
+            <ArrowUpDown className="h-3.5 w-3.5 opacity-40" />
+          )}
+        </Button>
+      );
+    },
     enableSorting: true,
     cell: ({ row }) => row.original.email ?? "-",
   },
   {
     accessorKey: "role",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="flex items-center gap-1 px-0 text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:text-sm"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Role
-        <ArrowUpDown className="h-3.5 w-3.5" />
-      </Button>
-    ),
+    header: ({ column }) => {
+      const sorted = column.getIsSorted();
+
+      return (
+        <Button
+          variant="ghost"
+          className="flex items-center gap-1 px-0 text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:text-sm"
+          onClick={() => column.toggleSorting(sorted === "asc")}
+        >
+          Role
+          {sorted === "asc" ? (
+            <ArrowUp className="h-3.5 w-3.5" />
+          ) : sorted === "desc" ? (
+            <ArrowDown className="h-3.5 w-3.5" />
+          ) : (
+            <ArrowUpDown className="h-3.5 w-3.5 opacity-40" />
+          )}
+        </Button>
+      );
+    },
     enableSorting: true,
     cell: ({ row }) => {
       const role = row.original.role;
@@ -102,16 +132,26 @@ export const columns: ColumnDef<UserTableRow>[] = [
   },
   {
     accessorKey: "profileStatus",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="flex items-center gap-1 px-0 text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:text-sm"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Status
-        <ArrowUpDown className="h-3.5 w-3.5" />
-      </Button>
-    ),
+    header: ({ column }) => {
+      const sorted = column.getIsSorted();
+
+      return (
+        <Button
+          variant="ghost"
+          className="flex items-center gap-1 px-0 text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:text-sm"
+          onClick={() => column.toggleSorting(sorted === "asc")}
+        >
+          Status
+          {sorted === "asc" ? (
+            <ArrowUp className="h-3.5 w-3.5" />
+          ) : sorted === "desc" ? (
+            <ArrowDown className="h-3.5 w-3.5" />
+          ) : (
+            <ArrowUpDown className="h-3.5 w-3.5 opacity-40" />
+          )}
+        </Button>
+      );
+    },
     enableSorting: true,
     cell: ({ row }) => {
       const status = row.original.profileStatus;

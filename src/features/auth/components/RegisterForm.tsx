@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect, useRef } from "react";
-import { CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { CheckCircle, XCircle, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,7 +15,11 @@ import { supabaseClient } from "@/lib/supabaseClient";
 import { useValidateInviteCodeQuery } from "@/features/organization/api/useValidateInviteCodeQuery";
 
 const RegisterForm = () => {
+  const [searchParams] = useSearchParams();
+  const urlInviteCode = searchParams.get("invite") || "";
+
   const [inviteCode, setInviteCode] = useState("");
+  const [isInvitePreFilled, setIsInvitePreFilled] = useState(false);
   const [debouncedInviteCode, setDebouncedInviteCode] = useState<string | null>(
     null
   );
@@ -28,6 +33,16 @@ const RegisterForm = () => {
   const [success, setSuccess] = useState(false);
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Pre-fill invite code from URL on mount
+  useEffect(() => {
+    if (urlInviteCode) {
+      setInviteCode(urlInviteCode);
+      setIsInvitePreFilled(true);
+      // Immediately trigger validation for pre-filled code
+      setDebouncedInviteCode(urlInviteCode);
+    }
+  }, [urlInviteCode]);
+
   // Validate invite code with debounce
   const {
     data: inviteValidation,
@@ -35,8 +50,13 @@ const RegisterForm = () => {
     isError: inviteValidationError,
   } = useValidateInviteCodeQuery(debouncedInviteCode);
 
-  // Debounced invite code validation
+  // Debounced invite code validation (only when user types, not when pre-filled)
   useEffect(() => {
+    // Skip debounce if this is the initial pre-fill from URL
+    if (isInvitePreFilled && inviteCode === urlInviteCode) {
+      return;
+    }
+
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
@@ -50,7 +70,7 @@ const RegisterForm = () => {
         clearTimeout(debounceTimerRef.current);
       }
     };
-  }, [inviteCode]);
+  }, [inviteCode, isInvitePreFilled, urlInviteCode]);
 
   const appUrl = useMemo(() => {
     const BASE_URL = (
@@ -136,6 +156,8 @@ const RegisterForm = () => {
                 name="inviteCode"
                 value={inviteCode}
                 onChange={(event) => setInviteCode(event.target.value)}
+                readOnly={isInvitePreFilled}
+                disabled={isInvitePreFilled}
                 className={
                   inviteCode.trim()
                     ? isValidatingInvite
@@ -164,13 +186,27 @@ const RegisterForm = () => {
                   )}
               </div>
             </div>
+
+            {/* Helper text for pre-filled invite */}
+            {isInvitePreFilled && inviteValidation?.isValid && (
+              <div className="flex items-start gap-2 rounded-md bg-blue-50/60 p-2.5">
+                <AlertCircle className="h-4 w-4 mt-0.5 text-blue-600 flex-shrink-0" />
+                <div className="text-xs text-blue-700">
+                  Používáte pozvánku od vaší organizace
+                </div>
+              </div>
+            )}
+
+            {/* Validation success text */}
             {inviteCode.trim() &&
               !isValidatingInvite &&
-              inviteValidation?.isValid && (
+              inviteValidation?.isValid && !isInvitePreFilled && (
                 <p className="text-xs text-emerald-700">
                   ✓ {inviteValidation.organizationName} ({inviteValidation.remainingUses} uses remaining)
                 </p>
               )}
+
+            {/* Validation error text */}
             {inviteCode.trim() &&
               !isValidatingInvite &&
               (inviteValidationError || !inviteValidation?.isValid) && (

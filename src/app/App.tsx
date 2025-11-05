@@ -21,6 +21,7 @@ import AccessDeniedPage from "../pages/AccessDeniedPage";
 import BaseLayout from "./layouts/BaseLayout";
 import { Toaster } from "@/components/ui/toaster";
 import { AlgorithmSettingsPage } from "@/features/pairing-algorithm/pages/AlgorithmSettingsPage";
+import InviteManagementPage from "@/pages/invite-management/InviteManagementPage";
 import { ProtectedRoute } from "../components/ProtectedRoute";
 
 // Role shortcuts for route protection
@@ -141,6 +142,14 @@ const App = () => {
               element={
                 <ProtectedRoute allowedRoles={ADMIN_ROLES}>
                   <AlgorithmSettingsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="invite-management"
+              element={
+                <ProtectedRoute allowedRoles={ADMIN_ROLES}>
+                  <InviteManagementPage />
                 </ProtectedRoute>
               }
             />

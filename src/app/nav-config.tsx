@@ -7,6 +7,7 @@ import {
   Settings2,
   Building,
   Wrench,
+  Mail,
 } from "lucide-react";
 export type NavItem = {
   label: string;
@@ -54,6 +55,12 @@ export const navConfig: NavItem[] = [
     path: "/algorithm-settings",
     roles: ["org_admin"],
     icon: <Settings2 />,
+  },
+  {
+    label: "Invite Management",
+    path: "/invite-management",
+    roles: ["org_admin"],
+    icon: <Mail />,
   },
   {
     label: "My Organization",

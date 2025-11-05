@@ -1,4 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
+import { CheckCircle, XCircle, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,9 +12,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabaseClient } from "@/lib/supabaseClient";
+import { useValidateInviteCodeQuery } from "@/features/organization/api/useValidateInviteCodeQuery";
 
 const RegisterForm = () => {
+  const [searchParams] = useSearchParams();
+  const urlInviteCode = searchParams.get("invite") || "";
+
   const [inviteCode, setInviteCode] = useState("");
+  const [isInvitePreFilled, setIsInvitePreFilled] = useState(false);
+  const [debouncedInviteCode, setDebouncedInviteCode] = useState<string | null>(
+    null
+  );
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -21,6 +31,46 @@ const RegisterForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Pre-fill invite code from URL on mount
+  useEffect(() => {
+    if (urlInviteCode) {
+      setInviteCode(urlInviteCode);
+      setIsInvitePreFilled(true);
+      // Immediately trigger validation for pre-filled code
+      setDebouncedInviteCode(urlInviteCode);
+    }
+  }, [urlInviteCode]);
+
+  // Validate invite code with debounce
+  const {
+    data: inviteValidation,
+    isLoading: isValidatingInvite,
+    isError: inviteValidationError,
+  } = useValidateInviteCodeQuery(debouncedInviteCode);
+
+  // Debounced invite code validation (only when user types, not when pre-filled)
+  useEffect(() => {
+    // Skip debounce if this is the initial pre-fill from URL
+    if (isInvitePreFilled && inviteCode === urlInviteCode) {
+      return;
+    }
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      setDebouncedInviteCode(inviteCode.trim() || null);
+    }, 500);
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [inviteCode, isInvitePreFilled, urlInviteCode]);
 
   const appUrl = useMemo(() => {
     const BASE_URL = (
@@ -44,6 +94,14 @@ const RegisterForm = () => {
       return;
     }
 
+    // Validate invite code if provided
+    if (inviteCode.trim()) {
+      if (!inviteValidation || !inviteValidation.isValid) {
+        setError("Please enter a valid invite code.");
+        return;
+      }
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -55,7 +113,7 @@ const RegisterForm = () => {
           data: {
             first_name: firstName || undefined,
             last_name: lastName || undefined,
-            invite_code: inviteCode || undefined,
+            invite_code: inviteCode.trim() || undefined,
           },
         },
       });
@@ -92,12 +150,70 @@ const RegisterForm = () => {
             >
               Invite code
             </Label>
-            <Input
-              id="register-invite-code"
-              name="inviteCode"
-              value={inviteCode}
-              onChange={(event) => setInviteCode(event.target.value)}
-            />
+            <div className="relative">
+              <Input
+                id="register-invite-code"
+                name="inviteCode"
+                value={inviteCode}
+                onChange={(event) => setInviteCode(event.target.value)}
+                readOnly={isInvitePreFilled}
+                disabled={isInvitePreFilled}
+                className={
+                  inviteCode.trim()
+                    ? isValidatingInvite
+                      ? "border-amber-200 bg-amber-50/30"
+                      : inviteValidation?.isValid
+                        ? "border-emerald-600/40 bg-emerald-500/5"
+                        : inviteValidationError || !inviteValidation?.isValid
+                          ? "border-red-600/40 bg-red-500/5"
+                          : ""
+                    : ""
+                }
+              />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                {inviteCode.trim() && isValidatingInvite && (
+                  <Loader2 className="h-4 w-4 animate-spin text-amber-600" />
+                )}
+                {inviteCode.trim() &&
+                  !isValidatingInvite &&
+                  inviteValidation?.isValid && (
+                    <CheckCircle className="h-4 w-4 text-emerald-600" />
+                  )}
+                {inviteCode.trim() &&
+                  !isValidatingInvite &&
+                  (inviteValidationError || !inviteValidation?.isValid) && (
+                    <XCircle className="h-4 w-4 text-red-600" />
+                  )}
+              </div>
+            </div>
+
+            {/* Helper text for pre-filled invite */}
+            {isInvitePreFilled && inviteValidation?.isValid && (
+              <div className="flex items-start gap-2 rounded-md bg-blue-50/60 p-2.5">
+                <AlertCircle className="h-4 w-4 mt-0.5 text-blue-600 flex-shrink-0" />
+                <div className="text-xs text-blue-700">
+                  Používáte pozvánku od vaší organizace
+                </div>
+              </div>
+            )}
+
+            {/* Validation success text */}
+            {inviteCode.trim() &&
+              !isValidatingInvite &&
+              inviteValidation?.isValid &&
+              !isInvitePreFilled && (
+                <p className="text-xs text-emerald-700">
+                  ✓ {inviteValidation.organizationName} (
+                  {inviteValidation.remainingUses} uses remaining)
+                </p>
+              )}
+
+            {/* Validation error text */}
+            {inviteCode.trim() &&
+              !isValidatingInvite &&
+              (inviteValidationError || !inviteValidation?.isValid) && (
+                <p className="text-xs text-red-600">Neplatný kód organizace</p>
+              )}
           </div>
 
           <div className="space-y-1.5">

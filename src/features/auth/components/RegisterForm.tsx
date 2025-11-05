@@ -200,9 +200,11 @@ const RegisterForm = () => {
             {/* Validation success text */}
             {inviteCode.trim() &&
               !isValidatingInvite &&
-              inviteValidation?.isValid && !isInvitePreFilled && (
+              inviteValidation?.isValid &&
+              !isInvitePreFilled && (
                 <p className="text-xs text-emerald-700">
-                  ✓ {inviteValidation.organizationName} ({inviteValidation.remainingUses} uses remaining)
+                  ✓ {inviteValidation.organizationName} (
+                  {inviteValidation.remainingUses} uses remaining)
                 </p>
               )}
 
@@ -210,9 +212,7 @@ const RegisterForm = () => {
             {inviteCode.trim() &&
               !isValidatingInvite &&
               (inviteValidationError || !inviteValidation?.isValid) && (
-                <p className="text-xs text-red-600">
-                  Neplatný kód organizace
-                </p>
+                <p className="text-xs text-red-600">Neplatný kód organizace</p>
               )}
           </div>
 

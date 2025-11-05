@@ -19,7 +19,10 @@ interface CreateInviteDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export const CreateInviteDialog = ({ open, onOpenChange }: CreateInviteDialogProps) => {
+export const CreateInviteDialog = ({
+  open,
+  onOpenChange,
+}: CreateInviteDialogProps) => {
   const [maxUses, setMaxUses] = useState<number | undefined>(50);
   const [expiresInDays, setExpiresInDays] = useState<number>(30);
   const [generatedCode, setGeneratedCode] = useState<string | null>(null);
@@ -48,7 +51,10 @@ export const CreateInviteDialog = ({ open, onOpenChange }: CreateInviteDialogPro
         onError: (error) => {
           toast({
             title: "Chyba",
-            description: error instanceof Error ? error.message : "Nepodařilo se vytvořit pozvánku",
+            description:
+              error instanceof Error
+                ? error.message
+                : "Nepodařilo se vytvořit pozvánku",
             variant: "destructive",
           });
         },
@@ -104,7 +110,11 @@ export const CreateInviteDialog = ({ open, onOpenChange }: CreateInviteDialogPro
                 type="number"
                 placeholder="Ponechte prázdné pro neomezenou dobu"
                 value={maxUses || ""}
-                onChange={(e) => setMaxUses(e.target.value ? parseInt(e.target.value) : undefined)}
+                onChange={(e) =>
+                  setMaxUses(
+                    e.target.value ? parseInt(e.target.value) : undefined
+                  )
+                }
                 min="1"
               />
             </div>
@@ -116,7 +126,9 @@ export const CreateInviteDialog = ({ open, onOpenChange }: CreateInviteDialogPro
                 type="number"
                 placeholder="30"
                 value={expiresInDays}
-                onChange={(e) => setExpiresInDays(parseInt(e.target.value) || 30)}
+                onChange={(e) =>
+                  setExpiresInDays(parseInt(e.target.value) || 30)
+                }
                 min="1"
               />
             </div>
@@ -149,27 +161,21 @@ export const CreateInviteDialog = ({ open, onOpenChange }: CreateInviteDialogPro
                 <code className="flex-1 rounded bg-white p-2 font-mono text-lg font-semibold">
                   {generatedCode}
                 </code>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleCopyCode}
-                >
+                <Button size="sm" variant="outline" onClick={handleCopyCode}>
                   <Copy className="h-4 w-4" />
                 </Button>
               </div>
             </div>
 
             <div className="rounded-lg bg-slate-50 p-4">
-              <p className="mb-2 text-sm text-slate-600">Odkaz na registraci:</p>
+              <p className="mb-2 text-sm text-slate-600">
+                Odkaz na registraci:
+              </p>
               <div className="flex items-center gap-2">
                 <code className="flex-1 truncate rounded bg-white p-2 font-mono text-sm">
                   {generatedUrl}
                 </code>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleCopyUrl}
-                >
+                <Button size="sm" variant="outline" onClick={handleCopyUrl}>
                   <Copy className="h-4 w-4" />
                 </Button>
               </div>

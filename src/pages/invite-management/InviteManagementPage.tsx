@@ -52,15 +52,14 @@ const InviteManagementPage = () => {
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight">Správa pozvánek</h1>
+            <h1 className="text-3xl font-semibold tracking-tight">
+              Správa pozvánek
+            </h1>
             <p className="mt-2 text-sm text-muted-foreground">
               Spravujte pozvánky pro nové členy vaší organizace
             </p>
           </div>
-          <Button
-            onClick={() => setCreateDialogOpen(true)}
-            className="gap-2"
-          >
+          <Button onClick={() => setCreateDialogOpen(true)} className="gap-2">
             <Plus className="h-4 w-4" />
             Vytvořit pozvánku
           </Button>
@@ -103,7 +102,8 @@ const InviteManagementPage = () => {
                   ))
                 ) : inviteCodes && inviteCodes.length > 0 ? (
                   inviteCodes.map((code) => {
-                    const isExpired = code.expiresAt && new Date(code.expiresAt) < new Date();
+                    const isExpired =
+                      code.expiresAt && new Date(code.expiresAt) < new Date();
                     const isMaxed =
                       code.maxUses && code.usedCount >= code.maxUses;
                     const isInvalid = !code.isActive || isExpired || isMaxed;
@@ -120,17 +120,13 @@ const InviteManagementPage = () => {
                         </TableCell>
                         <TableCell>
                           {code.expiresAt ? (
-                            <span
-                              className={isExpired ? "text-red-600" : ""}
-                            >
+                            <span className={isExpired ? "text-red-600" : ""}>
                               {format(new Date(code.expiresAt), "d. MMM yyyy", {
                                 locale: cs,
                               })}
                             </span>
                           ) : (
-                            <span className="text-muted-foreground">
-                              Nikdy
-                            </span>
+                            <span className="text-muted-foreground">Nikdy</span>
                           )}
                         </TableCell>
                         <TableCell>
@@ -141,9 +137,7 @@ const InviteManagementPage = () => {
                         </TableCell>
                         <TableCell>
                           <Badge
-                            variant={
-                              isInvalid ? "destructive" : "default"
-                            }
+                            variant={isInvalid ? "destructive" : "default"}
                           >
                             {isExpired
                               ? "Vypršelo"
@@ -161,7 +155,8 @@ const InviteManagementPage = () => {
                   <TableRow>
                     <TableCell colSpan={5} className="h-24 text-center">
                       <p className="text-sm text-muted-foreground">
-                        Žádné pozvánky. Vytvořte svou první pozvánku kliknutím na tlačítko výše.
+                        Žádné pozvánky. Vytvořte svou první pozvánku kliknutím
+                        na tlačítko výše.
                       </p>
                     </TableCell>
                   </TableRow>

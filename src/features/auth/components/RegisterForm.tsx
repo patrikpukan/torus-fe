@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
+import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,9 +11,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabaseClient } from "@/lib/supabaseClient";
+import { useValidateInviteCodeQuery } from "@/features/organization/api/useValidateInviteCodeQuery";
 
 const RegisterForm = () => {
   const [inviteCode, setInviteCode] = useState("");
+  const [debouncedInviteCode, setDebouncedInviteCode] = useState<string | null>(
+    null
+  );
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -21,6 +26,31 @@ const RegisterForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Validate invite code with debounce
+  const {
+    data: inviteValidation,
+    isLoading: isValidatingInvite,
+    isError: inviteValidationError,
+  } = useValidateInviteCodeQuery(debouncedInviteCode);
+
+  // Debounced invite code validation
+  useEffect(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      setDebouncedInviteCode(inviteCode.trim() || null);
+    }, 500);
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [inviteCode]);
 
   const appUrl = useMemo(() => {
     const BASE_URL = (
@@ -44,6 +74,14 @@ const RegisterForm = () => {
       return;
     }
 
+    // Validate invite code if provided
+    if (inviteCode.trim()) {
+      if (!inviteValidation || !inviteValidation.isValid) {
+        setError("Please enter a valid invite code.");
+        return;
+      }
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -55,7 +93,7 @@ const RegisterForm = () => {
           data: {
             first_name: firstName || undefined,
             last_name: lastName || undefined,
-            invite_code: inviteCode || undefined,
+            invite_code: inviteCode.trim() || undefined,
           },
         },
       });
@@ -92,12 +130,54 @@ const RegisterForm = () => {
             >
               Invite code
             </Label>
-            <Input
-              id="register-invite-code"
-              name="inviteCode"
-              value={inviteCode}
-              onChange={(event) => setInviteCode(event.target.value)}
-            />
+            <div className="relative">
+              <Input
+                id="register-invite-code"
+                name="inviteCode"
+                value={inviteCode}
+                onChange={(event) => setInviteCode(event.target.value)}
+                className={
+                  inviteCode.trim()
+                    ? isValidatingInvite
+                      ? "border-amber-200 bg-amber-50/30"
+                      : inviteValidation?.isValid
+                        ? "border-emerald-600/40 bg-emerald-500/5"
+                        : inviteValidationError || !inviteValidation?.isValid
+                          ? "border-red-600/40 bg-red-500/5"
+                          : ""
+                    : ""
+                }
+              />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                {inviteCode.trim() && isValidatingInvite && (
+                  <Loader2 className="h-4 w-4 animate-spin text-amber-600" />
+                )}
+                {inviteCode.trim() &&
+                  !isValidatingInvite &&
+                  inviteValidation?.isValid && (
+                    <CheckCircle className="h-4 w-4 text-emerald-600" />
+                  )}
+                {inviteCode.trim() &&
+                  !isValidatingInvite &&
+                  (inviteValidationError || !inviteValidation?.isValid) && (
+                    <XCircle className="h-4 w-4 text-red-600" />
+                  )}
+              </div>
+            </div>
+            {inviteCode.trim() &&
+              !isValidatingInvite &&
+              inviteValidation?.isValid && (
+                <p className="text-xs text-emerald-700">
+                  ✓ {inviteValidation.organizationName} ({inviteValidation.remainingUses} uses remaining)
+                </p>
+              )}
+            {inviteCode.trim() &&
+              !isValidatingInvite &&
+              (inviteValidationError || !inviteValidation?.isValid) && (
+                <p className="text-xs text-red-600">
+                  Neplatný kód organizace
+                </p>
+              )}
           </div>
 
           <div className="space-y-1.5">

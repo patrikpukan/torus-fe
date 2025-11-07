@@ -39,6 +39,31 @@ export const CALENDAR_EVENTS_QUERY = graphql(`
   }
 `);
 
+export const UPDATE_CALENDAR_EVENT = graphql(`
+  mutation UpdateCalendarEvent($input: UpdateCalendarEventInput!) {
+    updateCalendarEvent(input: $input) {
+      id
+      title
+      description
+      type
+      startDateTime
+      endDateTime
+      rrule
+      exceptionDates
+      exceptionRrules
+      createdAt
+      updatedAt
+      deletedAt
+    }
+  }
+`);
+
+export const DELETE_CALENDAR_EVENT = graphql(`
+  mutation DeleteCalendarEvent($input: DeleteCalendarEventInput!) {
+    deleteCalendarEvent(input: $input)
+  }
+`);
+
 export const useCalendarEvents = (startDate: string, endDate: string) => {
   return useQuery<CalendarEventsQueryData>(CALENDAR_EVENTS_QUERY, {
     variables: {

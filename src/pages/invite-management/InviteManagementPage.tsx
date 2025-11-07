@@ -443,13 +443,8 @@ const InviteManagementPage = () => {
                 {!qrGeneratedCode ? (
                   // INITIAL STATE: Before generation
                   <div className="flex flex-col items-center justify-center py-12 space-y-6">
-                    {/* QR Placeholder: 4 squares in 2x2 grid */}
-                    <div className="grid grid-cols-2 gap-2 w-20 h-20">
-                      <div className="bg-muted rounded" />
-                      <div className="bg-muted rounded" />
-                      <div className="bg-muted rounded" />
-                      <div className="bg-muted rounded" />
-                    </div>
+                    {/* QR Placeholder: QR Code icon */}
+                    <QrCode className="w-20 h-20 text-muted-foreground" />
 
                     {/* Advanced Options */}
                     <div className="w-full max-w-md space-y-4">

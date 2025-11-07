@@ -189,8 +189,8 @@ const PairedUserTable = ({
                           ? sortedState === "asc"
                             ? "ascending"
                             : sortedState === "desc"
-                            ? "descending"
-                            : "none"
+                              ? "descending"
+                              : "none"
                           : undefined
                       }
                     >

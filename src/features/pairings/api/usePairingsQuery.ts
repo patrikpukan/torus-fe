@@ -20,38 +20,37 @@ export const usePairingsQuery = () => {
   const pairingContacts = useMemo(() => {
     if (!data?.getPairingHistory || !user) return [];
 
-    return data.getPairingHistory
-      .map((pairing) => {
-        // Determine which user is the "contact" (not the current user)
-        const isUserA = pairing.userAId === user.id;
-        const contactUser = isUserA ? pairing.userB : pairing.userA;
+    return data.getPairingHistory.map((pairing) => {
+      // Determine which user is the "contact" (not the current user)
+      const isUserA = pairing.userAId === user.id;
+      const contactUser = isUserA ? pairing.userB : pairing.userA;
 
-        return {
-          id: contactUser.id,
-          profile: {
-            organization: "", // Will be filled from other sources if needed
-            email: contactUser.email,
-            firstName: contactUser.firstName || "",
-            lastName: contactUser.lastName || "",
-            accountStatus: contactUser.profileStatus,
-            pairingStatus: pairing.status,
-            about: "",
-            hobbies: [],
-            interests: "",
-            profileImageUrl: contactUser.profileImageUrl || "",
-          },
-          pairedAt: pairing.createdAt,
-          lastMessageAt: pairing.createdAt, // Will be updated when messages are implemented
-          messages: [], // Will be populated when messages are implemented
-          pairingId: pairing.id, // Store pairing ID for status reference
+      return {
+        id: contactUser.id,
+        profile: {
+          organization: "", // Will be filled from other sources if needed
+          email: contactUser.email,
+          firstName: contactUser.firstName || "",
+          lastName: contactUser.lastName || "",
+          accountStatus: contactUser.profileStatus,
           pairingStatus: pairing.status,
-          isCurrentlyMatched: pairing.status === "matched",
-        } as PairingContact & {
-          pairingId: string;
-          pairingStatus: string;
-          isCurrentlyMatched: boolean;
-        };
-      })
+          about: "",
+          hobbies: [],
+          interests: "",
+          profileImageUrl: contactUser.profileImageUrl || "",
+        },
+        pairedAt: pairing.createdAt,
+        lastMessageAt: pairing.createdAt, // Will be updated when messages are implemented
+        messages: [], // Will be populated when messages are implemented
+        pairingId: pairing.id, // Store pairing ID for status reference
+        pairingStatus: pairing.status,
+        isCurrentlyMatched: pairing.status === "matched",
+      } as PairingContact & {
+        pairingId: string;
+        pairingStatus: string;
+        isCurrentlyMatched: boolean;
+      };
+    });
   }, [data?.getPairingHistory, user]);
 
   return {

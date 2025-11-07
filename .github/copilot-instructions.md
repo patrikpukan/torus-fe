@@ -78,5 +78,5 @@ const useProfile = (userId: string) => {
 
 ## GraphQL Type Generation
 
-- On the frontend (`./torus-fe`), we run `npm run regenerate` to generate GraphQL types from the backend (`./torus-be`) using the shared GraphQL configuration.  
+- On the frontend (`./torus-fe`), we run `npm run regenerate` to generate GraphQL types from the backend (`./torus-be`) using the shared GraphQL configuration.
 - Keep types up to date by re-running this command whenever the backend schema changes.

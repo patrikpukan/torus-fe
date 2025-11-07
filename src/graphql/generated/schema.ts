@@ -81,6 +81,22 @@ export type CreateCalendarEventInput = {
   userId: Scalars['ID']['input'];
 };
 
+export type CreateInviteCodeInputType = {
+  /** Optional: hours until code expires (default: 30 days if not set) */
+  expiresInHours?: InputMaybe<Scalars['Float']['input']>;
+  /** Optional: max uses for this code */
+  maxUses?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type CreateInviteCodeResponseType = {
+  __typename?: 'CreateInviteCodeResponseType';
+  code: Scalars['String']['output'];
+  expiresAt: Maybe<Scalars['DateTime']['output']>;
+  inviteUrl: Scalars['String']['output'];
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
 export type CreateMeetingEventInput = {
   createdByUserId: Scalars['ID']['input'];
   endDateTime: Scalars['DateTime']['input'];
@@ -100,7 +116,7 @@ export type CurrentUser = {
   interests: Maybe<Scalars['String']['output']>;
   isActive: Scalars['Boolean']['output'];
   lastName: Maybe<Scalars['String']['output']>;
-  organization: Organization;
+  organization: SimpleOrganizationType;
   organizationId: Scalars['ID']['output'];
   preferredActivity: Maybe<Scalars['String']['output']>;
   profileImageUrl: Maybe<Scalars['String']['output']>;
@@ -120,6 +136,31 @@ export type ExpandedCalendarEventOccurrence = {
   occurrenceEnd: Scalars['DateTime']['output'];
   occurrenceStart: Scalars['DateTime']['output'];
   originalEvent: CalendarEvent;
+};
+
+export type InviteCodeType = {
+  __typename?: 'InviteCodeType';
+  code: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  createdBy: Maybe<User>;
+  createdById: Scalars['String']['output'];
+  expiresAt: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['ID']['output'];
+  inviteUrl: Scalars['String']['output'];
+  isActive: Scalars['Boolean']['output'];
+  maxUses: Maybe<Scalars['Float']['output']>;
+  organizationId: Scalars['String']['output'];
+  usedCount: Scalars['Float']['output'];
+};
+
+export type InviteCodeValidationResponseType = {
+  __typename?: 'InviteCodeValidationResponseType';
+  expiresAt: Maybe<Scalars['DateTime']['output']>;
+  isValid: Scalars['Boolean']['output'];
+  message: Scalars['String']['output'];
+  organizationId: Maybe<Scalars['String']['output']>;
+  organizationName: Maybe<Scalars['String']['output']>;
+  remainingUses: Maybe<Scalars['Float']['output']>;
 };
 
 export type InviteUserInputType = {
@@ -170,6 +211,7 @@ export type Mutation = {
   cancelMeeting: MeetingEvent;
   confirmMeeting: MeetingEvent;
   createCalendarEvent: CalendarEvent;
+  createInviteCode: CreateInviteCodeResponseType;
   createMeetingEvent: MeetingEvent;
   deleteCalendarEvent: Scalars['Boolean']['output'];
   deleteUser: User;
@@ -201,6 +243,11 @@ export type MutationConfirmMeetingArgs = {
 
 export type MutationCreateCalendarEventArgs = {
   input: CreateCalendarEventInput;
+};
+
+
+export type MutationCreateInviteCodeArgs = {
+  input: InputMaybe<CreateInviteCodeInputType>;
 };
 
 
@@ -280,14 +327,6 @@ export type MutationUpdateUserArgs = {
   data: UpdateUserInputType;
 };
 
-export type Organization = {
-  __typename?: 'Organization';
-  code: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  imageUrl: Maybe<Scalars['String']['output']>;
-  name: Scalars['String']['output'];
-};
-
 export type OrganizationType = {
   __typename?: 'OrganizationType';
   address: Maybe<Scalars['String']['output']>;
@@ -341,6 +380,7 @@ export type Query = {
   expandedCalendarOccurrences: Array<ExpandedCalendarEventOccurrence>;
   getAlgorithmSettings: AlgorithmSettings;
   getCurrentUser: Maybe<CurrentUser>;
+  getOrganizationInvites: Array<InviteCodeType>;
   getPairedUsers: Array<User>;
   getPairingHistory: Array<PairingHistory>;
   latestMeetingForPairing: Maybe<MeetingEvent>;
@@ -353,6 +393,7 @@ export type Query = {
   upcomingMeetings: Array<MeetingEvent>;
   userById: Maybe<User>;
   users: Array<User>;
+  validateInviteCode: InviteCodeValidationResponseType;
 };
 
 
@@ -408,6 +449,11 @@ export type QueryUserByIdArgs = {
   id: Scalars['ID']['input'];
 };
 
+
+export type QueryValidateInviteCodeArgs = {
+  code: Scalars['String']['input'];
+};
+
 export type RegisterOrganizationInputType = {
   adminEmail: Scalars['String']['input'];
   organizationAddress: Scalars['String']['input'];
@@ -425,9 +471,19 @@ export type RegisterOrganizationResponseType = {
 export type SignUpInputType = {
   email: Scalars['String']['input'];
   firstName?: InputMaybe<Scalars['String']['input']>;
+  /** Optional invite code for organization assignment */
+  inviteCode?: InputMaybe<Scalars['String']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
   password: Scalars['String']['input'];
   profilePicture?: InputMaybe<Scalars['Upload']['input']>;
+};
+
+export type SimpleOrganizationType = {
+  __typename?: 'SimpleOrganizationType';
+  code: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  imageUrl: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
 };
 
 export type UpdateAlgorithmSettingsInput = {
@@ -505,7 +561,68 @@ export type UserRoleEnum =
 export type GetCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCurrentUserQuery = { __typename?: 'Query', getCurrentUser: { __typename?: 'CurrentUser', id: string, email: string, organizationId: string, role: UserRoleEnum, firstName: string | null, lastName: string | null, about: string | null, hobbies: string | null, interests: string | null, profileImageUrl: string | null, profileStatus: ProfileStatusEnum, isActive: boolean, organization: { __typename?: 'Organization', id: string, name: string, code: string, imageUrl: string | null } } | null };
+export type GetCurrentUserQuery = { __typename?: 'Query', getCurrentUser: { __typename?: 'CurrentUser', id: string, email: string, organizationId: string, role: UserRoleEnum, firstName: string | null, lastName: string | null, about: string | null, hobbies: string | null, interests: string | null, profileImageUrl: string | null, profileStatus: ProfileStatusEnum, isActive: boolean, organization: { __typename?: 'SimpleOrganizationType', id: string, name: string, code: string, imageUrl: string | null } } | null };
+
+export type GetCalendarEventsQueryVariables = Exact<{
+  startDate: Scalars['DateTime']['input'];
+  endDate: Scalars['DateTime']['input'];
+}>;
+
+
+export type GetCalendarEventsQuery = { __typename?: 'Query', calendarEventsByDateRange: Array<{ __typename?: 'CalendarEvent', id: string, title: string | null, description: string | null, type: CalendarEventType, startDateTime: string, endDateTime: string, rrule: string | null, exceptionDates: string | null, exceptionRrules: string | null, createdAt: string, updatedAt: string, deletedAt: string | null }> };
+
+export type GetMeetingEventsQueryVariables = Exact<{
+  startDate: Scalars['DateTime']['input'];
+  endDate: Scalars['DateTime']['input'];
+}>;
+
+
+export type GetMeetingEventsQuery = { __typename?: 'Query', meetingEventsByDateRange: Array<{ __typename?: 'MeetingEvent', id: string, startDateTime: string, endDateTime: string, userAId: string, userBId: string, userAConfirmationStatus: MeetingConfirmationStatus, userBConfirmationStatus: MeetingConfirmationStatus, userAProposedStartDateTime: string | null, userAProposedEndDateTime: string | null, userBProposedStartDateTime: string | null, userBProposedEndDateTime: string | null, userANote: string | null, userBNote: string | null, pairingId: string | null, createdAt: string, cancelledAt: string | null, createdByUserId: string }> };
+
+export type GetUpcomingMeetingsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetUpcomingMeetingsQuery = { __typename?: 'Query', upcomingMeetings: Array<{ __typename?: 'MeetingEvent', id: string, startDateTime: string, endDateTime: string, userAId: string, userBId: string, userAConfirmationStatus: MeetingConfirmationStatus, userBConfirmationStatus: MeetingConfirmationStatus, userAProposedStartDateTime: string | null, userAProposedEndDateTime: string | null, userBProposedStartDateTime: string | null, userBProposedEndDateTime: string | null, userANote: string | null, userBNote: string | null, pairingId: string | null, createdAt: string, cancelledAt: string | null, createdByUserId: string }> };
+
+export type GetPendingConfirmationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetPendingConfirmationsQuery = { __typename?: 'Query', pendingMeetingConfirmations: Array<{ __typename?: 'MeetingEvent', id: string, startDateTime: string, endDateTime: string, userAId: string, userBId: string, userAConfirmationStatus: MeetingConfirmationStatus, userBConfirmationStatus: MeetingConfirmationStatus, userAProposedStartDateTime: string | null, userAProposedEndDateTime: string | null, userBProposedStartDateTime: string | null, userBProposedEndDateTime: string | null, userANote: string | null, userBNote: string | null, pairingId: string | null, createdAt: string, cancelledAt: string | null, createdByUserId: string }> };
+
+export type ConfirmMeetingMutationVariables = Exact<{
+  meetingId: Scalars['ID']['input'];
+  note: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type ConfirmMeetingMutation = { __typename?: 'Mutation', confirmMeeting: { __typename?: 'MeetingEvent', id: string, userAConfirmationStatus: MeetingConfirmationStatus, userBConfirmationStatus: MeetingConfirmationStatus, userANote: string | null, userBNote: string | null } };
+
+export type RejectMeetingMutationVariables = Exact<{
+  meetingId: Scalars['ID']['input'];
+  note: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type RejectMeetingMutation = { __typename?: 'Mutation', rejectMeeting: { __typename?: 'MeetingEvent', id: string, userAConfirmationStatus: MeetingConfirmationStatus, userBConfirmationStatus: MeetingConfirmationStatus, userANote: string | null, userBNote: string | null } };
+
+export type CreateMeetingMutationVariables = Exact<{
+  input: CreateMeetingEventInput;
+}>;
+
+
+export type CreateMeetingMutation = { __typename?: 'Mutation', createMeetingEvent: { __typename?: 'MeetingEvent', id: string, startDateTime: string, endDateTime: string, userAId: string, userBId: string, userAConfirmationStatus: MeetingConfirmationStatus, userBConfirmationStatus: MeetingConfirmationStatus, pairingId: string | null, createdAt: string, createdByUserId: string } };
+
+export type CreateInviteCodeMutationVariables = Exact<{
+  input: InputMaybe<CreateInviteCodeInputType>;
+}>;
+
+
+export type CreateInviteCodeMutation = { __typename?: 'Mutation', createInviteCode: { __typename?: 'CreateInviteCodeResponseType', success: boolean, message: string, code: string, inviteUrl: string, expiresAt: string | null } };
+
+export type GetOrganizationInvitesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetOrganizationInvitesQuery = { __typename?: 'Query', getOrganizationInvites: Array<{ __typename?: 'InviteCodeType', id: string, code: string, createdAt: string, expiresAt: string | null, usedCount: number, maxUses: number | null, isActive: boolean, inviteUrl: string, createdBy: { __typename?: 'User', id: string, email: string, firstName: string | null, lastName: string | null } | null }> };
 
 export type InviteUserToOrganizationMutationVariables = Exact<{
   input: InviteUserInputType;
@@ -544,6 +661,13 @@ export type UpdateOrganizationMutationVariables = Exact<{
 
 
 export type UpdateOrganizationMutation = { __typename?: 'Mutation', updateOrganization: { __typename?: 'OrganizationType', id: string, name: string, code: string, size: number | null, address: string | null, imageUrl: string | null, createdAt: string, updatedAt: string } };
+
+export type ValidateInviteCodeQueryVariables = Exact<{
+  code: Scalars['String']['input'];
+}>;
+
+
+export type ValidateInviteCodeQuery = { __typename?: 'Query', validateInviteCode: { __typename?: 'InviteCodeValidationResponseType', isValid: boolean, message: string, organizationId: string | null, organizationName: string | null, remainingUses: number | null } };
 
 export type GetAlgorithmSettingsQueryVariables = Exact<{
   organizationId: Scalars['String']['input'];
@@ -617,6 +741,162 @@ export const GetCurrentUserDocument = gql`
       code
       imageUrl
     }
+  }
+}
+    `;
+export const GetCalendarEventsDocument = gql`
+    query GetCalendarEvents($startDate: DateTime!, $endDate: DateTime!) {
+  calendarEventsByDateRange(startDate: $startDate, endDate: $endDate) {
+    id
+    title
+    description
+    type
+    startDateTime
+    endDateTime
+    rrule
+    exceptionDates
+    exceptionRrules
+    createdAt
+    updatedAt
+    deletedAt
+  }
+}
+    `;
+export const GetMeetingEventsDocument = gql`
+    query GetMeetingEvents($startDate: DateTime!, $endDate: DateTime!) {
+  meetingEventsByDateRange(startDate: $startDate, endDate: $endDate) {
+    id
+    startDateTime
+    endDateTime
+    userAId
+    userBId
+    userAConfirmationStatus
+    userBConfirmationStatus
+    userAProposedStartDateTime
+    userAProposedEndDateTime
+    userBProposedStartDateTime
+    userBProposedEndDateTime
+    userANote
+    userBNote
+    pairingId
+    createdAt
+    cancelledAt
+    createdByUserId
+  }
+}
+    `;
+export const GetUpcomingMeetingsDocument = gql`
+    query GetUpcomingMeetings {
+  upcomingMeetings {
+    id
+    startDateTime
+    endDateTime
+    userAId
+    userBId
+    userAConfirmationStatus
+    userBConfirmationStatus
+    userAProposedStartDateTime
+    userAProposedEndDateTime
+    userBProposedStartDateTime
+    userBProposedEndDateTime
+    userANote
+    userBNote
+    pairingId
+    createdAt
+    cancelledAt
+    createdByUserId
+  }
+}
+    `;
+export const GetPendingConfirmationsDocument = gql`
+    query GetPendingConfirmations {
+  pendingMeetingConfirmations {
+    id
+    startDateTime
+    endDateTime
+    userAId
+    userBId
+    userAConfirmationStatus
+    userBConfirmationStatus
+    userAProposedStartDateTime
+    userAProposedEndDateTime
+    userBProposedStartDateTime
+    userBProposedEndDateTime
+    userANote
+    userBNote
+    pairingId
+    createdAt
+    cancelledAt
+    createdByUserId
+  }
+}
+    `;
+export const ConfirmMeetingDocument = gql`
+    mutation ConfirmMeeting($meetingId: ID!, $note: String) {
+  confirmMeeting(meetingId: $meetingId, note: $note) {
+    id
+    userAConfirmationStatus
+    userBConfirmationStatus
+    userANote
+    userBNote
+  }
+}
+    `;
+export const RejectMeetingDocument = gql`
+    mutation RejectMeeting($meetingId: ID!, $note: String) {
+  rejectMeeting(meetingId: $meetingId, note: $note) {
+    id
+    userAConfirmationStatus
+    userBConfirmationStatus
+    userANote
+    userBNote
+  }
+}
+    `;
+export const CreateMeetingDocument = gql`
+    mutation CreateMeeting($input: CreateMeetingEventInput!) {
+  createMeetingEvent(input: $input) {
+    id
+    startDateTime
+    endDateTime
+    userAId
+    userBId
+    userAConfirmationStatus
+    userBConfirmationStatus
+    pairingId
+    createdAt
+    createdByUserId
+  }
+}
+    `;
+export const CreateInviteCodeDocument = gql`
+    mutation CreateInviteCode($input: CreateInviteCodeInputType) {
+  createInviteCode(input: $input) {
+    success
+    message
+    code
+    inviteUrl
+    expiresAt
+  }
+}
+    `;
+export const GetOrganizationInvitesDocument = gql`
+    query GetOrganizationInvites {
+  getOrganizationInvites {
+    id
+    code
+    createdAt
+    expiresAt
+    usedCount
+    maxUses
+    isActive
+    createdBy {
+      id
+      email
+      firstName
+      lastName
+    }
+    inviteUrl
   }
 }
     `;
@@ -699,6 +979,17 @@ export const UpdateOrganizationDocument = gql`
     imageUrl
     createdAt
     updatedAt
+  }
+}
+    `;
+export const ValidateInviteCodeDocument = gql`
+    query ValidateInviteCode($code: String!) {
+  validateInviteCode(code: $code) {
+    isValid
+    message
+    organizationId
+    organizationName
+    remainingUses
   }
 }
     `;
@@ -826,6 +1117,33 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     GetCurrentUser(variables?: GetCurrentUserQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetCurrentUserQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetCurrentUserQuery>({ document: GetCurrentUserDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetCurrentUser', 'query', variables);
     },
+    GetCalendarEvents(variables: GetCalendarEventsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetCalendarEventsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetCalendarEventsQuery>({ document: GetCalendarEventsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetCalendarEvents', 'query', variables);
+    },
+    GetMeetingEvents(variables: GetMeetingEventsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetMeetingEventsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetMeetingEventsQuery>({ document: GetMeetingEventsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetMeetingEvents', 'query', variables);
+    },
+    GetUpcomingMeetings(variables?: GetUpcomingMeetingsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetUpcomingMeetingsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetUpcomingMeetingsQuery>({ document: GetUpcomingMeetingsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetUpcomingMeetings', 'query', variables);
+    },
+    GetPendingConfirmations(variables?: GetPendingConfirmationsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetPendingConfirmationsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetPendingConfirmationsQuery>({ document: GetPendingConfirmationsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetPendingConfirmations', 'query', variables);
+    },
+    ConfirmMeeting(variables: ConfirmMeetingMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<ConfirmMeetingMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ConfirmMeetingMutation>({ document: ConfirmMeetingDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'ConfirmMeeting', 'mutation', variables);
+    },
+    RejectMeeting(variables: RejectMeetingMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<RejectMeetingMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<RejectMeetingMutation>({ document: RejectMeetingDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'RejectMeeting', 'mutation', variables);
+    },
+    CreateMeeting(variables: CreateMeetingMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CreateMeetingMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CreateMeetingMutation>({ document: CreateMeetingDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'CreateMeeting', 'mutation', variables);
+    },
+    CreateInviteCode(variables?: CreateInviteCodeMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CreateInviteCodeMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CreateInviteCodeMutation>({ document: CreateInviteCodeDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'CreateInviteCode', 'mutation', variables);
+    },
+    GetOrganizationInvites(variables?: GetOrganizationInvitesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetOrganizationInvitesQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetOrganizationInvitesQuery>({ document: GetOrganizationInvitesDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetOrganizationInvites', 'query', variables);
+    },
     InviteUserToOrganization(variables: InviteUserToOrganizationMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<InviteUserToOrganizationMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<InviteUserToOrganizationMutation>({ document: InviteUserToOrganizationDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'InviteUserToOrganization', 'mutation', variables);
     },
@@ -843,6 +1161,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     UpdateOrganization(variables: UpdateOrganizationMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<UpdateOrganizationMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateOrganizationMutation>({ document: UpdateOrganizationDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'UpdateOrganization', 'mutation', variables);
+    },
+    ValidateInviteCode(variables: ValidateInviteCodeQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<ValidateInviteCodeQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ValidateInviteCodeQuery>({ document: ValidateInviteCodeDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'ValidateInviteCode', 'query', variables);
     },
     GetAlgorithmSettings(variables: GetAlgorithmSettingsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetAlgorithmSettingsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetAlgorithmSettingsQuery>({ document: GetAlgorithmSettingsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetAlgorithmSettings', 'query', variables);

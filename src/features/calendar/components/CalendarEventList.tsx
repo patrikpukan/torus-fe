@@ -46,8 +46,12 @@ export const CalendarEventList: React.FC<CalendarEventListProps> = ({
           >
             <div className="font-medium">{event.title || "Untitled"}</div>
             <div className="text-xs opacity-75">
-              {format(new Date(event.startDateTime), "dd.MM HH:mm")} -{" "}
-              {format(new Date(event.endDateTime), "HH:mm")}
+              <div>
+                Start: {format(new Date(event.startDateTime), "dd.MM HH:mm")}
+              </div>
+              <div>
+                End: {format(new Date(event.endDateTime), "dd.MM HH:mm")}
+              </div>
             </div>
             {event.rrule && (
               <div className="text-xs opacity-50">Recurring: {event.rrule}</div>

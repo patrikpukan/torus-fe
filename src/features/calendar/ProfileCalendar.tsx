@@ -10,6 +10,12 @@ import "@schedule-x/theme-default/dist/index.css";
 import "temporal-polyfill/global";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useCalendarEvents } from "./api/useCalendarEvents";
+import {
+  CalendarEventList,
+  MeetingEventList,
+  PendingMeetingConfirmations,
+} from "./components";
 
 const normalizeLocale = (l?: string): string => {
   if (!l) return "en-US";
@@ -66,6 +72,18 @@ const makeDemoEvents = (): CalendarEvent[] => {
 };
 
 const ProfileCalendar = () => {
+  // Get date range for current week
+  const today = Temporal.Now.plainDateISO();
+  const startOfWeek = today.subtract({ days: (today.dayOfWeek + 6) % 7 });
+  const endOfWeek = startOfWeek.add({ days: 6 });
+
+  // Convert to ISO strings for API
+  const startDate = startOfWeek.toString() + "T00:00:00Z";
+  const endDate = endOfWeek.toString() + "T23:59:59Z";
+
+  // Fetch calendar and meeting events
+  useCalendarEvents(startDate, endDate);
+
   const calendar = useMemo(
     () =>
       createCalendar({
@@ -98,7 +116,7 @@ const ProfileCalendar = () => {
   );
 
   const handleAddEvent = () => {
-    // Add a quick 1-hour available slot starting at the next full hour (local timezone)
+    // Add a quick 1-hour available slot starting at the next full hour
     const base = Temporal.Now.zonedDateTimeISO();
     const nextHour = base
       .with({
@@ -120,8 +138,6 @@ const ProfileCalendar = () => {
 
   const handleSyncGoogle = () => {
     // Placeholder for future implementation
-    // Could trigger OAuth flow and import events from Google Calendar
-    // For now, we just log to the console
     console.log("Sync with Google Calendar clicked");
   };
 
@@ -129,11 +145,25 @@ const ProfileCalendar = () => {
     <div>
       <h1 className="mb-6 text-3xl font-semibold">Calendar</h1>
 
-      <Card className="p-4">
-        <ScheduleXCalendar calendarApp={calendar} />
-      </Card>
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        <Card className="p-4 col-span-2">
+          <ScheduleXCalendar calendarApp={calendar} />
+        </Card>
 
-      <div className="mt-10 flex flex-col items-center gap-4">
+        <div className="space-y-4">
+          <Card className="p-4">
+            <PendingMeetingConfirmations />
+          </Card>
+          <Card className="p-4">
+            <CalendarEventList startDate={startDate} endDate={endDate} />
+          </Card>
+          <Card className="p-4">
+            <MeetingEventList />
+          </Card>
+        </div>
+      </div>
+
+      <div className="flex flex-col items-center gap-4">
         <Button
           className="h-auto w-80 rounded-xl bg-muted-foreground py-4 text-lg font-semibold hover:bg-muted-foreground/90"
           size="lg"

@@ -192,7 +192,7 @@ const RegisterForm = () => {
               <div className="flex items-start gap-2 rounded-md bg-blue-50/60 p-2.5">
                 <AlertCircle className="h-4 w-4 mt-0.5 text-blue-600 flex-shrink-0" />
                 <div className="text-xs text-blue-700">
-                  Používáte pozvánku od vaší organizace
+                  Using an invite from your organization
                 </div>
               </div>
             )}
@@ -212,7 +212,9 @@ const RegisterForm = () => {
             {inviteCode.trim() &&
               !isValidatingInvite &&
               (inviteValidationError || !inviteValidation?.isValid) && (
-                <p className="text-xs text-red-600">Neplatný kód organizace</p>
+                <p className="text-xs text-red-600">
+                  Invalid organization code
+                </p>
               )}
           </div>
 

@@ -1,5 +1,16 @@
-import { useState } from "react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -8,36 +19,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useInviteCodesQuery } from "@/features/organization/api/useInviteCodesQuery";
 import { useCreateInviteCodeMutation } from "@/features/organization/api/useCreateInviteCodeMutation";
-import { useAuth } from "@/hooks/useAuth";
+import { useInviteCodesQuery } from "@/features/organization/api/useInviteCodesQuery";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Link,
-  QrCode,
-  Info,
-  Copy,
-  Check,
-  Loader2,
-  ChevronDown,
-  Download,
-} from "lucide-react";
-import QRCodeCanvas from "react-qr-code";
+import { useAuth } from "@/hooks/useAuth";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
+import {
+  Check,
+  ChevronDown,
+  Copy,
+  Download,
+  Info,
+  Link,
+  Loader2,
+  QrCode,
+} from "lucide-react";
+import { useState } from "react";
+import QRCodeCanvas from "react-qr-code";
 
 const InviteManagementPage = () => {
   const { appRole, loading: authLoading } = useAuth();
@@ -80,7 +80,7 @@ const InviteManagementPage = () => {
           description: `Code: ${result.code}`,
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to create invite code",
@@ -135,7 +135,7 @@ const InviteManagementPage = () => {
           description: `Code: ${result.code}`,
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to create invite code",

@@ -38,4 +38,3 @@ export const useStatisticsQuery = (filter?: StatisticsFilter) => {
     fetchPolicy: "cache-and-network",
   });
 };
-

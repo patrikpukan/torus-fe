@@ -671,6 +671,33 @@ export type UpdateUserProfileMutation = {
   };
 };
 
+export type StatisticsQueryVariables = Exact<{
+  filter: InputMaybe<StatisticsFilterInputType>;
+}>;
+
+export type StatisticsQuery = {
+  __typename?: "Query";
+  statistics: {
+    __typename?: "StatisticsResponseType";
+    newUsersCount: number;
+    inactiveUsersCount: number;
+    reportsCount: number;
+    pairingsByStatus: Array<{
+      __typename?: "PairingStatusOverviewType";
+      status: string;
+      count: number;
+    }>;
+    pairingsByStatusAndUser: Array<{
+      __typename?: "PairingStatusByUserType";
+      userId: string;
+      userEmail: string;
+      userName: string | null;
+      status: string;
+      count: number;
+    }>;
+  };
+};
+
 export type GetPairedUsersQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetPairedUsersQuery = {
@@ -940,6 +967,26 @@ export const UpdateUserProfileDocument = gql`
       profileImageUrl
       profileStatus
       isActive
+    }
+  }
+`;
+export const StatisticsDocument = gql`
+  query Statistics($filter: StatisticsFilterInputType) {
+    statistics(filter: $filter) {
+      newUsersCount
+      inactiveUsersCount
+      reportsCount
+      pairingsByStatus {
+        status
+        count
+      }
+      pairingsByStatusAndUser {
+        userId
+        userEmail
+        userName
+        status
+        count
+      }
     }
   }
 `;
@@ -1269,6 +1316,24 @@ export function getSdk(
           }),
         "UpdateUserProfile",
         "mutation",
+        variables
+      );
+    },
+    Statistics(
+      variables?: StatisticsQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+      signal?: RequestInit["signal"]
+    ): Promise<StatisticsQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<StatisticsQuery>({
+            document: StatisticsDocument,
+            variables,
+            requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders },
+            signal,
+          }),
+        "Statistics",
+        "query",
         variables
       );
     },

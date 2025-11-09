@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import ProfileCalendar from "@/features/calendar/ProfileCalendar";
+import ReadOnlyUserCalendar from "@/features/calendar/ReadOnlyUserCalendar";
 import { cn } from "@/lib/utils";
 import type { PairingContact } from "@/mocks/mockPairings";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -257,7 +257,7 @@ const PairingsView = () => {
                     value="calendar"
                     className="mt-0 flex-1 overflow-y-auto px-6 py-4"
                   >
-                    <ProfileCalendar />
+                    <ReadOnlyUserCalendar userId={selectedContact?.id} />
                   </TabsContent>
                 </Tabs>
               </CardContent>

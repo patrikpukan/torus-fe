@@ -25,9 +25,9 @@ export const CalendarEventList: React.FC<CalendarEventListProps> = ({
     );
   }
 
-  const events = data?.calendarEventsByDateRange || [];
+  const occurrences = data?.expandedCalendarOccurrences || [];
 
-  if (events.length === 0) {
+  if (occurrences.length === 0) {
     return <div className="p-4 text-gray-500">No calendar events</div>;
   }
 
@@ -35,29 +35,37 @@ export const CalendarEventList: React.FC<CalendarEventListProps> = ({
     <div className="space-y-2">
       <h3 className="font-semibold text-sm">Calendar Events</h3>
       <div className="space-y-1 max-h-48 overflow-y-auto">
-        {events.map((event) => (
-          <div
-            key={event.id}
-            className={`p-2 rounded text-xs ${
-              event.type === "availability"
-                ? "bg-green-100 text-green-900"
-                : "bg-red-100 text-red-900"
-            }`}
-          >
-            <div className="font-medium">{event.title || "Untitled"}</div>
-            <div className="text-xs opacity-75">
-              <div>
-                Start: {format(new Date(event.startDateTime), "dd.MM HH:mm")}
+        {occurrences.map((occurrence) => {
+          const event = occurrence.originalEvent;
+
+          return (
+            <div
+              key={occurrence.id}
+              className={`p-2 rounded text-xs ${
+                event.type === "availability"
+                  ? "bg-green-100 text-green-900"
+                  : "bg-red-100 text-red-900"
+              }`}
+            >
+              <div className="font-medium">{event.title || "Untitled"}</div>
+              <div className="text-xs opacity-75">
+                <div>
+                  Start:{" "}
+                  {format(new Date(occurrence.occurrenceStart), "dd.MM HH:mm")}
+                </div>
+                <div>
+                  End:{" "}
+                  {format(new Date(occurrence.occurrenceEnd), "dd.MM HH:mm")}
+                </div>
               </div>
-              <div>
-                End: {format(new Date(event.endDateTime), "dd.MM HH:mm")}
-              </div>
+              {event.rrule && (
+                <div className="text-xs opacity-50">
+                  Recurring: {event.rrule}
+                </div>
+              )}
             </div>
-            {event.rrule && (
-              <div className="text-xs opacity-50">Recurring: {event.rrule}</div>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

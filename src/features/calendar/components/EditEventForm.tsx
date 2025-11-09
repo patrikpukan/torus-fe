@@ -17,8 +17,15 @@ import {
 } from "@/components/ui/select";
 import type { CalendarEventItem } from "../api/useCalendarEvents";
 
+type Occurrence = {
+  id: string;
+  occurrenceStart: string;
+  occurrenceEnd: string;
+  originalEvent: CalendarEventItem;
+};
+
 interface EditEventFormProps {
-  event: CalendarEventItem;
+  occurrence: Occurrence;
   onSuccess?: () => void;
   onCancel?: () => void;
   startDate?: string;
@@ -26,12 +33,14 @@ interface EditEventFormProps {
 }
 
 export const EditEventForm: React.FC<EditEventFormProps> = ({
-  event,
+  occurrence,
   onSuccess,
   onCancel,
   startDate: initialStartDate,
   endDate: initialEndDate,
 }) => {
+  const event = occurrence.originalEvent;
+  const [scope, setScope] = useState<"this" | "following" | "all">("this");
   const [mutate, { loading }] = useMutation(UPDATE_CALENDAR_EVENT, {
     refetchQueries: [
       {
@@ -57,22 +66,47 @@ export const EditEventForm: React.FC<EditEventFormProps> = ({
 
   // Initialize form with event data
   useEffect(() => {
-    if (event) {
+    if (event && occurrence) {
       setTitle(event.title || "");
-      setType(
-        (event.type as "availability" | "unavailability") || "availability"
-      );
+
+      // Make sure we cast the type correctly and trim any whitespace
+      let eventType: "availability" | "unavailability" = "availability";
+      if (event.type) {
+        const trimmedType = String(event.type).trim().toLowerCase();
+        console.log(
+          "Event type from API:",
+          event.type,
+          "trimmed:",
+          trimmedType
+        );
+        if (trimmedType === "unavailability") {
+          eventType = "unavailability";
+        } else if (trimmedType === "availability") {
+          eventType = "availability";
+        }
+      }
+      console.log("Setting form type to:", eventType);
+      setType(eventType);
 
       // Convert UTC times to user's local timezone
       const tz = Temporal.Now.zonedDateTimeISO().timeZoneId;
 
       try {
-        const startZdt = Temporal.Instant.from(
-          event.startDateTime
-        ).toZonedDateTimeISO(tz);
-        const endZdt = Temporal.Instant.from(
-          event.endDateTime
-        ).toZonedDateTimeISO(tz);
+        // For recurring events, use the occurrence's datetime, not the base event's datetime
+        // This ensures the form shows the correct date for the specific occurrence being edited
+        const baseStartInstant = occurrence.occurrenceStart
+          ? occurrence.occurrenceStart
+          : event.startDateTime;
+        const durationMs =
+          new Date(event.endDateTime).getTime() -
+          new Date(event.startDateTime).getTime();
+        const endInstant = new Date(
+          new Date(baseStartInstant).getTime() + durationMs
+        ).toISOString();
+
+        const startZdt =
+          Temporal.Instant.from(baseStartInstant).toZonedDateTimeISO(tz);
+        const endZdt = Temporal.Instant.from(endInstant).toZonedDateTimeISO(tz);
 
         // Format date and time strings
         const startDateStr = startZdt.toPlainDate().toString();
@@ -88,12 +122,18 @@ export const EditEventForm: React.FC<EditEventFormProps> = ({
         console.error("Error parsing event dates:", err);
       }
 
-      // Set recurrence
+      // Set recurrence - parse rrule properly
       if (event.rrule) {
-        setRecurrence(event.rrule.includes("WEEKLY") ? "weekly" : "none");
+        if (event.rrule.includes("WEEKLY")) {
+          setRecurrence("weekly");
+        } else {
+          setRecurrence("none");
+        }
+      } else {
+        setRecurrence("none");
       }
     }
-  }, [event]);
+  }, [event, occurrence]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,34 +159,30 @@ export const EditEventForm: React.FC<EditEventFormProps> = ({
       const startDateTime = startZoned.toInstant().toString();
       const endDateTime = endZoned.toInstant().toString();
 
-      let rrule: string | undefined;
-      if (recurrence === "weekly") {
-        // Get day of week from start date
-        const day = new Date(startDate).toLocaleDateString("en-US", {
-          weekday: "short",
-        });
-        const dayMap: Record<string, string> = {
-          Mon: "MO",
-          Tue: "TU",
-          Wed: "WE",
-          Thu: "TH",
-          Fri: "FR",
-          Sat: "SA",
-          Sun: "SU",
-        };
-        rrule = `FREQ=WEEKLY;BYDAY=${dayMap[day]}`;
+      // Convert occurrence start to Date for backend
+      const occurrenceStartDate = new Date(occurrence.occurrenceStart);
+
+      const input: Record<string, unknown> = {
+        id: event.id,
+        title,
+      };
+
+      // For "all events" scope on recurring events, don't send startDateTime/endDateTime
+      // Changing the base event's start time would break the recurrence pattern
+      if (scope !== "all" || !event.rrule) {
+        input.startDateTime = startDateTime;
+        input.endDateTime = endDateTime;
+      }
+
+      if (type) {
+        input.type = type;
       }
 
       await mutate({
         variables: {
-          input: {
-            id: event.id,
-            title,
-            type,
-            startDateTime,
-            endDateTime,
-            rrule,
-          },
+          input,
+          scope,
+          occurrenceStart: occurrenceStartDate,
         },
       });
 
@@ -157,6 +193,8 @@ export const EditEventForm: React.FC<EditEventFormProps> = ({
       setError(err instanceof Error ? err.message : "Failed to update event");
     }
   };
+
+  console.log("type", type);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -174,10 +212,9 @@ export const EditEventForm: React.FC<EditEventFormProps> = ({
       <div>
         <Label htmlFor="type">Type *</Label>
         <Select
+          key={type}
           value={type}
-          onValueChange={(value) =>
-            setType(value as "availability" | "unavailability")
-          }
+          onValueChange={(v) => setType(v as "availability" | "unavailability")}
         >
           <SelectTrigger id="type">
             <SelectValue />
@@ -240,6 +277,7 @@ export const EditEventForm: React.FC<EditEventFormProps> = ({
         <Select
           value={recurrence}
           onValueChange={(value) => setRecurrence(value as "none" | "weekly")}
+          disabled
         >
           <SelectTrigger id="recurrence">
             <SelectValue />
@@ -249,7 +287,77 @@ export const EditEventForm: React.FC<EditEventFormProps> = ({
             <SelectItem value="weekly">Every week</SelectItem>
           </SelectContent>
         </Select>
+        <p className="text-xs text-muted-foreground mt-1">
+          Recurrence cannot be edited. Delete and recreate the event to change
+          recurrence.
+        </p>
       </div>
+
+      {event.rrule && (
+        <div className="space-y-3 border-y py-4">
+          <Label>Update scope</Label>
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <input
+                type="radio"
+                id="scope-this"
+                value="this"
+                checked={scope === "this"}
+                onChange={(e) =>
+                  setScope(e.target.value as "this" | "following" | "all")
+                }
+                disabled={loading}
+              />
+              <Label
+                htmlFor="scope-this"
+                className="font-normal cursor-pointer"
+              >
+                This event only
+              </Label>
+            </div>
+            <div className="flex items-center gap-3">
+              <input
+                type="radio"
+                id="scope-following"
+                value="following"
+                checked={scope === "following"}
+                onChange={(e) =>
+                  setScope(e.target.value as "this" | "following" | "all")
+                }
+                disabled={loading}
+              />
+              <Label
+                htmlFor="scope-following"
+                className="font-normal cursor-pointer"
+              >
+                This and following events
+              </Label>
+            </div>
+            <div className="flex items-center gap-3">
+              <input
+                type="radio"
+                id="scope-all"
+                value="all"
+                checked={scope === "all"}
+                onChange={(e) =>
+                  setScope(e.target.value as "this" | "following" | "all")
+                }
+                disabled={loading}
+              />
+              <Label htmlFor="scope-all" className="font-normal cursor-pointer">
+                All events in series
+              </Label>
+            </div>
+          </div>
+          {scope === "all" && (
+            <p className="text-xs text-muted-foreground mt-2">
+              When updating all events, date and time changes are not applied
+              (only title and type). To change the time of all events, delete
+              and recreate the recurring event.
+            </p>
+          )}
+        </div>
+      )}
 
       {error && (
         <div className="p-2 bg-red-100 text-red-700 rounded">{error}</div>

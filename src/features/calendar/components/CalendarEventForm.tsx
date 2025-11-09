@@ -62,7 +62,9 @@ export const CalendarEventForm: React.FC<CalendarEventFormProps> = ({
   const [startTime, setStartTime] = useState("09:00");
   const [endDate, setEndDate] = useState("");
   const [endTime, setEndTime] = useState("10:00");
-  const [recurrence, setRecurrence] = useState<"none" | "weekly">("none");
+  const [recurrence, setRecurrence] = useState<
+    "none" | "daily" | "weekly" | "biweekly" | "monthly"
+  >("none");
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -90,21 +92,41 @@ export const CalendarEventForm: React.FC<CalendarEventFormProps> = ({
       const endDateTime = endZoned.toInstant().toString();
 
       let rrule: string | undefined;
-      if (recurrence === "weekly") {
-        // Get day of week from start date
-        const day = new Date(startDate).toLocaleDateString("en-US", {
-          weekday: "short",
-        });
-        const dayMap: Record<string, string> = {
-          Mon: "MO",
-          Tue: "TU",
-          Wed: "WE",
-          Thu: "TH",
-          Fri: "FR",
-          Sat: "SA",
-          Sun: "SU",
+      if (recurrence === "daily") {
+        rrule = "FREQ=DAILY";
+      } else if (recurrence === "weekly") {
+        // Get day of week from start date using Temporal for consistency
+        const startPlainDate = Temporal.PlainDate.from(startDate);
+        const dayOfWeek = startPlainDate.dayOfWeek; // 1=Monday, 7=Sunday
+        const dayMap: Record<number, string> = {
+          1: "MO",
+          2: "TU",
+          3: "WE",
+          4: "TH",
+          5: "FR",
+          6: "SA",
+          7: "SU",
         };
-        rrule = `FREQ=WEEKLY;BYDAY=${dayMap[day]}`;
+        rrule = `FREQ=WEEKLY;BYDAY=${dayMap[dayOfWeek]}`;
+      } else if (recurrence === "biweekly") {
+        // Get day of week from start date using Temporal for consistency
+        const startPlainDate = Temporal.PlainDate.from(startDate);
+        const dayOfWeek = startPlainDate.dayOfWeek; // 1=Monday, 7=Sunday
+        const dayMap: Record<number, string> = {
+          1: "MO",
+          2: "TU",
+          3: "WE",
+          4: "TH",
+          5: "FR",
+          6: "SA",
+          7: "SU",
+        };
+        rrule = `FREQ=WEEKLY;INTERVAL=2;BYDAY=${dayMap[dayOfWeek]}`;
+      } else if (recurrence === "monthly") {
+        // Get day of month from start date
+        const startPlainDate = Temporal.PlainDate.from(startDate);
+        const dayOfMonth = startPlainDate.day;
+        rrule = `FREQ=MONTHLY;BYMONTHDAY=${dayOfMonth}`;
       }
 
       await mutate({
@@ -215,14 +237,21 @@ export const CalendarEventForm: React.FC<CalendarEventFormProps> = ({
         <Label htmlFor="recurrence">Recurrence</Label>
         <Select
           value={recurrence}
-          onValueChange={(value) => setRecurrence(value as "none" | "weekly")}
+          onValueChange={(value) =>
+            setRecurrence(
+              value as "none" | "daily" | "weekly" | "biweekly" | "monthly"
+            )
+          }
         >
           <SelectTrigger id="recurrence">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="none">No recurrence</SelectItem>
+            <SelectItem value="daily">Daily</SelectItem>
             <SelectItem value="weekly">Every week</SelectItem>
+            <SelectItem value="biweekly">Every 2 weeks</SelectItem>
+            <SelectItem value="monthly">Monthly</SelectItem>
           </SelectContent>
         </Select>
       </div>

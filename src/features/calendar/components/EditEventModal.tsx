@@ -8,9 +8,16 @@ import {
 import { EditEventForm } from "./EditEventForm";
 import type { CalendarEventItem } from "../api/useCalendarEvents";
 
+type Occurrence = {
+  id: string;
+  occurrenceStart: string;
+  occurrenceEnd: string;
+  originalEvent: CalendarEventItem;
+};
+
 interface EditEventModalProps {
   open: boolean;
-  event: CalendarEventItem | null;
+  event: Occurrence | null;
   onOpenChange: (open: boolean) => void;
   startDate?: string;
   endDate?: string;
@@ -41,7 +48,7 @@ export const EditEventModal: React.FC<EditEventModalProps> = ({
         </DialogHeader>
         <div className="mt-4">
           <EditEventForm
-            event={event}
+            occurrence={event}
             onSuccess={handleSuccess}
             onCancel={handleCancel}
             startDate={startDate}

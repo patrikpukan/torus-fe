@@ -186,7 +186,7 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
       },
     });
   } else {
-    // Updatuj len eventy bez rekreácie kalendára
+    // Update events - this should replace all events completely
     calendarRef.current.events.set(events);
   }
 

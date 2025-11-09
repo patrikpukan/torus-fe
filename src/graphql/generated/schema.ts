@@ -649,7 +649,23 @@ export type GetCalendarEventsQueryVariables = Exact<{
 }>;
 
 
-export type GetCalendarEventsQuery = { __typename?: 'Query', calendarEventsByDateRange: Array<{ __typename?: 'CalendarEvent', id: string, title: string | null, description: string | null, type: CalendarEventType, startDateTime: string, endDateTime: string, rrule: string | null, exceptionDates: string | null, exceptionRrules: string | null, createdAt: string, updatedAt: string, deletedAt: string | null }> };
+export type GetCalendarEventsQuery = { __typename?: 'Query', expandedCalendarOccurrences: Array<{ __typename?: 'ExpandedCalendarEventOccurrence', id: string, occurrenceStart: string, occurrenceEnd: string, originalEvent: { __typename?: 'CalendarEvent', id: string, title: string | null, description: string | null, type: CalendarEventType, startDateTime: string, endDateTime: string, rrule: string | null, exceptionDates: string | null, exceptionRrules: string | null, createdAt: string, updatedAt: string, deletedAt: string | null } }> };
+
+export type UpdateCalendarEventMutationVariables = Exact<{
+  input: UpdateCalendarEventInput;
+  scope: InputMaybe<Scalars['String']['input']>;
+  occurrenceStart: InputMaybe<Scalars['DateTime']['input']>;
+}>;
+
+
+export type UpdateCalendarEventMutation = { __typename?: 'Mutation', updateCalendarEvent: { __typename?: 'CalendarEvent', id: string, title: string | null, description: string | null, type: CalendarEventType, startDateTime: string, endDateTime: string, rrule: string | null, exceptionDates: string | null, exceptionRrules: string | null, createdAt: string, updatedAt: string, deletedAt: string | null } };
+
+export type DeleteCalendarEventMutationVariables = Exact<{
+  input: DeleteCalendarEventInput;
+}>;
+
+
+export type DeleteCalendarEventMutation = { __typename?: 'Mutation', deleteCalendarEvent: boolean };
 
 export type GetMeetingEventsQueryVariables = Exact<{
   startDate: Scalars['DateTime']['input'];
@@ -840,7 +856,34 @@ export const GetCurrentUserDocument = gql`
     `;
 export const GetCalendarEventsDocument = gql`
     query GetCalendarEvents($startDate: DateTime!, $endDate: DateTime!) {
-  calendarEventsByDateRange(startDate: $startDate, endDate: $endDate) {
+  expandedCalendarOccurrences(startDate: $startDate, endDate: $endDate) {
+    id
+    occurrenceStart
+    occurrenceEnd
+    originalEvent {
+      id
+      title
+      description
+      type
+      startDateTime
+      endDateTime
+      rrule
+      exceptionDates
+      exceptionRrules
+      createdAt
+      updatedAt
+      deletedAt
+    }
+  }
+}
+    `;
+export const UpdateCalendarEventDocument = gql`
+    mutation UpdateCalendarEvent($input: UpdateCalendarEventInput!, $scope: String, $occurrenceStart: DateTime) {
+  updateCalendarEvent(
+    input: $input
+    scope: $scope
+    occurrenceStart: $occurrenceStart
+  ) {
     id
     title
     description
@@ -854,6 +897,11 @@ export const GetCalendarEventsDocument = gql`
     updatedAt
     deletedAt
   }
+}
+    `;
+export const DeleteCalendarEventDocument = gql`
+    mutation DeleteCalendarEvent($input: DeleteCalendarEventInput!) {
+  deleteCalendarEvent(input: $input)
 }
     `;
 export const GetMeetingEventsDocument = gql`
@@ -1244,6 +1292,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     GetCalendarEvents(variables: GetCalendarEventsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetCalendarEventsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetCalendarEventsQuery>({ document: GetCalendarEventsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetCalendarEvents', 'query', variables);
+    },
+    UpdateCalendarEvent(variables: UpdateCalendarEventMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<UpdateCalendarEventMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UpdateCalendarEventMutation>({ document: UpdateCalendarEventDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'UpdateCalendarEvent', 'mutation', variables);
+    },
+    DeleteCalendarEvent(variables: DeleteCalendarEventMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<DeleteCalendarEventMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<DeleteCalendarEventMutation>({ document: DeleteCalendarEventDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'DeleteCalendarEvent', 'mutation', variables);
     },
     GetMeetingEvents(variables: GetMeetingEventsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetMeetingEventsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetMeetingEventsQuery>({ document: GetMeetingEventsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetMeetingEvents', 'query', variables);

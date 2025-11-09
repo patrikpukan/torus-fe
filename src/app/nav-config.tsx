@@ -8,6 +8,7 @@ import {
   Building,
   Wrench,
   Mail,
+  BarChart3,
 } from "lucide-react";
 export type NavItem = {
   label: string;
@@ -61,6 +62,12 @@ export const navConfig: NavItem[] = [
     path: "/invite-management",
     roles: ["org_admin"],
     icon: <Mail />,
+  },
+  {
+    label: "Statistics",
+    path: "/statistics",
+    roles: ["org_admin", "super_admin"],
+    icon: <BarChart3 />,
   },
   {
     label: "My Organization",

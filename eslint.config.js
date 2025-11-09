@@ -8,7 +8,7 @@ import prettierPlugin from "eslint-plugin-prettier";
 import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
-  globalIgnores(["dist", "src/components/ui/**"]),
+  globalIgnores(["dist", "src/components/ui/**", "src/graphql/generated/**"]),
   {
     files: ["**/*.{ts,tsx,js,jsx}"],
     extends: [

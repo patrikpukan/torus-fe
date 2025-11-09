@@ -4,45 +4,55 @@ import { type CalendarEvent } from "@schedule-x/calendar";
 import "@schedule-x/theme-default/dist/index.css";
 import "temporal-polyfill/global";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import {
   useCalendarEvents,
   type CalendarEventItem,
 } from "./api/useCalendarEvents";
 import {
-  CalendarEventList,
-  MeetingEventList,
-  PendingMeetingConfirmations,
   CustomCalendar,
   CreateEventModal,
   EditEventModal,
   DeleteEventModal,
 } from "./components";
+import { CalendarPlus, CalendarSync } from "lucide-react";
 
 // Convert calendar events from GraphQL to ScheduleX format
 const convertToScheduleXEvents = (
-  calendarEvents: CalendarEventItem[] | undefined
+  calendarOccurrences:
+    | Array<{
+        id: string;
+        occurrenceStart: string;
+        occurrenceEnd: string;
+        originalEvent: CalendarEventItem;
+      }>
+    | undefined
 ): CalendarEvent[] => {
-  if (!calendarEvents) return [];
+  if (!calendarOccurrences) return [];
 
-  return calendarEvents
-
-    .filter((event) => !event.deletedAt) // Skip soft-deleted events
-    .map((event) => {
+  return calendarOccurrences
+    .filter((occ) => !occ.originalEvent.deletedAt) // Skip soft-deleted events
+    .map((occ) => {
       const tz = Temporal.Now.zonedDateTimeISO().timeZoneId;
 
-      // Convert backend ISO (UTC) to the user's timezone
+      // Convert backend ISO (UTC) to the user's timezone using occurrence times
       const startZdt = Temporal.Instant.from(
-        event.startDateTime
+        occ.occurrenceStart
       ).toZonedDateTimeISO(tz);
       const endZdt = Temporal.Instant.from(
-        event.endDateTime
+        occ.occurrenceEnd
       ).toZonedDateTimeISO(tz);
 
+      // Generate unique ID for each occurrence by combining event ID and occurrence start time
+      // The backend now provides unique IDs for each occurrence, so we use it directly
+      const uniqueId = occ.id;
+
       return {
-        id: event.id,
-        title: event.title || "Untitled",
-        calendarId: event.type === "availability" ? "available" : "unavailable",
+        id: uniqueId,
+        title: occ.originalEvent.title || "Untitled",
+        calendarId:
+          occ.originalEvent.type === "availability"
+            ? "available"
+            : "unavailable",
         start: startZdt,
         end: endZdt,
       };
@@ -53,10 +63,17 @@ const ProfileCalendar = () => {
   const [createEventModalOpen, setCreateEventModalOpen] = useState(false);
   const [editEventModalOpen, setEditEventModalOpen] = useState(false);
   const [deleteEventModalOpen, setDeleteEventModalOpen] = useState(false);
+  type Occurrence = {
+    id: string;
+    occurrenceStart: string;
+    occurrenceEnd: string;
+    originalEvent: CalendarEventItem;
+  };
+
   const [selectedEventForEdit, setSelectedEventForEdit] =
-    useState<CalendarEventItem | null>(null);
+    useState<Occurrence | null>(null);
   const [selectedEventForDelete, setSelectedEventForDelete] =
-    useState<CalendarEventItem | null>(null);
+    useState<Occurrence | null>(null);
 
   // Get date range for current week + 2 weeks ahead (to show upcoming events)
   const today = Temporal.Now.plainDateISO();
@@ -72,31 +89,36 @@ const ProfileCalendar = () => {
 
   // Convert real calendar events to ScheduleX format
   const scheduleXEvents = useMemo(
-    () => convertToScheduleXEvents(calendarData?.calendarEventsByDateRange),
+    () => convertToScheduleXEvents(calendarData?.expandedCalendarOccurrences),
     [calendarData]
   );
 
-  // Map from ScheduleX event ID to CalendarEventItem for edit/delete operations
+  // Map from unique occurrence ID to the occurrence object for edit/delete operations
   const eventItemsMap = useMemo(() => {
-    const map = new Map<string, CalendarEventItem>();
-    calendarData?.calendarEventsByDateRange.forEach((item) => {
-      map.set(item.id, item);
+    const map = new Map<string, Occurrence>();
+    calendarData?.expandedCalendarOccurrences.forEach((occ) => {
+      map.set(occ.id, {
+        id: occ.id,
+        occurrenceStart: occ.occurrenceStart,
+        occurrenceEnd: occ.occurrenceEnd,
+        originalEvent: occ.originalEvent,
+      });
     });
     return map;
   }, [calendarData]);
 
   const handleEditEvent = (event: CalendarEvent) => {
-    const eventItem = eventItemsMap.get(String(event.id));
-    if (eventItem) {
-      setSelectedEventForEdit(eventItem);
+    const occ = eventItemsMap.get(String(event.id));
+    if (occ) {
+      setSelectedEventForEdit(occ);
       setEditEventModalOpen(true);
     }
   };
 
   const handleDeleteEvent = (event: CalendarEvent) => {
-    const eventItem = eventItemsMap.get(String(event.id));
-    if (eventItem) {
-      setSelectedEventForDelete(eventItem);
+    const occ = eventItemsMap.get(String(event.id));
+    if (occ) {
+      setSelectedEventForDelete(occ);
       setDeleteEventModalOpen(true);
     }
   };
@@ -108,19 +130,16 @@ const ProfileCalendar = () => {
 
   return (
     <div>
-      <h1 className="mb-6 text-3xl font-semibold">Calendar</h1>
-
-      {/* <div className="grid grid-cols-3 gap-4 mb-6">
-        <Card className="p-4">
-          <PendingMeetingConfirmations />
-        </Card>
-        <Card className="p-4">
-          <CalendarEventList startDate={startDate} endDate={endDate} />
-        </Card>
-        <Card className="p-4">
-          <MeetingEventList />
-        </Card>
-      </div> */}
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-3xl font-semibold">Calendar</h1>
+        <Button
+          className="h-auto rounded-xl bg-muted-foreground py-2 font-semibold hover:bg-muted-foreground/90"
+          onClick={() => setCreateEventModalOpen(true)}
+        >
+          <CalendarPlus className="mr-2 h-4 w-4" />
+          Add event
+        </Button>
+      </div>
 
       <div className="grid grid-cols-1 gap-4 mb-6">
         <CustomCalendar
@@ -132,16 +151,11 @@ const ProfileCalendar = () => {
 
       <div className="flex flex-col items-center gap-4">
         <Button
-          className="h-auto w-80 rounded-xl bg-muted-foreground py-2 font-semibold hover:bg-muted-foreground/90"
-          onClick={() => setCreateEventModalOpen(true)}
-        >
-          Add event
-        </Button>
-        <Button
           className="h-auto w-80 rounded-xl py-2"
           variant="outline"
           onClick={handleSyncGoogle}
         >
+          <CalendarSync className="mr-2 h-4 w-4" />
           Sync with google calendar
         </Button>
       </div>

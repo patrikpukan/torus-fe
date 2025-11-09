@@ -17,31 +17,49 @@ export type CalendarEventItem = {
 };
 
 export type CalendarEventsQueryData = {
-  calendarEventsByDateRange: CalendarEventItem[];
+  expandedCalendarOccurrences: Array<{
+    id: string;
+    occurrenceStart: string;
+    occurrenceEnd: string;
+    originalEvent: CalendarEventItem;
+  }>;
 };
 
 export const CALENDAR_EVENTS_QUERY = graphql(`
   query GetCalendarEvents($startDate: DateTime!, $endDate: DateTime!) {
-    calendarEventsByDateRange(startDate: $startDate, endDate: $endDate) {
+    expandedCalendarOccurrences(startDate: $startDate, endDate: $endDate) {
       id
-      title
-      description
-      type
-      startDateTime
-      endDateTime
-      rrule
-      exceptionDates
-      exceptionRrules
-      createdAt
-      updatedAt
-      deletedAt
+      occurrenceStart
+      occurrenceEnd
+      originalEvent {
+        id
+        title
+        description
+        type
+        startDateTime
+        endDateTime
+        rrule
+        exceptionDates
+        exceptionRrules
+        createdAt
+        updatedAt
+        deletedAt
+      }
     }
   }
 `);
 
 export const UPDATE_CALENDAR_EVENT = graphql(`
-  mutation UpdateCalendarEvent($input: UpdateCalendarEventInput!) {
-    updateCalendarEvent(input: $input) {
+  mutation UpdateCalendarEvent(
+    $input: UpdateCalendarEventInput!
+    $scope: String
+    $occurrenceStart: DateTime
+  ) {
+    updateCalendarEvent(
+      input: $input
+      scope: $scope
+      occurrenceStart: $occurrenceStart
+    ) {
       id
       title
       description

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { GraphQLClient, RequestOptions } from "graphql-request";
 import gql from "graphql-tag";
 export type Maybe<T> = T | null;
@@ -33,7 +31,7 @@ export type Scalars = {
   /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
   DateTime: { input: string; output: string };
   /** The `Upload` scalar type represents a file upload. */
-  Upload: { input: any; output: any };
+  Upload: { input: File; output: File };
 };
 
 export type AlgorithmSettings = {
@@ -57,6 +55,22 @@ export type AlgorithmSettingsResponse = {
   warning: Maybe<Scalars["String"]["output"]>;
 };
 
+export type CreateInviteCodeInputType = {
+  /** Optional: hours until code expires (default: 30 days if not set) */
+  expiresInHours?: InputMaybe<Scalars["Float"]["input"]>;
+  /** Optional: max uses for this code */
+  maxUses?: InputMaybe<Scalars["Float"]["input"]>;
+};
+
+export type CreateInviteCodeResponseType = {
+  __typename?: "CreateInviteCodeResponseType";
+  code: Scalars["String"]["output"];
+  expiresAt: Maybe<Scalars["DateTime"]["output"]>;
+  inviteUrl: Scalars["String"]["output"];
+  message: Scalars["String"]["output"];
+  success: Scalars["Boolean"]["output"];
+};
+
 export type CurrentUser = {
   __typename?: "CurrentUser";
   about: Maybe<Scalars["String"]["output"]>;
@@ -67,13 +81,38 @@ export type CurrentUser = {
   interests: Maybe<Scalars["String"]["output"]>;
   isActive: Scalars["Boolean"]["output"];
   lastName: Maybe<Scalars["String"]["output"]>;
-  organization: Organization;
+  organization: SimpleOrganizationType;
   organizationId: Scalars["ID"]["output"];
   preferredActivity: Maybe<Scalars["String"]["output"]>;
   profileImageUrl: Maybe<Scalars["String"]["output"]>;
   profileStatus: ProfileStatusEnum;
   role: UserRoleEnum;
   supabaseUserId: Maybe<Scalars["String"]["output"]>;
+};
+
+export type InviteCodeType = {
+  __typename?: "InviteCodeType";
+  code: Scalars["String"]["output"];
+  createdAt: Scalars["DateTime"]["output"];
+  createdBy: Maybe<User>;
+  createdById: Scalars["String"]["output"];
+  expiresAt: Maybe<Scalars["DateTime"]["output"]>;
+  id: Scalars["ID"]["output"];
+  inviteUrl: Scalars["String"]["output"];
+  isActive: Scalars["Boolean"]["output"];
+  maxUses: Maybe<Scalars["Float"]["output"]>;
+  organizationId: Scalars["String"]["output"];
+  usedCount: Scalars["Float"]["output"];
+};
+
+export type InviteCodeValidationResponseType = {
+  __typename?: "InviteCodeValidationResponseType";
+  expiresAt: Maybe<Scalars["DateTime"]["output"]>;
+  isValid: Scalars["Boolean"]["output"];
+  message: Scalars["String"]["output"];
+  organizationId: Maybe<Scalars["String"]["output"]>;
+  organizationName: Maybe<Scalars["String"]["output"]>;
+  remainingUses: Maybe<Scalars["Float"]["output"]>;
 };
 
 export type InviteUserInputType = {
@@ -90,6 +129,7 @@ export type InviteUserResponseType = {
 
 export type Mutation = {
   __typename?: "Mutation";
+  createInviteCode: CreateInviteCodeResponseType;
   deleteUser: User;
   executePairingAlgorithm: PairingExecutionResult;
   inviteUserToOrganization: InviteUserResponseType;
@@ -99,6 +139,10 @@ export type Mutation = {
   updateCurrentUserProfile: CurrentUser;
   updateOrganization: OrganizationType;
   updateUser: User;
+};
+
+export type MutationCreateInviteCodeArgs = {
+  input: InputMaybe<CreateInviteCodeInputType>;
 };
 
 export type MutationDeleteUserArgs = {
@@ -137,14 +181,6 @@ export type MutationUpdateUserArgs = {
   data: UpdateUserInputType;
 };
 
-export type Organization = {
-  __typename?: "Organization";
-  code: Scalars["String"]["output"];
-  id: Scalars["ID"]["output"];
-  imageUrl: Maybe<Scalars["String"]["output"]>;
-  name: Scalars["String"]["output"];
-};
-
 export type OrganizationType = {
   __typename?: "OrganizationType";
   address: Maybe<Scalars["String"]["output"]>;
@@ -176,6 +212,15 @@ export type PairingHistory = {
   userBId: Scalars["ID"]["output"];
 };
 
+export type PairingStatusByUserType = {
+  __typename?: "PairingStatusByUserType";
+  count: Scalars["Int"]["output"];
+  status: Scalars["String"]["output"];
+  userEmail: Scalars["String"]["output"];
+  userId: Scalars["ID"]["output"];
+  userName: Maybe<Scalars["String"]["output"]>;
+};
+
 /** Pairing status */
 export type PairingStatusEnum =
   | "cancelled"
@@ -184,6 +229,12 @@ export type PairingStatusEnum =
   | "not_met"
   | "planned";
 
+export type PairingStatusOverviewType = {
+  __typename?: "PairingStatusOverviewType";
+  count: Scalars["Int"]["output"];
+  status: Scalars["String"]["output"];
+};
+
 /** Profile onboarding status */
 export type ProfileStatusEnum = "active" | "pending" | "suspended";
 
@@ -191,14 +242,16 @@ export type Query = {
   __typename?: "Query";
   getAlgorithmSettings: AlgorithmSettings;
   getCurrentUser: Maybe<CurrentUser>;
+  getOrganizationInvites: Array<InviteCodeType>;
   getPairedUsers: Array<User>;
   getPairingHistory: Array<PairingHistory>;
   myOrganization: Maybe<OrganizationType>;
   organizationById: Maybe<OrganizationType>;
   organizations: Array<OrganizationType>;
-  user: Maybe<User>;
+  statistics: StatisticsResponseType;
   userById: Maybe<User>;
   users: Array<User>;
+  validateInviteCode: InviteCodeValidationResponseType;
 };
 
 export type QueryGetAlgorithmSettingsArgs = {
@@ -209,8 +262,16 @@ export type QueryOrganizationByIdArgs = {
   id: Scalars["ID"]["input"];
 };
 
+export type QueryStatisticsArgs = {
+  filter: InputMaybe<StatisticsFilterInputType>;
+};
+
 export type QueryUserByIdArgs = {
   id: Scalars["ID"]["input"];
+};
+
+export type QueryValidateInviteCodeArgs = {
+  code: Scalars["String"]["input"];
 };
 
 export type RegisterOrganizationInputType = {
@@ -230,9 +291,36 @@ export type RegisterOrganizationResponseType = {
 export type SignUpInputType = {
   email: Scalars["String"]["input"];
   firstName?: InputMaybe<Scalars["String"]["input"]>;
+  /** Optional invite code for organization assignment */
+  inviteCode?: InputMaybe<Scalars["String"]["input"]>;
   lastName?: InputMaybe<Scalars["String"]["input"]>;
   password: Scalars["String"]["input"];
   profilePicture?: InputMaybe<Scalars["Upload"]["input"]>;
+};
+
+export type SimpleOrganizationType = {
+  __typename?: "SimpleOrganizationType";
+  code: Scalars["String"]["output"];
+  id: Scalars["ID"]["output"];
+  imageUrl: Maybe<Scalars["String"]["output"]>;
+  name: Scalars["String"]["output"];
+};
+
+export type StatisticsFilterInputType = {
+  endDate?: InputMaybe<Scalars["String"]["input"]>;
+  month?: InputMaybe<Scalars["Int"]["input"]>;
+  organizationId?: InputMaybe<Scalars["String"]["input"]>;
+  startDate?: InputMaybe<Scalars["String"]["input"]>;
+  year?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+export type StatisticsResponseType = {
+  __typename?: "StatisticsResponseType";
+  inactiveUsersCount: Scalars["Int"]["output"];
+  newUsersCount: Scalars["Int"]["output"];
+  pairingsByStatus: Array<PairingStatusOverviewType>;
+  pairingsByStatusAndUser: Array<PairingStatusByUserType>;
+  reportsCount: Scalars["Int"]["output"];
 };
 
 export type UpdateAlgorithmSettingsInput = {
@@ -300,19 +388,74 @@ export type GetCurrentUserQuery = {
     lastName: string | null;
     about: string | null;
     hobbies: string | null;
-    preferredActivity: string | null;
     interests: string | null;
     profileImageUrl: string | null;
     profileStatus: ProfileStatusEnum;
     isActive: boolean;
     organization: {
-      __typename?: "Organization";
+      __typename?: "SimpleOrganizationType";
       id: string;
       name: string;
       code: string;
       imageUrl: string | null;
     };
   } | null;
+};
+
+export type CreateInviteCodeMutationVariables = Exact<{
+  input: InputMaybe<CreateInviteCodeInputType>;
+}>;
+
+export type CreateInviteCodeMutation = {
+  __typename?: "Mutation";
+  createInviteCode: {
+    __typename?: "CreateInviteCodeResponseType";
+    success: boolean;
+    message: string;
+    code: string;
+    inviteUrl: string;
+    expiresAt: string | null;
+  };
+};
+
+export type GetOrganizationInvitesQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type GetOrganizationInvitesQuery = {
+  __typename?: "Query";
+  getOrganizationInvites: Array<{
+    __typename?: "InviteCodeType";
+    id: string;
+    code: string;
+    createdAt: string;
+    expiresAt: string | null;
+    usedCount: number;
+    maxUses: number | null;
+    isActive: boolean;
+    inviteUrl: string;
+    createdBy: {
+      __typename?: "User";
+      id: string;
+      email: string;
+      firstName: string | null;
+      lastName: string | null;
+    } | null;
+  }>;
+};
+
+export type InviteUserToOrganizationMutationVariables = Exact<{
+  input: InviteUserInputType;
+}>;
+
+export type InviteUserToOrganizationMutation = {
+  __typename?: "Mutation";
+  inviteUserToOrganization: {
+    __typename?: "InviteUserResponseType";
+    success: boolean;
+    message: string;
+    userId: string | null;
+  };
 };
 
 export type MyOrganizationQueryVariables = Exact<{ [key: string]: never }>;
@@ -407,6 +550,22 @@ export type UpdateOrganizationMutation = {
     imageUrl: string | null;
     createdAt: string;
     updatedAt: string;
+  };
+};
+
+export type ValidateInviteCodeQueryVariables = Exact<{
+  code: Scalars["String"]["input"];
+}>;
+
+export type ValidateInviteCodeQuery = {
+  __typename?: "Query";
+  validateInviteCode: {
+    __typename?: "InviteCodeValidationResponseType";
+    isValid: boolean;
+    message: string;
+    organizationId: string | null;
+    organizationName: string | null;
+    remainingUses: number | null;
   };
 };
 
@@ -505,7 +664,6 @@ export type UpdateUserProfileMutation = {
     lastName: string | null;
     about: string | null;
     hobbies: string | null;
-    preferredActivity: string | null;
     interests: string | null;
     profileImageUrl: string | null;
     profileStatus: ProfileStatusEnum;
@@ -584,6 +742,46 @@ export const GetCurrentUserDocument = gql`
     }
   }
 `;
+export const CreateInviteCodeDocument = gql`
+  mutation CreateInviteCode($input: CreateInviteCodeInputType) {
+    createInviteCode(input: $input) {
+      success
+      message
+      code
+      inviteUrl
+      expiresAt
+    }
+  }
+`;
+export const GetOrganizationInvitesDocument = gql`
+  query GetOrganizationInvites {
+    getOrganizationInvites {
+      id
+      code
+      createdAt
+      expiresAt
+      usedCount
+      maxUses
+      isActive
+      createdBy {
+        id
+        email
+        firstName
+        lastName
+      }
+      inviteUrl
+    }
+  }
+`;
+export const InviteUserToOrganizationDocument = gql`
+  mutation InviteUserToOrganization($input: InviteUserInputType!) {
+    inviteUserToOrganization(input: $input) {
+      success
+      message
+      userId
+    }
+  }
+`;
 export const MyOrganizationDocument = gql`
   query MyOrganization {
     myOrganization {
@@ -657,6 +855,17 @@ export const UpdateOrganizationDocument = gql`
     }
   }
 `;
+export const ValidateInviteCodeDocument = gql`
+  query ValidateInviteCode($code: String!) {
+    validateInviteCode(code: $code) {
+      isValid
+      message
+      organizationId
+      organizationName
+      remainingUses
+    }
+  }
+`;
 export const GetAlgorithmSettingsDocument = gql`
   query GetAlgorithmSettings($organizationId: String!) {
     getAlgorithmSettings(organizationId: $organizationId) {
@@ -727,7 +936,6 @@ export const UpdateUserProfileDocument = gql`
       lastName
       about
       hobbies
-      preferredActivity
       interests
       profileImageUrl
       profileStatus
@@ -776,13 +984,16 @@ export type SdkFunctionWrapper = <T>(
   action: (requestHeaders?: Record<string, string>) => Promise<T>,
   operationName: string,
   operationType?: string,
-  variables?: any
+  variables?: Record<string, unknown>
 ) => Promise<T>;
 
 const defaultWrapper: SdkFunctionWrapper = (
   action,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _operationName,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _operationType,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _variables
 ) => action();
 
@@ -806,6 +1017,60 @@ export function getSdk(
           }),
         "GetCurrentUser",
         "query",
+        variables
+      );
+    },
+    CreateInviteCode(
+      variables?: CreateInviteCodeMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+      signal?: RequestInit["signal"]
+    ): Promise<CreateInviteCodeMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<CreateInviteCodeMutation>({
+            document: CreateInviteCodeDocument,
+            variables,
+            requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders },
+            signal,
+          }),
+        "CreateInviteCode",
+        "mutation",
+        variables
+      );
+    },
+    GetOrganizationInvites(
+      variables?: GetOrganizationInvitesQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+      signal?: RequestInit["signal"]
+    ): Promise<GetOrganizationInvitesQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetOrganizationInvitesQuery>({
+            document: GetOrganizationInvitesDocument,
+            variables,
+            requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders },
+            signal,
+          }),
+        "GetOrganizationInvites",
+        "query",
+        variables
+      );
+    },
+    InviteUserToOrganization(
+      variables: InviteUserToOrganizationMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+      signal?: RequestInit["signal"]
+    ): Promise<InviteUserToOrganizationMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<InviteUserToOrganizationMutation>({
+            document: InviteUserToOrganizationDocument,
+            variables,
+            requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders },
+            signal,
+          }),
+        "InviteUserToOrganization",
+        "mutation",
         variables
       );
     },
@@ -896,6 +1161,24 @@ export function getSdk(
           }),
         "UpdateOrganization",
         "mutation",
+        variables
+      );
+    },
+    ValidateInviteCode(
+      variables: ValidateInviteCodeQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+      signal?: RequestInit["signal"]
+    ): Promise<ValidateInviteCodeQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<ValidateInviteCodeQuery>({
+            document: ValidateInviteCodeDocument,
+            variables,
+            requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders },
+            signal,
+          }),
+        "ValidateInviteCode",
+        "query",
         variables
       );
     },

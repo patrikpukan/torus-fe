@@ -2,27 +2,28 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import HomePage from "../pages/home/HomePage";
-import LandingPage from "../pages/LandingPage";
-import LoginPage from "../pages/login/LoginPage";
-import ProfilePage from "../pages/profile/ProfilePage";
-import ProfileEditPage from "../pages/profile/ProfileEditPage";
-import PairingsRoute from "../pages/pairings/PairingsRoute";
-import RegisterOrgPage from "../pages/register-org/RegisterOrgPage";
-import RegisterPage from "../pages/register/RegisterPage";
-import ResetPasswordPage from "../pages/reset-password/ResetPasswordPage";
-import ConfirmResetPasswordPage from "../pages/reset-password/ConfirmResetPasswordPage";
-import AuthCallbackPage from "../pages/auth/AuthCallbackPage";
-import UserDetailPage from "../pages/user-list/UserDetailPage";
-import UserListPage from "../pages/user-list/UserListPage";
-import OrganizationListPage from "../pages/organization-list/OrganizationListPage";
-import OrganizationDetailPage from "../pages/organization-list/OrganizationDetailPage";
-import AccessDeniedPage from "../pages/AccessDeniedPage";
-import BaseLayout from "./layouts/BaseLayout";
 import { Toaster } from "@/components/ui/toaster";
 import { AlgorithmSettingsPage } from "@/features/pairing-algorithm/pages/AlgorithmSettingsPage";
 import InviteManagementPage from "@/pages/invite-management/InviteManagementPage";
+import StatisticsPage from "@/pages/statistics/StatisticsPage";
 import { ProtectedRoute } from "../components/ProtectedRoute";
+import AccessDeniedPage from "../pages/AccessDeniedPage";
+import AuthCallbackPage from "../pages/auth/AuthCallbackPage";
+import HomePage from "../pages/home/HomePage";
+import LandingPage from "../pages/LandingPage";
+import LoginPage from "../pages/login/LoginPage";
+import OrganizationDetailPage from "../pages/organization-list/OrganizationDetailPage";
+import OrganizationListPage from "../pages/organization-list/OrganizationListPage";
+import PairingsRoute from "../pages/pairings/PairingsRoute";
+import ProfileEditPage from "../pages/profile/ProfileEditPage";
+import ProfilePage from "../pages/profile/ProfilePage";
+import RegisterOrgPage from "../pages/register-org/RegisterOrgPage";
+import RegisterPage from "../pages/register/RegisterPage";
+import ConfirmResetPasswordPage from "../pages/reset-password/ConfirmResetPasswordPage";
+import ResetPasswordPage from "../pages/reset-password/ResetPasswordPage";
+import UserDetailPage from "../pages/user-list/UserDetailPage";
+import UserListPage from "../pages/user-list/UserListPage";
+import BaseLayout from "./layouts/BaseLayout";
 
 // Role shortcuts for route protection
 const AUTHENTICATED_ROLES = ["user", "org_admin", "super_admin"] as const;
@@ -150,6 +151,14 @@ const App = () => {
               element={
                 <ProtectedRoute allowedRoles={ADMIN_ROLES}>
                   <InviteManagementPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="statistics"
+              element={
+                <ProtectedRoute allowedRoles={ADMIN_ROLES}>
+                  <StatisticsPage />
                 </ProtectedRoute>
               }
             />

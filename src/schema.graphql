@@ -114,6 +114,19 @@ enum PairingStatusEnum {
   planned
 }
 
+type PairingStatusOverviewType {
+  count: Int!
+  status: String!
+}
+
+type PairingStatusByUserType {
+  count: Int!
+  status: String!
+  userEmail: String!
+  userId: ID!
+  userName: String
+}
+
 """
 Profile onboarding status
 """
@@ -131,6 +144,7 @@ type Query {
   myOrganization: OrganizationType
   organizationById(id: ID!): OrganizationType
   organizations: [OrganizationType!]!
+  statistics(filter: StatisticsFilterInputType): StatisticsResponseType!
   userById(id: ID!): User
   users: [User!]!
 }
@@ -140,6 +154,22 @@ input RegisterOrganizationInputType {
   organizationAddress: String!
   organizationName: String!
   organizationSize: String!
+}
+
+input StatisticsFilterInputType {
+  endDate: String
+  month: Int
+  organizationId: String
+  startDate: String
+  year: Int
+}
+
+type StatisticsResponseType {
+  inactiveUsersCount: Int!
+  newUsersCount: Int!
+  pairingsByStatus: [PairingStatusOverviewType!]!
+  pairingsByStatusAndUser: [PairingStatusByUserType!]!
+  reportsCount: Int!
 }
 
 type RegisterOrganizationResponseType {

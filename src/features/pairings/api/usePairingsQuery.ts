@@ -24,6 +24,8 @@ export const usePairingsQuery = () => {
       // Determine which user is the "contact" (not the current user)
       const isUserA = pairing.userAId === user.id;
       const contactUser = isUserA ? pairing.userB : pairing.userA;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const effectiveStatus = (pairing as any).derivedStatus || pairing.status;
 
       return {
         id: contactUser.id,
@@ -33,7 +35,7 @@ export const usePairingsQuery = () => {
           firstName: contactUser.firstName || "",
           lastName: contactUser.lastName || "",
           accountStatus: contactUser.profileStatus,
-          pairingStatus: pairing.status,
+          pairingStatus: effectiveStatus,
           about: "",
           hobbies: [],
           interests: "",
@@ -43,8 +45,8 @@ export const usePairingsQuery = () => {
         lastMessageAt: pairing.createdAt, // Will be updated when messages are implemented
         messages: [], // Will be populated when messages are implemented
         pairingId: pairing.id, // Store pairing ID for status reference
-        pairingStatus: pairing.status,
-        isCurrentlyMatched: pairing.status === "matched",
+        pairingStatus: effectiveStatus,
+        isCurrentlyMatched: effectiveStatus === "matched",
       } as PairingContact & {
         pairingId: string;
         pairingStatus: string;

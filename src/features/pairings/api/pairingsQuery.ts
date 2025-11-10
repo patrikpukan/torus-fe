@@ -4,7 +4,8 @@ export type PairingQueryItem = {
   id: string;
   userAId: string;
   userBId: string;
-  status: "planned" | "matched" | "met" | "not_met" | "cancelled";
+  status: "planned" | "matched" | "met" | "not_met" | "not_planned" | "unspecified" | "cancelled";
+  derivedStatus?: "planned" | "matched" | "met" | "not_met" | "not_planned" | "unspecified" | "cancelled";
   createdAt: string;
   userA: {
     id: string;
@@ -39,6 +40,7 @@ export const PAIRINGS_QUERY = graphql(`
       userAId
       userBId
       status
+      derivedStatus
       createdAt
       userA {
         id

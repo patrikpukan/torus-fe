@@ -1,155 +1,217 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Temporal } from "temporal-polyfill";
-import { ScheduleXCalendar } from "@schedule-x/react";
-import {
-  createCalendar,
-  createViewWeek,
-  type CalendarEvent,
-} from "@schedule-x/calendar";
+import { type CalendarEvent } from "@schedule-x/calendar";
 import "@schedule-x/theme-default/dist/index.css";
 import "temporal-polyfill/global";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import {
+  useCalendarEvents,
+  type CalendarEventItem,
+} from "./api/useCalendarEvents";
+import {
+  CustomCalendar,
+  CreateEventModal,
+  EditEventModal,
+  DeleteEventModal,
+} from "./components";
+import { CalendarPlus, CalendarSync } from "lucide-react";
+import { useMeetingEvents } from "./api/useMeetingEvents";
 
-const normalizeLocale = (l?: string): string => {
-  if (!l) return "en-US";
-  const lower = l.toLowerCase();
-  if (/^[a-z]{2}$/.test(lower)) {
-    if (lower === "en") return "en-US";
-    return `${lower}-${lower.toUpperCase()}`;
-  }
-  return l;
-};
+// Convert calendar events from GraphQL to ScheduleX format
+const convertToScheduleXEvents = (
+  calendarOccurrences:
+    | Array<{
+        id: string;
+        occurrenceStart: string;
+        occurrenceEnd: string;
+        originalEvent: CalendarEventItem;
+      }>
+    | undefined
+): CalendarEvent[] => {
+  if (!calendarOccurrences) return [];
 
-const makeDemoEvents = (): CalendarEvent[] => {
-  const today = Temporal.Now.plainDateISO();
-  const monday = today.subtract({ days: (today.dayOfWeek + 6) % 7 });
-  const tz = Temporal.Now.zonedDateTimeISO().timeZoneId;
+  return calendarOccurrences
+    .filter((occ) => !occ.originalEvent.deletedAt) // Skip soft-deleted events
+    .map((occ) => {
+      const tz = Temporal.Now.zonedDateTimeISO().timeZoneId;
 
-  const day = (offset: number, startHour: number, durationHours: number) => {
-    const date = monday.add({ days: offset });
-    const start = date
-      .toPlainDateTime({ hour: startHour, minute: 0 })
-      .toZonedDateTime(tz);
-    const end = start.add({ hours: durationHours });
-    return { start, end };
-  };
+      // Convert backend ISO (UTC) to the user's timezone using occurrence times
+      const startZdt = Temporal.Instant.from(
+        occ.occurrenceStart
+      ).toZonedDateTimeISO(tz);
+      const endZdt = Temporal.Instant.from(
+        occ.occurrenceEnd
+      ).toZonedDateTimeISO(tz);
 
-  return [
-    // Available (green)
-    {
-      id: "a-1",
-      title: "Available",
-      calendarId: "available",
-      ...day(0, 9, 2),
-    },
-    {
-      id: "a-2",
-      title: "Available",
-      calendarId: "available",
-      ...day(1, 13, 2),
-    },
-    // Unavailable (red)
-    {
-      id: "u-1",
-      title: "Unavailable",
-      calendarId: "unavailable",
-      ...day(2, 10, 1),
-    },
-    {
-      id: "u-2",
-      title: "Unavailable",
-      calendarId: "unavailable",
-      ...day(4, 14, 2),
-    },
-  ];
+      // Generate unique ID for each occurrence by combining event ID and occurrence start time
+      // The backend now provides unique IDs for each occurrence, so we use it directly
+      const uniqueId = occ.id;
+
+      return {
+        id: uniqueId,
+        title: occ.originalEvent.title || "Untitled",
+        calendarId:
+          occ.originalEvent.type === "availability"
+            ? "available"
+            : "unavailable",
+        start: startZdt,
+        end: endZdt,
+      };
+    });
 };
 
 const ProfileCalendar = () => {
-  const calendar = useMemo(
-    () =>
-      createCalendar({
-        views: [createViewWeek()],
-        defaultView: "week",
-        calendars: {
-          available: {
-            colorName: "available",
-            lightColors: {
-              main: "#16a34a",
-              container: "#dcfce7",
-              onContainer: "#052e16",
-            },
-          },
-          unavailable: {
-            colorName: "unavailable",
-            lightColors: {
-              main: "#dc2626",
-              container: "#fee2e2",
-              onContainer: "#450a0a",
-            },
-          },
-        },
-        events: makeDemoEvents(),
-        // Quality of life
-        locale: normalizeLocale(navigator.language),
-        weekOptions: { gridHeight: 720 },
-      }),
-    []
+  const [createEventModalOpen, setCreateEventModalOpen] = useState(false);
+  const [editEventModalOpen, setEditEventModalOpen] = useState(false);
+  const [deleteEventModalOpen, setDeleteEventModalOpen] = useState(false);
+  type Occurrence = {
+    id: string;
+    occurrenceStart: string;
+    occurrenceEnd: string;
+    originalEvent: CalendarEventItem;
+  };
+
+  const [selectedEventForEdit, setSelectedEventForEdit] =
+    useState<Occurrence | null>(null);
+  const [selectedEventForDelete, setSelectedEventForDelete] =
+    useState<Occurrence | null>(null);
+
+  // Get date range for current week + 2 weeks ahead (to show upcoming events)
+  const today = Temporal.Now.plainDateISO();
+  const startOfWeek = today.subtract({ days: (today.dayOfWeek + 6) % 7 });
+  const endOfWeek = startOfWeek.add({ days: 20 }); // Show 3 weeks ahead
+
+  // Convert to ISO strings for API
+  const startDate = startOfWeek.toString() + "T00:00:00Z";
+  const endDate = endOfWeek.toString() + "T23:59:59Z";
+
+  // Fetch calendar events
+  const { data: calendarData } = useCalendarEvents(startDate, endDate);
+  const { data: meetingsData } = useMeetingEvents(startDate, endDate);
+
+  // Convert real calendar events to ScheduleX format
+  const scheduleXEvents = useMemo(
+    () => convertToScheduleXEvents(calendarData?.expandedCalendarOccurrences),
+    [calendarData]
   );
 
-  const handleAddEvent = () => {
-    // Add a quick 1-hour available slot starting at the next full hour (local timezone)
-    const base = Temporal.Now.zonedDateTimeISO();
-    const nextHour = base
-      .with({
-        minute: 0,
-        second: 0,
-        millisecond: 0,
-        microsecond: 0,
-        nanosecond: 0,
-      })
-      .add({ hours: 1 });
-    calendar.events.add({
-      id: String(Date.now()),
-      title: "Available",
-      calendarId: "available",
-      start: nextHour,
-      end: nextHour.add({ hours: 1 }),
+  // Convert confirmed meetings to yellow ScheduleX events
+  const scheduleXMeetingEvents = useMemo(() => {
+    const items = meetingsData?.meetingEventsByDateRange ?? [];
+    const tz = Temporal.Now.zonedDateTimeISO().timeZoneId;
+    return items
+      .filter(
+        (m) =>
+          !m.cancelledAt &&
+          String(m.userAConfirmationStatus) === "confirmed" &&
+          String(m.userBConfirmationStatus) === "confirmed"
+      )
+      .map((m) => {
+        const start = Temporal.Instant.from(m.startDateTime).toZonedDateTimeISO(
+          tz
+        );
+        const end = Temporal.Instant.from(m.endDateTime).toZonedDateTimeISO(tz);
+        return {
+          id: `meeting-${m.id}`,
+          title: "Meeting",
+          calendarId: "meeting",
+          start,
+          end,
+        } as CalendarEvent;
+      });
+  }, [meetingsData]);
+
+  // Map from unique occurrence ID to the occurrence object for edit/delete operations
+  const eventItemsMap = useMemo(() => {
+    const map = new Map<string, Occurrence>();
+    calendarData?.expandedCalendarOccurrences.forEach((occ) => {
+      map.set(occ.id, {
+        id: occ.id,
+        occurrenceStart: occ.occurrenceStart,
+        occurrenceEnd: occ.occurrenceEnd,
+        originalEvent: occ.originalEvent,
+      });
     });
+    return map;
+  }, [calendarData]);
+
+  const handleEditEvent = (event: CalendarEvent) => {
+    const occ = eventItemsMap.get(String(event.id));
+    if (occ) {
+      setSelectedEventForEdit(occ);
+      setEditEventModalOpen(true);
+    }
+  };
+
+  const handleDeleteEvent = (event: CalendarEvent) => {
+    const occ = eventItemsMap.get(String(event.id));
+    if (occ) {
+      setSelectedEventForDelete(occ);
+      setDeleteEventModalOpen(true);
+    }
   };
 
   const handleSyncGoogle = () => {
     // Placeholder for future implementation
-    // Could trigger OAuth flow and import events from Google Calendar
-    // For now, we just log to the console
     console.log("Sync with Google Calendar clicked");
   };
+  console.log([...scheduleXEvents, ...scheduleXMeetingEvents]);
 
   return (
     <div>
-      <h1 className="mb-6 text-3xl font-semibold">Calendar</h1>
-
-      <Card className="p-4">
-        <ScheduleXCalendar calendarApp={calendar} />
-      </Card>
-
-      <div className="mt-10 flex flex-col items-center gap-4">
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-3xl font-semibold">Calendar</h1>
         <Button
-          className="h-auto w-80 rounded-xl bg-muted-foreground py-4 text-lg font-semibold hover:bg-muted-foreground/90"
-          size="lg"
-          onClick={handleAddEvent}
+          className="h-auto rounded-xl bg-muted-foreground py-2 font-semibold hover:bg-muted-foreground/90"
+          onClick={() => setCreateEventModalOpen(true)}
         >
+          <CalendarPlus className="mr-2 h-4 w-4" />
           Add event
         </Button>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 mb-6">
+        <CustomCalendar
+          events={[...scheduleXEvents, ...scheduleXMeetingEvents]}
+          onEditEvent={handleEditEvent}
+          onDeleteEvent={handleDeleteEvent}
+          isEditVisible={(ev) => ev.calendarId !== "meeting"}
+          isDeleteVisible={(ev) => ev.calendarId !== "meeting"}
+        />
+      </div>
+
+      <div className="flex flex-col items-center gap-4">
         <Button
-          className="h-auto w-80 rounded-xl py-4 text-lg"
-          size="lg"
+          className="h-auto w-80 rounded-xl py-2"
           variant="outline"
           onClick={handleSyncGoogle}
         >
+          <CalendarSync className="mr-2 h-4 w-4" />
           Sync with google calendar
         </Button>
       </div>
+
+      {/* Modals */}
+      <CreateEventModal
+        open={createEventModalOpen}
+        onOpenChange={setCreateEventModalOpen}
+        startDate={startDate}
+        endDate={endDate}
+      />
+      <EditEventModal
+        open={editEventModalOpen}
+        event={selectedEventForEdit}
+        onOpenChange={setEditEventModalOpen}
+        startDate={startDate}
+        endDate={endDate}
+      />
+      <DeleteEventModal
+        open={deleteEventModalOpen}
+        event={selectedEventForDelete}
+        onOpenChange={setDeleteEventModalOpen}
+        startDate={startDate}
+        endDate={endDate}
+      />
     </div>
   );
 };

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { GraphQLClient, RequestOptions } from "graphql-request";
 import gql from "graphql-tag";
 export type Maybe<T> = T | null;
@@ -391,7 +393,6 @@ export type Query = {
   getAlgorithmSettings: AlgorithmSettings;
   getCurrentUser: Maybe<CurrentUser>;
   getOrganizationInvites: Array<InviteCodeType>;
-  getOrganizationInvites: Array<InviteCodeType>;
   getPairedUsers: Array<User>;
   getPairingHistory: Array<PairingHistory>;
   latestMeetingForPairing: Maybe<MeetingEvent>;
@@ -482,31 +483,6 @@ export type SignUpInputType = {
   lastName?: InputMaybe<Scalars["String"]["input"]>;
   password: Scalars["String"]["input"];
   profilePicture?: InputMaybe<Scalars["Upload"]["input"]>;
-};
-
-export type SimpleOrganizationType = {
-  __typename?: "SimpleOrganizationType";
-  code: Scalars["String"]["output"];
-  id: Scalars["ID"]["output"];
-  imageUrl: Maybe<Scalars["String"]["output"]>;
-  name: Scalars["String"]["output"];
-};
-
-export type StatisticsFilterInputType = {
-  endDate?: InputMaybe<Scalars["String"]["input"]>;
-  month?: InputMaybe<Scalars["Int"]["input"]>;
-  organizationId?: InputMaybe<Scalars["String"]["input"]>;
-  startDate?: InputMaybe<Scalars["String"]["input"]>;
-  year?: InputMaybe<Scalars["Int"]["input"]>;
-};
-
-export type StatisticsResponseType = {
-  __typename?: "StatisticsResponseType";
-  inactiveUsersCount: Scalars["Int"]["output"];
-  newUsersCount: Scalars["Int"]["output"];
-  pairingsByStatus: Array<PairingStatusOverviewType>;
-  pairingsByStatusAndUser: Array<PairingStatusByUserType>;
-  reportsCount: Scalars["Int"]["output"];
 };
 
 export type SimpleOrganizationType = {
@@ -833,6 +809,87 @@ export type CreateMeetingMutation = {
   };
 };
 
+export type LatestMeetingForPairingQueryVariables = Exact<{
+  pairingId: Scalars["ID"]["input"];
+}>;
+
+export type LatestMeetingForPairingQuery = {
+  __typename?: "Query";
+  latestMeetingForPairing: {
+    __typename?: "MeetingEvent";
+    id: string;
+    startDateTime: string;
+    endDateTime: string;
+    userAId: string;
+    userBId: string;
+    userAConfirmationStatus: MeetingConfirmationStatus;
+    userBConfirmationStatus: MeetingConfirmationStatus;
+    userAProposedStartDateTime: string | null;
+    userAProposedEndDateTime: string | null;
+    userBProposedStartDateTime: string | null;
+    userBProposedEndDateTime: string | null;
+    userANote: string | null;
+    userBNote: string | null;
+    pairingId: string | null;
+    createdAt: string;
+    cancelledAt: string | null;
+    createdByUserId: string;
+  } | null;
+};
+
+export type ProposeMeetingTimeMutationVariables = Exact<{
+  input: UpdateMeetingEventConfirmationInput;
+}>;
+
+export type ProposeMeetingTimeMutation = {
+  __typename?: "Mutation";
+  proposeMeetingTime: {
+    __typename?: "MeetingEvent";
+    id: string;
+    userAConfirmationStatus: MeetingConfirmationStatus;
+    userBConfirmationStatus: MeetingConfirmationStatus;
+    userAProposedStartDateTime: string | null;
+    userAProposedEndDateTime: string | null;
+    userBProposedStartDateTime: string | null;
+    userBProposedEndDateTime: string | null;
+    userANote: string | null;
+    userBNote: string | null;
+  };
+};
+
+export type UpdateMeetingToProposedTimeMutationVariables = Exact<{
+  meetingId: Scalars["ID"]["input"];
+}>;
+
+export type UpdateMeetingToProposedTimeMutation = {
+  __typename?: "Mutation";
+  updateMeetingToProposedTime: {
+    __typename?: "MeetingEvent";
+    id: string;
+    startDateTime: string;
+    endDateTime: string;
+    userAConfirmationStatus: MeetingConfirmationStatus;
+    userBConfirmationStatus: MeetingConfirmationStatus;
+    userAProposedStartDateTime: string | null;
+    userAProposedEndDateTime: string | null;
+    userBProposedStartDateTime: string | null;
+    userBProposedEndDateTime: string | null;
+  };
+};
+
+export type CancelMeetingMutationVariables = Exact<{
+  input: CancelMeetingEventInput;
+}>;
+
+export type CancelMeetingMutation = {
+  __typename?: "Mutation";
+  cancelMeeting: {
+    __typename?: "MeetingEvent";
+    id: string;
+    cancelledAt: string | null;
+  };
+};
+
 export type GetCalendarEventsForUserQueryVariables = Exact<{
   userId: Scalars["ID"]["input"];
   startDate: Scalars["DateTime"]["input"];
@@ -1134,6 +1191,33 @@ export type UpdateUserProfileMutation = {
   };
 };
 
+export type StatisticsQueryVariables = Exact<{
+  filter: InputMaybe<StatisticsFilterInputType>;
+}>;
+
+export type StatisticsQuery = {
+  __typename?: "Query";
+  statistics: {
+    __typename?: "StatisticsResponseType";
+    newUsersCount: number;
+    inactiveUsersCount: number;
+    reportsCount: number;
+    pairingsByStatus: Array<{
+      __typename?: "PairingStatusOverviewType";
+      status: string;
+      count: number;
+    }>;
+    pairingsByStatusAndUser: Array<{
+      __typename?: "PairingStatusByUserType";
+      userId: string;
+      userEmail: string;
+      userName: string | null;
+      status: string;
+      count: number;
+    }>;
+  };
+};
+
 export type GetPairedUsersQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetPairedUsersQuery = {
@@ -1363,6 +1447,67 @@ export const CreateMeetingDocument = gql`
       pairingId
       createdAt
       createdByUserId
+    }
+  }
+`;
+export const LatestMeetingForPairingDocument = gql`
+  query LatestMeetingForPairing($pairingId: ID!) {
+    latestMeetingForPairing(pairingId: $pairingId) {
+      id
+      startDateTime
+      endDateTime
+      userAId
+      userBId
+      userAConfirmationStatus
+      userBConfirmationStatus
+      userAProposedStartDateTime
+      userAProposedEndDateTime
+      userBProposedStartDateTime
+      userBProposedEndDateTime
+      userANote
+      userBNote
+      pairingId
+      createdAt
+      cancelledAt
+      createdByUserId
+    }
+  }
+`;
+export const ProposeMeetingTimeDocument = gql`
+  mutation ProposeMeetingTime($input: UpdateMeetingEventConfirmationInput!) {
+    proposeMeetingTime(input: $input) {
+      id
+      userAConfirmationStatus
+      userBConfirmationStatus
+      userAProposedStartDateTime
+      userAProposedEndDateTime
+      userBProposedStartDateTime
+      userBProposedEndDateTime
+      userANote
+      userBNote
+    }
+  }
+`;
+export const UpdateMeetingToProposedTimeDocument = gql`
+  mutation UpdateMeetingToProposedTime($meetingId: ID!) {
+    updateMeetingToProposedTime(meetingId: $meetingId) {
+      id
+      startDateTime
+      endDateTime
+      userAConfirmationStatus
+      userBConfirmationStatus
+      userAProposedStartDateTime
+      userAProposedEndDateTime
+      userBProposedStartDateTime
+      userBProposedEndDateTime
+    }
+  }
+`;
+export const CancelMeetingDocument = gql`
+  mutation CancelMeeting($input: CancelMeetingEventInput!) {
+    cancelMeeting(input: $input) {
+      id
+      cancelledAt
     }
   }
 `;
@@ -1599,6 +1744,26 @@ export const UpdateUserProfileDocument = gql`
     }
   }
 `;
+export const StatisticsDocument = gql`
+  query Statistics($filter: StatisticsFilterInputType) {
+    statistics(filter: $filter) {
+      newUsersCount
+      inactiveUsersCount
+      reportsCount
+      pairingsByStatus {
+        status
+        count
+      }
+      pairingsByStatusAndUser {
+        userId
+        userEmail
+        userName
+        status
+        count
+      }
+    }
+  }
+`;
 export const GetPairedUsersDocument = gql`
   query GetPairedUsers {
     getPairedUsers {
@@ -1831,6 +1996,78 @@ export function getSdk(
             signal,
           }),
         "CreateMeeting",
+        "mutation",
+        variables
+      );
+    },
+    LatestMeetingForPairing(
+      variables: LatestMeetingForPairingQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+      signal?: RequestInit["signal"]
+    ): Promise<LatestMeetingForPairingQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<LatestMeetingForPairingQuery>({
+            document: LatestMeetingForPairingDocument,
+            variables,
+            requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders },
+            signal,
+          }),
+        "LatestMeetingForPairing",
+        "query",
+        variables
+      );
+    },
+    ProposeMeetingTime(
+      variables: ProposeMeetingTimeMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+      signal?: RequestInit["signal"]
+    ): Promise<ProposeMeetingTimeMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<ProposeMeetingTimeMutation>({
+            document: ProposeMeetingTimeDocument,
+            variables,
+            requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders },
+            signal,
+          }),
+        "ProposeMeetingTime",
+        "mutation",
+        variables
+      );
+    },
+    UpdateMeetingToProposedTime(
+      variables: UpdateMeetingToProposedTimeMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+      signal?: RequestInit["signal"]
+    ): Promise<UpdateMeetingToProposedTimeMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<UpdateMeetingToProposedTimeMutation>({
+            document: UpdateMeetingToProposedTimeDocument,
+            variables,
+            requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders },
+            signal,
+          }),
+        "UpdateMeetingToProposedTime",
+        "mutation",
+        variables
+      );
+    },
+    CancelMeeting(
+      variables: CancelMeetingMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+      signal?: RequestInit["signal"]
+    ): Promise<CancelMeetingMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<CancelMeetingMutation>({
+            document: CancelMeetingDocument,
+            variables,
+            requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders },
+            signal,
+          }),
+        "CancelMeeting",
         "mutation",
         variables
       );
@@ -2102,6 +2339,24 @@ export function getSdk(
           }),
         "UpdateUserProfile",
         "mutation",
+        variables
+      );
+    },
+    Statistics(
+      variables?: StatisticsQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+      signal?: RequestInit["signal"]
+    ): Promise<StatisticsQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<StatisticsQuery>({
+            document: StatisticsDocument,
+            variables,
+            requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders },
+            signal,
+          }),
+        "Statistics",
+        "query",
         variables
       );
     },

@@ -262,6 +262,7 @@ const PairingsView = () => {
                   >
                     <MeetingBanner
                       pairingId={
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         (selectedContact as any)?.pairingId as
                           | string
                           | undefined
@@ -270,7 +271,12 @@ const PairingsView = () => {
                     />
                     <ReadOnlyUserCalendar
                       userId={selectedContact?.id}
-                      pairingId={(selectedContact as any)?.pairingId as string | undefined}
+                      pairingId={
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        (selectedContact as any)?.pairingId as
+                          | string
+                          | undefined
+                      }
                       otherUserName={getDisplayName(selectedContact.profile)}
                     />
                     <div className="mt-4">
@@ -283,6 +289,7 @@ const PairingsView = () => {
                       onOpenChange={setProposalOpen}
                       otherUserId={selectedContact?.id ?? ""}
                       pairingId={
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         (selectedContact as any)?.pairingId as
                           | string
                           | undefined

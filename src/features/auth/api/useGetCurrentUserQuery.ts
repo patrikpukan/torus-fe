@@ -15,6 +15,14 @@ export type CurrentUserData = {
   profileImageUrl?: string | null;
   profileStatus?: string | null;
   isActive?: boolean;
+  preferredActivity?: string | null;
+  suspendedUntil?: string | null;
+  activeBan?: {
+    id: string;
+    reason: string;
+    createdAt: string;
+    expiresAt?: string | null;
+  } | null;
   organization?: {
     id: string;
     name: string;
@@ -42,6 +50,14 @@ export const GET_CURRENT_USER = graphql(`
       profileImageUrl
       profileStatus
       isActive
+      preferredActivity
+      suspendedUntil
+      activeBan {
+        id
+        reason
+        createdAt
+        expiresAt
+      }
       organization {
         id
         name

@@ -15,6 +15,8 @@ interface EventPopoverProps {
   onClose: () => void;
   onEdit?: (event: CalendarEvent) => void;
   onDelete?: (event: CalendarEvent) => void;
+  isEditVisible?: (event: CalendarEvent) => boolean;
+  isDeleteVisible?: (event: CalendarEvent) => boolean;
 }
 
 const clamp = (val: number, min: number, max: number) =>
@@ -53,6 +55,8 @@ export const EventPopover: React.FC<EventPopoverProps> = ({
   onClose,
   onEdit,
   onDelete,
+  isEditVisible,
+  isDeleteVisible,
 }) => {
   const popRef = useRef<HTMLDivElement>(null);
 
@@ -139,12 +143,12 @@ export const EventPopover: React.FC<EventPopoverProps> = ({
       </div>
 
       <div className="mt-3 flex gap-2">
-        {onEdit && (
+        {onEdit && (!isEditVisible || isEditVisible(pop.event)) && (
           <Button size="sm" onClick={handleEdit}>
             Edit
           </Button>
         )}
-        {onDelete && (
+        {onDelete && (!isDeleteVisible || isDeleteVisible(pop.event)) && (
           <Button size="sm" variant="destructive" onClick={handleDelete}>
             Delete
           </Button>

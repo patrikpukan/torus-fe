@@ -15,6 +15,7 @@ import {
   DeleteEventModal,
 } from "./components";
 import { CalendarPlus, CalendarSync } from "lucide-react";
+import { useMeetingEvents } from "./api/useMeetingEvents";
 
 // Convert calendar events from GraphQL to ScheduleX format
 const convertToScheduleXEvents = (
@@ -86,12 +87,39 @@ const ProfileCalendar = () => {
 
   // Fetch calendar events
   const { data: calendarData } = useCalendarEvents(startDate, endDate);
+  const { data: meetingsData } = useMeetingEvents(startDate, endDate);
 
   // Convert real calendar events to ScheduleX format
   const scheduleXEvents = useMemo(
     () => convertToScheduleXEvents(calendarData?.expandedCalendarOccurrences),
     [calendarData]
   );
+
+  // Convert confirmed meetings to yellow ScheduleX events
+  const scheduleXMeetingEvents = useMemo(() => {
+    const items = meetingsData?.meetingEventsByDateRange ?? [];
+    const tz = Temporal.Now.zonedDateTimeISO().timeZoneId;
+    return items
+      .filter(
+        (m) =>
+          !m.cancelledAt &&
+          String(m.userAConfirmationStatus) === "confirmed" &&
+          String(m.userBConfirmationStatus) === "confirmed"
+      )
+      .map((m) => {
+        const start = Temporal.Instant.from(m.startDateTime).toZonedDateTimeISO(
+          tz
+        );
+        const end = Temporal.Instant.from(m.endDateTime).toZonedDateTimeISO(tz);
+        return {
+          id: `meeting-${m.id}`,
+          title: "Meeting",
+          calendarId: "meeting",
+          start,
+          end,
+        } as CalendarEvent;
+      });
+  }, [meetingsData]);
 
   // Map from unique occurrence ID to the occurrence object for edit/delete operations
   const eventItemsMap = useMemo(() => {
@@ -127,6 +155,7 @@ const ProfileCalendar = () => {
     // Placeholder for future implementation
     console.log("Sync with Google Calendar clicked");
   };
+  console.log([...scheduleXEvents, ...scheduleXMeetingEvents]);
 
   return (
     <div>
@@ -143,9 +172,11 @@ const ProfileCalendar = () => {
 
       <div className="grid grid-cols-1 gap-4 mb-6">
         <CustomCalendar
-          events={scheduleXEvents}
+          events={[...scheduleXEvents, ...scheduleXMeetingEvents]}
           onEditEvent={handleEditEvent}
           onDeleteEvent={handleDeleteEvent}
+          isEditVisible={(ev) => ev.calendarId !== "meeting"}
+          isDeleteVisible={(ev) => ev.calendarId !== "meeting"}
         />
       </div>
 

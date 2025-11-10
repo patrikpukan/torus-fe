@@ -33,6 +33,11 @@ interface CustomCalendarProps {
    */
   onDeleteEvent?: (event: CalendarEvent) => void;
   /**
+   * Optional visibility predicates for edit/delete controls
+   */
+  isEditVisible?: (event: CalendarEvent) => boolean;
+  isDeleteVisible?: (event: CalendarEvent) => boolean;
+  /**
    * Locale pre kalendár
    */
   locale?: string;
@@ -74,6 +79,8 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
   onEditEvent,
   onDeleteEvent,
   timezone = "Europe/Prague",
+  isEditVisible,
+  isDeleteVisible,
   calendars = {
     available: {
       colorName: "available",
@@ -89,6 +96,14 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
         main: "#dc2626",
         container: "#fee2e2",
         onContainer: "#450a0a",
+      },
+    },
+    meeting: {
+      colorName: "meeting",
+      lightColors: {
+        main: "#f59e0b",
+        container: "#fef3c7",
+        onContainer: "#78350f",
       },
     },
   },
@@ -201,6 +216,8 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
         onClose={closePop}
         onEdit={onEditEvent}
         onDelete={onDeleteEvent}
+        isEditVisible={isEditVisible}
+        isDeleteVisible={isDeleteVisible}
       />
     </div>
   );

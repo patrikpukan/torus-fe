@@ -100,6 +100,7 @@ export type CreateInviteCodeResponseType = {
 export type CreateMeetingEventInput = {
   createdByUserId: Scalars['ID']['input'];
   endDateTime: Scalars['DateTime']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
   pairingId?: InputMaybe<Scalars['ID']['input']>;
   startDateTime: Scalars['DateTime']['input'];
   userAId: Scalars['ID']['input'];
@@ -223,7 +224,7 @@ export type Mutation = {
   rejectMeeting: MeetingEvent;
   signUp: User;
   updateAlgorithmSettings: AlgorithmSettingsResponse;
-  updateCalendarEvent: CalendarEvent;
+  updateCalendarEvent: Array<CalendarEvent>;
   updateCurrentUserProfile: CurrentUser;
   updateMeetingToProposedTime: MeetingEvent;
   updateOrganization: OrganizationType;
@@ -352,6 +353,7 @@ export type PairingExecutionResult = {
 export type PairingHistory = {
   __typename?: 'PairingHistory';
   createdAt: Scalars['DateTime']['output'];
+  derivedStatus: PairingStatusEnum;
   id: Scalars['ID']['output'];
   status: PairingStatusEnum;
   userA: User;
@@ -360,13 +362,30 @@ export type PairingHistory = {
   userBId: Scalars['ID']['output'];
 };
 
+export type PairingStatusByUserType = {
+  __typename?: 'PairingStatusByUserType';
+  count: Scalars['Int']['output'];
+  status: Scalars['String']['output'];
+  userEmail: Scalars['String']['output'];
+  userId: Scalars['ID']['output'];
+  userName: Maybe<Scalars['String']['output']>;
+};
+
 /** Pairing status */
 export type PairingStatusEnum =
   | 'cancelled'
   | 'matched'
   | 'met'
   | 'not_met'
-  | 'planned';
+  | 'not_planned'
+  | 'planned'
+  | 'unspecified';
+
+export type PairingStatusOverviewType = {
+  __typename?: 'PairingStatusOverviewType';
+  count: Scalars['Int']['output'];
+  status: Scalars['String']['output'];
+};
 
 /** Profile onboarding status */
 export type ProfileStatusEnum =
@@ -392,6 +411,7 @@ export type Query = {
   organizationById: Maybe<OrganizationType>;
   organizations: Array<OrganizationType>;
   pendingMeetingConfirmations: Array<MeetingEvent>;
+  statistics: StatisticsResponseType;
   upcomingMeetings: Array<MeetingEvent>;
   userById: Maybe<User>;
   users: Array<User>;
@@ -418,6 +438,7 @@ export type QueryCalendarEventsByDateRangeArgs = {
 export type QueryExpandedCalendarOccurrencesArgs = {
   endDate: Scalars['DateTime']['input'];
   startDate: Scalars['DateTime']['input'];
+  userId: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -444,6 +465,11 @@ export type QueryMeetingEventsByDateRangeArgs = {
 
 export type QueryOrganizationByIdArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryStatisticsArgs = {
+  filter: InputMaybe<StatisticsFilterInputType>;
 };
 
 
@@ -486,6 +512,23 @@ export type SimpleOrganizationType = {
   id: Scalars['ID']['output'];
   imageUrl: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
+};
+
+export type StatisticsFilterInputType = {
+  endDate?: InputMaybe<Scalars['String']['input']>;
+  month?: InputMaybe<Scalars['Int']['input']>;
+  organizationId?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['String']['input']>;
+  year?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type StatisticsResponseType = {
+  __typename?: 'StatisticsResponseType';
+  inactiveUsersCount: Scalars['Int']['output'];
+  newUsersCount: Scalars['Int']['output'];
+  pairingsByStatus: Array<PairingStatusOverviewType>;
+  pairingsByStatusAndUser: Array<PairingStatusByUserType>;
+  reportsCount: Scalars['Int']['output'];
 };
 
 export type UpdateAlgorithmSettingsInput = {
@@ -580,7 +623,7 @@ export type UpdateCalendarEventMutationVariables = Exact<{
 }>;
 
 
-export type UpdateCalendarEventMutation = { __typename?: 'Mutation', updateCalendarEvent: { __typename?: 'CalendarEvent', id: string, title: string | null, description: string | null, type: CalendarEventType, startDateTime: string, endDateTime: string, rrule: string | null, exceptionDates: string | null, exceptionRrules: string | null, createdAt: string, updatedAt: string, deletedAt: string | null } };
+export type UpdateCalendarEventMutation = { __typename?: 'Mutation', updateCalendarEvent: Array<{ __typename?: 'CalendarEvent', id: string, title: string | null, description: string | null, type: CalendarEventType, startDateTime: string, endDateTime: string, rrule: string | null, exceptionDates: string | null, exceptionRrules: string | null, createdAt: string, updatedAt: string, deletedAt: string | null }> };
 
 export type DeleteCalendarEventMutationVariables = Exact<{
   input: DeleteCalendarEventInput;
@@ -629,6 +672,15 @@ export type CreateMeetingMutationVariables = Exact<{
 
 
 export type CreateMeetingMutation = { __typename?: 'Mutation', createMeetingEvent: { __typename?: 'MeetingEvent', id: string, startDateTime: string, endDateTime: string, userAId: string, userBId: string, userAConfirmationStatus: MeetingConfirmationStatus, userBConfirmationStatus: MeetingConfirmationStatus, pairingId: string | null, createdAt: string, createdByUserId: string } };
+
+export type GetCalendarEventsForUserQueryVariables = Exact<{
+  userId: Scalars['ID']['input'];
+  startDate: Scalars['DateTime']['input'];
+  endDate: Scalars['DateTime']['input'];
+}>;
+
+
+export type GetCalendarEventsForUserQuery = { __typename?: 'Query', expandedCalendarOccurrences: Array<{ __typename?: 'ExpandedCalendarEventOccurrence', id: string, occurrenceStart: string, occurrenceEnd: string, originalEvent: { __typename?: 'CalendarEvent', id: string, title: string | null, description: string | null, type: CalendarEventType, startDateTime: string, endDateTime: string, rrule: string | null, exceptionDates: string | null, exceptionRrules: string | null, createdAt: string, updatedAt: string, deletedAt: string | null } }> };
 
 export type CreateInviteCodeMutationVariables = Exact<{
   input: InputMaybe<CreateInviteCodeInputType>;
@@ -711,7 +763,7 @@ export type ExecutePairingAlgorithmMutation = { __typename?: 'Mutation', execute
 export type GetPairingHistoryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetPairingHistoryQuery = { __typename?: 'Query', getPairingHistory: Array<{ __typename?: 'PairingHistory', id: string, userAId: string, userBId: string, status: PairingStatusEnum, createdAt: string, userA: { __typename?: 'User', id: string, email: string, firstName: string | null, lastName: string | null, profileImageUrl: string | null, profileStatus: ProfileStatusEnum }, userB: { __typename?: 'User', id: string, email: string, firstName: string | null, lastName: string | null, profileImageUrl: string | null, profileStatus: ProfileStatusEnum } }> };
+export type GetPairingHistoryQuery = { __typename?: 'Query', getPairingHistory: Array<{ __typename?: 'PairingHistory', id: string, userAId: string, userBId: string, status: PairingStatusEnum, derivedStatus: PairingStatusEnum, createdAt: string, userA: { __typename?: 'User', id: string, email: string, firstName: string | null, lastName: string | null, profileImageUrl: string | null, profileStatus: ProfileStatusEnum }, userB: { __typename?: 'User', id: string, email: string, firstName: string | null, lastName: string | null, profileImageUrl: string | null, profileStatus: ProfileStatusEnum } }> };
 
 export type UpdateUserProfileMutationVariables = Exact<{
   input: UpdateCurrentUserProfileInputType;
@@ -919,6 +971,33 @@ export const CreateMeetingDocument = gql`
   }
 }
     `;
+export const GetCalendarEventsForUserDocument = gql`
+    query GetCalendarEventsForUser($userId: ID!, $startDate: DateTime!, $endDate: DateTime!) {
+  expandedCalendarOccurrences(
+    userId: $userId
+    startDate: $startDate
+    endDate: $endDate
+  ) {
+    id
+    occurrenceStart
+    occurrenceEnd
+    originalEvent {
+      id
+      title
+      description
+      type
+      startDateTime
+      endDateTime
+      rrule
+      exceptionDates
+      exceptionRrules
+      createdAt
+      updatedAt
+      deletedAt
+    }
+  }
+}
+    `;
 export const CreateInviteCodeDocument = gql`
     mutation CreateInviteCode($input: CreateInviteCodeInputType) {
   createInviteCode(input: $input) {
@@ -1084,6 +1163,7 @@ export const GetPairingHistoryDocument = gql`
     userAId
     userBId
     status
+    derivedStatus
     createdAt
     userA {
       id
@@ -1193,6 +1273,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     CreateMeeting(variables: CreateMeetingMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CreateMeetingMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<CreateMeetingMutation>({ document: CreateMeetingDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'CreateMeeting', 'mutation', variables);
+    },
+    GetCalendarEventsForUser(variables: GetCalendarEventsForUserQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetCalendarEventsForUserQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetCalendarEventsForUserQuery>({ document: GetCalendarEventsForUserDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetCalendarEventsForUser', 'query', variables);
     },
     CreateInviteCode(variables?: CreateInviteCodeMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CreateInviteCodeMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<CreateInviteCodeMutation>({ document: CreateInviteCodeDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'CreateInviteCode', 'mutation', variables);

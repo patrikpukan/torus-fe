@@ -249,7 +249,7 @@ const ProfileForm = ({
           return (
             <Field key={key}>
               <FieldLabel htmlFor={fieldId}>{label}</FieldLabel>
-              <FieldContent>
+              <FieldContent className="bg-card">
                 <Input
                   id={fieldId}
                   value={getFieldValue(key)}
@@ -268,7 +268,7 @@ const ProfileForm = ({
         <FieldGroup>
           <Field>
             <FieldLabel htmlFor="profile-about">About me</FieldLabel>
-            <FieldContent>
+            <FieldContent className="bg-card">
               <Textarea
                 id="profile-about"
                 value={value.about}
@@ -281,7 +281,7 @@ const ProfileForm = ({
           </Field>
           <Field>
             <FieldLabel htmlFor="profile-hobbies">Hobbies</FieldLabel>
-            <FieldContent>
+            <FieldContent className="bg-card">
               <Input
                 id="profile-hobbies"
                 value={getFieldValue("hobbies")}
@@ -293,7 +293,7 @@ const ProfileForm = ({
           </Field>
           <Field>
             <FieldLabel htmlFor="profile-interests">Interests</FieldLabel>
-            <FieldContent>
+            <FieldContent className="bg-card">
               <Input
                 id="profile-interests"
                 value={value.interests}

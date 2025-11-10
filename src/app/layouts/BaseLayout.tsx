@@ -219,7 +219,7 @@ const BaseLayout = () => {
           <div className="ml-auto" />
         </div>
         <div className="container mx-auto flex-1 p-4">
-          <div className="rounded-xl bg-card text-card-foreground border border-border shadow-sm p-6 min-h-[80vh]">
+          <div className="rounded-xl bg-muted/35 text-card-foreground border border-border shadow-sm p-6 min-h-[80vh]">
             <Outlet />
           </div>
         </div>

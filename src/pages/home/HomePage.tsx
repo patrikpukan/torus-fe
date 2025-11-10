@@ -62,7 +62,7 @@ const HomePage = () => {
     : "Welcome back!";
 
   return (
-    <div className="space-y-6 bg-background">
+    <div className="space-y-6">
       <header className="space-y-1">
         <h1 className="text-3xl font-semibold tracking-tight text-foreground">
           {welcomeMessage}
@@ -73,7 +73,7 @@ const HomePage = () => {
       </header>
 
       <section>
-        <Card className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between bg-muted">
+        <Card className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between bg-card">
           {isEmpty ? (
             <div className="flex flex-1 flex-col items-start gap-4">
               <div>
@@ -132,7 +132,7 @@ const HomePage = () => {
       </section>
 
       <section className="grid gap-3 md:grid-cols-2">
-        <Card className="bg-muted">
+        <Card className="bg-card">
           <CardHeader className="space-y-1">
             <CardTitle className="text-base font-medium">
               A new pairing has been running since
@@ -142,7 +142,7 @@ const HomePage = () => {
             </CardDescription>
           </CardHeader>
         </Card>
-        <Card className="bg-muted">
+        <Card className="bg-card">
           <CardHeader className="space-y-1">
             <CardTitle className="text-base font-medium">
               This year you’ve been paired {stats.pairingsThisYear} times
@@ -162,7 +162,7 @@ const HomePage = () => {
             className="block transition hover:scale-[1.01] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2"
             aria-label="Go to your profile"
           >
-            <Card className="flex h-full items-center gap-4 p-6 transition bg-muted hover:bg-muted/40">
+            <Card className="flex h-full items-center gap-4 p-6 transition bg-card hover:bg-muted/40">
               <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-muted text-2xl text-muted-foreground">
                 <User />
               </div>
@@ -182,7 +182,7 @@ const HomePage = () => {
             className="block transition hover:scale-[1.01] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2"
             aria-label="Browse pairings"
           >
-            <Card className="flex h-full items-center gap-4 p-6 transition bg-muted hover:bg-muted/40">
+            <Card className="flex h-full items-center gap-4 p-6 transition bg-card hover:bg-muted/40">
               <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-muted text-2xl text-muted-foreground">
                 <Handshake />
               </div>

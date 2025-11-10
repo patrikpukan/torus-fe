@@ -180,7 +180,11 @@ export function AlgorithmSettingsForm({
         } else {
           toast({
             title: "Execution Failed",
-            description: data.message,
+            description: `${data.message}${
+              data.unpairedUsers !== undefined && data.unpairedUsers > 0
+                ? ` (${data.unpairedUsers} user(s) unpaired)`
+                : ""
+            }`,
             variant: "destructive",
           });
         }
@@ -208,7 +212,7 @@ export function AlgorithmSettingsForm({
       <h1 className="mb-12 text-3xl font-bold">Algorithm settings</h1>
 
       {/* Execute Pairing Section */}
-      <div className="mb-12 rounded-lg border border-gray-200 bg-gray-50 p-6">
+      <div className="mb-12 bg-card rounded-lg border border-gray-200  p-6">
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <h2 className="text-lg font-semibold text-gray-900">
@@ -224,7 +228,7 @@ export function AlgorithmSettingsForm({
             type="button"
             onClick={handleExecutePairing}
             disabled={executing || loading}
-            className="ml-6 bg-blue-600 hover:bg-blue-700"
+            className="ml-6 bg-muted-foreground hover:bg-muted-foreground/90"
           >
             {executing ? "Executing..." : "Execute Now"}
           </Button>

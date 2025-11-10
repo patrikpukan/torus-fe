@@ -184,7 +184,7 @@ const AdminUserTable = () => {
           </div>
         )}
 
-        <div className="rounded-md border border-muted-foreground/20">
+        <div className="rounded-md border bg-card border-muted-foreground/20">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (

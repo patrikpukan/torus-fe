@@ -243,9 +243,7 @@ export const useLatestMeetingForPairing = (pairingId?: string) => {
 
 // Propose different time
 export const PROPOSE_MEETING_TIME_MUTATION = graphql(`
-  mutation ProposeMeetingTime(
-    $input: UpdateMeetingEventConfirmationInput!
-  ) {
+  mutation ProposeMeetingTime($input: UpdateMeetingEventConfirmationInput!) {
     proposeMeetingTime(input: $input) {
       id
       userAConfirmationStatus

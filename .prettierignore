@@ -1,2 +1,3 @@
 // .prettierignore
 /src/components/ui/*
+/src/graphql/*

@@ -52,7 +52,8 @@ export const MeetingBanner: React.FC<Props> = ({
   const apollo = useApolloClient();
 
   const me = user?.id;
-  const isParticipant = !!meeting && (meeting.userAId === me || meeting.userBId === me);
+  const isParticipant =
+    !!meeting && (meeting.userAId === me || meeting.userBId === me);
 
   const aConfirmed = (meeting?.userAConfirmationStatus ?? "") === "confirmed";
   const bConfirmed = (meeting?.userBConfirmationStatus ?? "") === "confirmed";

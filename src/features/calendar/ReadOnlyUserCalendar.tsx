@@ -99,7 +99,11 @@ type AllMeetingsForPairingData = {
  * Read-only calendar for displaying another user's events inside pairings.
  * Shows event details popover without edit/delete actions.
  */
-const ReadOnlyUserCalendar = ({ userId, pairingId, otherUserName }: ReadOnlyUserCalendarProps) => {
+const ReadOnlyUserCalendar = ({
+  userId,
+  pairingId,
+  otherUserName,
+}: ReadOnlyUserCalendarProps) => {
   // Date range: current week start through ~3 weeks ahead
   const today = Temporal.Now.plainDateISO();
   const startOfWeek = today.subtract({ days: (today.dayOfWeek + 6) % 7 });
@@ -109,13 +113,20 @@ const ReadOnlyUserCalendar = ({ userId, pairingId, otherUserName }: ReadOnlyUser
   const endDate = endOfRange.toString() + "T23:59:59Z";
 
   // Fetch target user's calendar (skips if userId is undefined)
-  const { data: calendarData } = useUserCalendarEvents(userId, startDate, endDate);
+  const { data: calendarData } = useUserCalendarEvents(
+    userId,
+    startDate,
+    endDate
+  );
   // Fetch meetings for this pairing to overlay (skips if no pairingId)
-  const { data: pairingMeetings } = useQuery<AllMeetingsForPairingData>(ALL_MEETINGS_FOR_PAIRING, {
-    variables: { pairingId: pairingId as string },
-    skip: !pairingId,
-    fetchPolicy: "cache-and-network",
-  });
+  const { data: pairingMeetings } = useQuery<AllMeetingsForPairingData>(
+    ALL_MEETINGS_FOR_PAIRING,
+    {
+      variables: { pairingId: pairingId as string },
+      skip: !pairingId,
+      fetchPolicy: "cache-and-network",
+    }
+  );
 
   const scheduleXEvents = useMemo(
     () => convertToScheduleXEvents(calendarData?.expandedCalendarOccurrences),
@@ -141,7 +152,9 @@ const ReadOnlyUserCalendar = ({ userId, pairingId, otherUserName }: ReadOnlyUser
           String(m.userBConfirmationStatus) === "confirmed"
       )
       .map((m) => {
-        const start = Temporal.Instant.from(m.startDateTime).toZonedDateTimeISO(tz);
+        const start = Temporal.Instant.from(m.startDateTime).toZonedDateTimeISO(
+          tz
+        );
         const end = Temporal.Instant.from(m.endDateTime).toZonedDateTimeISO(tz);
         return {
           id: `pairing-meeting-${m.id}`,
@@ -156,7 +169,9 @@ const ReadOnlyUserCalendar = ({ userId, pairingId, otherUserName }: ReadOnlyUser
   return (
     <div className="grid grid-cols-1 gap-4 mb-6">
       {/* No edit/delete callbacks passed -> popover is details-only */}
-      <CustomCalendar events={[...scheduleXEvents, ...scheduleXMeetingEvents]} />
+      <CustomCalendar
+        events={[...scheduleXEvents, ...scheduleXMeetingEvents]}
+      />
     </div>
   );
 };

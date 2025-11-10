@@ -1,14 +1,22 @@
 import React, { useState } from "react";
 import { Temporal } from "temporal-polyfill";
 import "temporal-polyfill/global";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useApolloClient } from "@apollo/client/react";
-import { useCreateMeetingMutation, useProposeMeetingTimeMutation } from "@/features/calendar/api/useMeetingEvents";
+import {
+  useCreateMeetingMutation,
+  useProposeMeetingTimeMutation,
+} from "@/features/calendar/api/useMeetingEvents";
 import { LATEST_MEETING_FOR_PAIRING_QUERY } from "@/features/calendar/api/useMeetingEvents";
 
 type Props = {
@@ -61,8 +69,12 @@ export const MeetingProposalModal: React.FC<Props> = ({
 
     try {
       const tz = Temporal.Now.zonedDateTimeISO().timeZoneId;
-      const startZdt = Temporal.ZonedDateTime.from(`${startDate}T${startTime}:00[${tz}]`);
-      const endZdt = Temporal.ZonedDateTime.from(`${endDate}T${endTime}:00[${tz}]`);
+      const startZdt = Temporal.ZonedDateTime.from(
+        `${startDate}T${startTime}:00[${tz}]`
+      );
+      const endZdt = Temporal.ZonedDateTime.from(
+        `${endDate}T${endTime}:00[${tz}]`
+      );
       const startDateTime = startZdt.toInstant().toString();
       const endDateTime = endZdt.toInstant().toString();
 
@@ -108,7 +120,9 @@ export const MeetingProposalModal: React.FC<Props> = ({
         });
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to propose meeting");
+      setError(
+        err instanceof Error ? err.message : "Failed to propose meeting"
+      );
     }
   };
 
@@ -177,7 +191,9 @@ export const MeetingProposalModal: React.FC<Props> = ({
           </div>
 
           {error && (
-            <div className="p-2 bg-red-100 text-red-700 rounded text-sm">{error}</div>
+            <div className="p-2 bg-red-100 text-red-700 rounded text-sm">
+              {error}
+            </div>
           )}
 
           <div className="flex gap-2 pt-2">

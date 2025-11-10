@@ -4,8 +4,22 @@ export type PairingQueryItem = {
   id: string;
   userAId: string;
   userBId: string;
-  status: "planned" | "matched" | "met" | "not_met" | "not_planned" | "unspecified" | "cancelled";
-  derivedStatus?: "planned" | "matched" | "met" | "not_met" | "not_planned" | "unspecified" | "cancelled";
+  status:
+    | "planned"
+    | "matched"
+    | "met"
+    | "not_met"
+    | "not_planned"
+    | "unspecified"
+    | "cancelled";
+  derivedStatus?:
+    | "planned"
+    | "matched"
+    | "met"
+    | "not_met"
+    | "not_planned"
+    | "unspecified"
+    | "cancelled";
   createdAt: string;
   userA: {
     id: string;

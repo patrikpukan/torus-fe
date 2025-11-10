@@ -1,5 +1,5 @@
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ArrowUpDown, Eye, UserRoundX } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -12,7 +12,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { UsersQueryItem } from "@/features/users/api/useUsersQuery";
-import BanUserDialog from "@/features/users/components/BanUserDialog";
 
 export type UserTableRow = UsersQueryItem & {
   displayName: string;
@@ -176,8 +175,8 @@ export const columns: ColumnDef<UserTableRow>[] = [
       const user = row.original;
 
       return (
-        <TooltipProvider>
-          <div className="flex justify-end gap-1">
+        <div className="flex justify-end">
+          <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -196,27 +195,8 @@ export const columns: ColumnDef<UserTableRow>[] = [
               </TooltipTrigger>
               <TooltipContent side="left">User detail</TooltipContent>
             </Tooltip>
-            <BanUserDialog userId={user.id} userDisplayName={user.displayName}>
-              {({ openDialog, loading }) => (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={openDialog}
-                      disabled={loading}
-                      className="h-10 w-10 text-muted-foreground hover:text-destructive [&_svg]:size-6"
-                    >
-                      <UserRoundX />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="left">Ban user</TooltipContent>
-                </Tooltip>
-              )}
-            </BanUserDialog>
-          </div>
-        </TooltipProvider>
+          </TooltipProvider>
+        </div>
       );
     },
   },

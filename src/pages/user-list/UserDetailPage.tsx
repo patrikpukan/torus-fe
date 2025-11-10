@@ -1,10 +1,9 @@
 import { useMemo } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { EyeOff, Home, ShieldAlert } from "lucide-react";
+import { EyeOff, Home } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import ProfileForm from "@/features/profile/ProfileForm";
 import SendResetPasswordButton from "@/features/auth/components/SendResetPasswordButton";
 import { useUserByIdQuery } from "@/features/users/api/useUserByIdQuery";
@@ -13,7 +12,6 @@ import { useGetCurrentUserQuery } from "@/features/auth/api/useGetCurrentUserQue
 import type { UserProfile } from "@/types/User";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
-import BanUserDialog from "@/features/users/components/BanUserDialog";
 
 const UserDetailPage = () => {
   const { appRole } = useAuth();
@@ -159,43 +157,12 @@ const UserDetailPage = () => {
     pairingStatus: user.profileStatus ?? undefined,
   };
 
-  const activeBan = user.activeBan ?? null;
-  const userDisplayName =
-    [user.firstName, user.lastName].filter(Boolean).join(" ").trim() ||
-    user.email;
-
   return (
     <div className="mx-auto max-w-3xl py-8">
       <ProfileForm value={profile} />
-      {activeBan && (
-        <Alert variant="destructive" className="mt-6">
-          <ShieldAlert className="h-4 w-4" />
-          <AlertTitle>User is banned</AlertTitle>
-          <AlertDescription>
-            {activeBan.reason}
-            {activeBan.expiresAt
-              ? ` — Ban expires ${new Date(
-                  activeBan.expiresAt
-                ).toLocaleString()}`
-              : " — This ban does not expire"}
-          </AlertDescription>
-        </Alert>
-      )}
       {isAdmin && (
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
+        <div className="mt-6 flex justify-center">
           <SendResetPasswordButton email={user.email} variant="outline" />
-          <BanUserDialog userId={user.id} userDisplayName={userDisplayName}>
-            {({ openDialog, loading }) => (
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={openDialog}
-                disabled={loading}
-              >
-                {loading ? "Opening..." : "Ban user"}
-              </Button>
-            )}
-          </BanUserDialog>
         </div>
       )}
     </div>

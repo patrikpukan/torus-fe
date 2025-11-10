@@ -3,7 +3,6 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import type { Session, User } from "@supabase/supabase-js";
@@ -14,7 +13,6 @@ import {
 } from "@/features/auth/context/AuthContext.ts";
 import type { AuthContextValue } from "@/features/auth/context/AuthContext.ts";
 import { useGetCurrentUserQuery } from "../api/useGetCurrentUserQuery";
-import { useToast } from "@/hooks/use-toast";
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [session, setSession] = useState<Session | null>(null);
@@ -25,15 +23,12 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   );
   const [loading, setLoading] = useState(true);
   const [sessionLoaded, setSessionLoaded] = useState(false);
-  const bannedHandledRef = useRef(false);
-  const { toast } = useToast();
 
   // Query current user to get role and organization - only start after session is loaded and user has a session
   const {
     data: currentUserData,
     loading: currentUserLoading,
     refetch: refetchCurrentUser,
-    error: currentUserError,
   } = useGetCurrentUserQuery({ skip: !sessionLoaded || !session });
 
   useEffect(() => {
@@ -78,77 +73,6 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }
   }, [currentUserData]);
 
-  const resetAuthState = useCallback(() => {
-    setSession(null);
-    setUser(null);
-    setAppRole(undefined);
-    setOrganizationId(undefined);
-  }, []);
-
-  const handleBannedUser = useCallback(async () => {
-    if (bannedHandledRef.current) {
-      return;
-    }
-
-    bannedHandledRef.current = true;
-
-    await supabaseClient.auth.signOut();
-    resetAuthState();
-
-    toast({
-      variant: "destructive",
-      title: "Account access blocked",
-      description:
-        "Your account has been banned. Please contact your organization administrator.",
-    });
-  }, [resetAuthState, toast]);
-
-  useEffect(() => {
-    if (!currentUserError) {
-      return;
-    }
-
-    const banMessageMatch = (message?: string | null): boolean => {
-      if (!message) {
-        return false;
-      }
-
-      const normalized = message.toLowerCase();
-      return (
-        normalized.includes("banned") ||
-        normalized.includes("suspended") ||
-        normalized.includes("account access")
-      );
-    };
-
-    type GraphQLErrorRecord = {
-      message?: string | null;
-      extensions?: {
-        code?: string;
-        [key: string]: unknown;
-      };
-    };
-
-    const graphErrors =
-      (currentUserError as { graphQLErrors?: GraphQLErrorRecord[] })
-        .graphQLErrors ?? [];
-
-    const hasForbiddenBan = graphErrors.some((graphError) => {
-      const code = String(graphError.extensions?.code ?? "").toUpperCase();
-      return code === "FORBIDDEN" && banMessageMatch(graphError.message);
-    });
-
-    if (hasForbiddenBan || banMessageMatch(currentUserError.message)) {
-      void handleBannedUser();
-    }
-  }, [currentUserError, handleBannedUser]);
-
-  useEffect(() => {
-    if (!session) {
-      bannedHandledRef.current = false;
-    }
-  }, [session]);
-
   const signIn = useCallback(async (email: string, password: string) => {
     const { data, error } = await supabaseClient.auth.signInWithPassword({
       email,
@@ -183,8 +107,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       throw error;
     }
 
-    resetAuthState();
-  }, [resetAuthState]);
+    setSession(null);
+    setUser(null);
+    setAppRole(undefined);
+    setOrganizationId(undefined);
+  }, []);
 
   const value = useMemo<AuthContextValue>(
     () => ({

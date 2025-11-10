@@ -8,12 +8,6 @@ export type UsersQueryItem = {
   lastName?: string | null;
   profileStatus?: string | null;
   role?: string | null;
-  activeBan?: {
-    id: string;
-    reason: string;
-    createdAt: string;
-    expiresAt?: string | null;
-  } | null;
 };
 
 export type UsersQueryData = {
@@ -29,12 +23,6 @@ export const USERS_QUERY = graphql(`
       lastName
       profileStatus
       role
-      activeBan {
-        id
-        reason
-        createdAt
-        expiresAt
-      }
     }
   }
 `);

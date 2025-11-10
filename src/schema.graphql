@@ -17,15 +17,8 @@ type AlgorithmSettingsResponse {
   warning: String
 }
 
-input BanUserInput {
-  userId: ID!
-  reason: String!
-  expiresAt: DateTime
-}
-
 type CurrentUser {
   about: String
-  activeBan: UserBan
   email: String!
   firstName: String
   hobbies: String
@@ -35,12 +28,10 @@ type CurrentUser {
   lastName: String
   organization: Organization!
   organizationId: ID!
-  preferredActivity: String
   profileImageUrl: String
   profileStatus: ProfileStatusEnum!
   role: UserRoleEnum!
   supabaseUserId: String
-  suspendedUntil: DateTime
 }
 
 """
@@ -60,7 +51,6 @@ type InviteUserResponseType {
 }
 
 type Mutation {
-  banUser(input: BanUserInput!): User!
   deleteUser(id: ID!): User!
   executePairingAlgorithm(organizationId: String!): PairingExecutionResult!
   inviteUserToOrganization(input: InviteUserInputType!): InviteUserResponseType!
@@ -239,32 +229,13 @@ The `Upload` scalar type represents a file upload.
 scalar Upload
 
 type User {
-  about: String
-  activeBan: UserBan
   email: String!
   firstName: String
-  hobbies: String
   id: ID!
-  interests: String
-  isActive: Boolean!
   lastName: String
-  organizationId: ID!
-  preferredActivity: String
   profileImageUrl: String
   profileStatus: ProfileStatusEnum!
   role: UserRoleEnum!
-  supabaseUserId: String
-  suspendedUntil: DateTime
-  updatedAt: DateTime!
-  createdAt: DateTime!
-}
-
-type UserBan {
-  id: ID!
-  userId: ID!
-  reason: String!
-  createdAt: DateTime!
-  expiresAt: DateTime
 }
 
 """

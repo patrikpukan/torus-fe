@@ -180,7 +180,11 @@ export function AlgorithmSettingsForm({
         } else {
           toast({
             title: "Execution Failed",
-            description: data.message,
+            description: `${data.message}${
+              data.unpairedUsers !== undefined && data.unpairedUsers > 0
+                ? ` (${data.unpairedUsers} user(s) unpaired)`
+                : ""
+            }`,
             variant: "destructive",
           });
         }

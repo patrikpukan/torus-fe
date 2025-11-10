@@ -24,6 +24,7 @@ export const usePairingsQuery = () => {
       // Determine which user is the "contact" (not the current user)
       const isUserA = pairing.userAId === user.id;
       const contactUser = isUserA ? pairing.userB : pairing.userA;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const effectiveStatus = (pairing as any).derivedStatus || pairing.status;
 
       return {

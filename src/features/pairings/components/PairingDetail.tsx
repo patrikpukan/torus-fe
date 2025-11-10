@@ -143,11 +143,13 @@ export default function PairingDetail({
                 className="mt-0 flex-1 overflow-y-auto px-6 py-4"
               >
                 <MeetingBanner
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   pairingId={(contact as any)?.pairingId as string | undefined}
                   otherUserName={getDisplayName(contact.profile)}
                 />
                 <ReadOnlyUserCalendar
                   userId={contact?.id}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   pairingId={(contact as any)?.pairingId as string | undefined}
                   otherUserName={getDisplayName(contact.profile)}
                 />
@@ -160,6 +162,7 @@ export default function PairingDetail({
                   open={proposalOpen}
                   onOpenChange={setProposalOpen}
                   otherUserId={contact?.id ?? ""}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   pairingId={(contact as any)?.pairingId as string | undefined}
                 />
               </TabsContent>

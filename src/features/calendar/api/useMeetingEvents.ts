@@ -33,6 +33,11 @@ export type PendingConfirmationsQueryData = {
   pendingMeetingConfirmations: MeetingEventItem[];
 };
 
+// Latest meeting for a pairing
+export type LatestMeetingForPairingQueryData = {
+  latestMeetingForPairing: MeetingEventItem | null;
+};
+
 export const MEETING_EVENTS_QUERY = graphql(`
   query GetMeetingEvents($startDate: DateTime!, $endDate: DateTime!) {
     meetingEventsByDateRange(startDate: $startDate, endDate: $endDate) {
@@ -195,6 +200,118 @@ export const useCreateMeetingMutation = () => {
 
   return useMutation(CREATE_MEETING_MUTATION, {
     onCompleted: () => {
+      client.cache.evict({ fieldName: "upcomingMeetings" });
+    },
+  });
+};
+
+// Latest meeting for a pairing
+export const LATEST_MEETING_FOR_PAIRING_QUERY = graphql(`
+  query LatestMeetingForPairing($pairingId: ID!) {
+    latestMeetingForPairing(pairingId: $pairingId) {
+      id
+      startDateTime
+      endDateTime
+      userAId
+      userBId
+      userAConfirmationStatus
+      userBConfirmationStatus
+      userAProposedStartDateTime
+      userAProposedEndDateTime
+      userBProposedStartDateTime
+      userBProposedEndDateTime
+      userANote
+      userBNote
+      pairingId
+      createdAt
+      cancelledAt
+      createdByUserId
+    }
+  }
+`);
+
+export const useLatestMeetingForPairing = (pairingId?: string) => {
+  return useQuery<LatestMeetingForPairingQueryData>(
+    LATEST_MEETING_FOR_PAIRING_QUERY,
+    {
+      variables: { pairingId: pairingId as string },
+      skip: !pairingId,
+      fetchPolicy: "cache-and-network",
+    }
+  );
+};
+
+// Propose different time
+export const PROPOSE_MEETING_TIME_MUTATION = graphql(`
+  mutation ProposeMeetingTime(
+    $input: UpdateMeetingEventConfirmationInput!
+  ) {
+    proposeMeetingTime(input: $input) {
+      id
+      userAConfirmationStatus
+      userBConfirmationStatus
+      userAProposedStartDateTime
+      userAProposedEndDateTime
+      userBProposedStartDateTime
+      userBProposedEndDateTime
+      userANote
+      userBNote
+    }
+  }
+`);
+
+export const useProposeMeetingTimeMutation = () => {
+  const client = useApolloClient();
+  return useMutation(PROPOSE_MEETING_TIME_MUTATION, {
+    onCompleted: () => {
+      client.cache.evict({ fieldName: "latestMeetingForPairing" });
+      client.cache.evict({ fieldName: "pendingMeetingConfirmations" });
+    },
+  });
+};
+
+// Accept proposed time
+export const UPDATE_MEETING_TO_PROPOSED_TIME = graphql(`
+  mutation UpdateMeetingToProposedTime($meetingId: ID!) {
+    updateMeetingToProposedTime(meetingId: $meetingId) {
+      id
+      startDateTime
+      endDateTime
+      userAConfirmationStatus
+      userBConfirmationStatus
+      userAProposedStartDateTime
+      userAProposedEndDateTime
+      userBProposedStartDateTime
+      userBProposedEndDateTime
+    }
+  }
+`);
+
+export const useAcceptProposedTimeMutation = () => {
+  const client = useApolloClient();
+  return useMutation(UPDATE_MEETING_TO_PROPOSED_TIME, {
+    onCompleted: () => {
+      client.cache.evict({ fieldName: "latestMeetingForPairing" });
+      client.cache.evict({ fieldName: "upcomingMeetings" });
+    },
+  });
+};
+
+// Cancel meeting
+export const CANCEL_MEETING_MUTATION = graphql(`
+  mutation CancelMeeting($input: CancelMeetingEventInput!) {
+    cancelMeeting(input: $input) {
+      id
+      cancelledAt
+    }
+  }
+`);
+
+export const useCancelMeetingMutation = () => {
+  const client = useApolloClient();
+  return useMutation(CANCEL_MEETING_MUTATION, {
+    onCompleted: () => {
+      client.cache.evict({ fieldName: "latestMeetingForPairing" });
       client.cache.evict({ fieldName: "upcomingMeetings" });
     },
   });

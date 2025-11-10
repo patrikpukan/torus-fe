@@ -80,7 +80,8 @@ const InviteManagementPage = () => {
           description: `Code: ${result.code}`,
         });
       }
-    } catch {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to create invite code",
@@ -135,7 +136,8 @@ const InviteManagementPage = () => {
           description: `Code: ${result.code}`,
         });
       }
-    } catch {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to create invite code",

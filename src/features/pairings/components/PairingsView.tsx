@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import ReadOnlyUserCalendar from "@/features/calendar/ReadOnlyUserCalendar";
+import MeetingBanner from "@/features/meetings/MeetingBanner";
+import MeetingProposalModal from "@/features/meetings/MeetingProposalModal";
 import { cn } from "@/lib/utils";
 import type { PairingContact } from "@/mocks/mockPairings";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -112,6 +114,7 @@ const PairingsView = () => {
   // List rendering moved to PairingsList
 
   const currentMessages = selectedContact?.messages ?? [];
+  const [proposalOpen, setProposalOpen] = useState(false);
   const currentDraft = selectedContact
     ? (drafts[selectedContact.id] ?? "")
     : "";
@@ -257,7 +260,34 @@ const PairingsView = () => {
                     value="calendar"
                     className="mt-0 flex-1 overflow-y-auto px-6 py-4"
                   >
-                    <ReadOnlyUserCalendar userId={selectedContact?.id} />
+                    <MeetingBanner
+                      pairingId={
+                        (selectedContact as any)?.pairingId as
+                          | string
+                          | undefined
+                      }
+                      otherUserName={getDisplayName(selectedContact.profile)}
+                    />
+                    <ReadOnlyUserCalendar
+                      userId={selectedContact?.id}
+                      pairingId={(selectedContact as any)?.pairingId as string | undefined}
+                      otherUserName={getDisplayName(selectedContact.profile)}
+                    />
+                    <div className="mt-4">
+                      <Button onClick={() => setProposalOpen(true)}>
+                        Propose meeting
+                      </Button>
+                    </div>
+                    <MeetingProposalModal
+                      open={proposalOpen}
+                      onOpenChange={setProposalOpen}
+                      otherUserId={selectedContact?.id ?? ""}
+                      pairingId={
+                        (selectedContact as any)?.pairingId as
+                          | string
+                          | undefined
+                      }
+                    />
                   </TabsContent>
                 </Tabs>
               </CardContent>

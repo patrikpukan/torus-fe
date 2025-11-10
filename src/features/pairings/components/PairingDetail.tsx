@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import ReadOnlyUserCalendar from "@/features/calendar/ReadOnlyUserCalendar";
 import ProfileForm from "@/features/profile/ProfileForm";
+import MeetingProposalModal from "@/features/meetings/MeetingProposalModal";
+import MeetingBanner from "@/features/meetings/MeetingBanner";
 import { cn } from "@/lib/utils";
 import type { PairingContact } from "@/mocks/mockPairings";
 import { getDisplayName } from "@/features/pairings/utils/displayName";
@@ -35,6 +38,7 @@ export default function PairingDetail({
   onSend,
   onBack,
 }: PairingDetailProps) {
+  const [proposalOpen, setProposalOpen] = useState(false);
   const currentDraft = contact ? (drafts[contact.id] ?? "") : "";
   const messages = contact?.messages ?? [];
 
@@ -138,7 +142,26 @@ export default function PairingDetail({
                 value="calendar"
                 className="mt-0 flex-1 overflow-y-auto px-6 py-4"
               >
-                <ReadOnlyUserCalendar userId={contact?.id} />
+                <MeetingBanner
+                  pairingId={(contact as any)?.pairingId as string | undefined}
+                  otherUserName={getDisplayName(contact.profile)}
+                />
+                <ReadOnlyUserCalendar
+                  userId={contact?.id}
+                  pairingId={(contact as any)?.pairingId as string | undefined}
+                  otherUserName={getDisplayName(contact.profile)}
+                />
+                <div className="mt-4">
+                  <Button onClick={() => setProposalOpen(true)}>
+                    Propose meeting
+                  </Button>
+                </div>
+                <MeetingProposalModal
+                  open={proposalOpen}
+                  onOpenChange={setProposalOpen}
+                  otherUserId={contact?.id ?? ""}
+                  pairingId={(contact as any)?.pairingId as string | undefined}
+                />
               </TabsContent>
             </Tabs>
           </CardContent>

@@ -43,9 +43,9 @@ const convertToScheduleXEvents = (
     const startZdt = Temporal.Instant.from(
       occ.occurrenceStart
     ).toZonedDateTimeISO(tz);
-    const endZdt = Temporal.Instant.from(
-      occ.occurrenceEnd
-    ).toZonedDateTimeISO(tz);
+    const endZdt = Temporal.Instant.from(occ.occurrenceEnd).toZonedDateTimeISO(
+      tz
+    );
 
     // Generate unique ID for each occurrence by combining event ID and occurrence start time
     // The backend now provides unique IDs for each occurrence, so we use it directly
@@ -55,9 +55,7 @@ const convertToScheduleXEvents = (
       id: uniqueId,
       title: occ.originalEvent.title || "Untitled",
       calendarId:
-        occ.originalEvent.type === "availability"
-          ? "available"
-          : "unavailable",
+        occ.originalEvent.type === "availability" ? "available" : "unavailable",
       start: startZdt,
       end: endZdt,
     };
@@ -179,7 +177,9 @@ const ProfileCalendar = () => {
           events={[...scheduleXEvents, ...scheduleXMeetingEvents]}
           onEditEvent={handleEditEvent}
           onDeleteEvent={handleDeleteEvent}
-          isEditVisible={(ev) => ev.calendarId !== "meeting" && ev.title !== "Activity Paused"}
+          isEditVisible={(ev) =>
+            ev.calendarId !== "meeting" && ev.title !== "Activity Paused"
+          }
           isDeleteVisible={(ev) => ev.calendarId !== "meeting"}
         />
       </div>

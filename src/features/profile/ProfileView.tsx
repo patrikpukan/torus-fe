@@ -35,16 +35,16 @@ const ProfileView = () => {
     // Query from a week in the past to catch any active pauses
     const startDate = new Date(now);
     startDate.setDate(startDate.getDate() - 7);
-    
+
     return {
       startDate: startDate.toISOString(),
       endDate: farFuture.toISOString(),
     };
   }, []);
-  
+
   // Create now for comparisons (this can change on each render since it's just for comparison logic)
   const now = new Date();
-  
+
   const { data: pauseData } = useActivePauseQuery(pauseQueryVariables) as {
     data?: {
       expandedCalendarOccurrences?: Array<{
@@ -64,20 +64,18 @@ const ProfileView = () => {
     };
   };
 
-  const activePause = pauseData?.expandedCalendarOccurrences?.find(
-    (occ) => {
-      // Check if the pause is currently active or upcoming
-      const occurrenceEnd = new Date(occ.occurrenceEnd);
-      const isCurrentOrFuture = occurrenceEnd > now;
-      
-      return (
-        occ?.originalEvent?.type === "unavailability" &&
-        occ?.originalEvent?.title === "Activity Paused" &&
-        !occ?.originalEvent?.deletedAt &&
-        isCurrentOrFuture
-      );
-    }
-  );
+  const activePause = pauseData?.expandedCalendarOccurrences?.find((occ) => {
+    // Check if the pause is currently active or upcoming
+    const occurrenceEnd = new Date(occ.occurrenceEnd);
+    const isCurrentOrFuture = occurrenceEnd > now;
+
+    return (
+      occ?.originalEvent?.type === "unavailability" &&
+      occ?.originalEvent?.title === "Activity Paused" &&
+      !occ?.originalEvent?.deletedAt &&
+      isCurrentOrFuture
+    );
+  });
 
   // Resume activity mutation
   const { toast } = useToast();

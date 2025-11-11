@@ -17,8 +17,8 @@ export const PAUSE_ACTIVITY_MUTATION = graphql(`
 `);
 
 export const RESUME_ACTIVITY_MUTATION = graphql(`
-  mutation ResumeActivity($eventId: String!) {
-    resumeActivity(eventId: $eventId)
+  mutation ResumeActivity {
+    resumeActivity
   }
 `);
 

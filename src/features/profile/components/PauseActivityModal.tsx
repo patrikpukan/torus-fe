@@ -49,6 +49,7 @@ export function PauseActivityModal({
 
       await pauseActivity({
         variables: { input },
+        refetchQueries: ["GetActivePause"],
       });
 
       toast({

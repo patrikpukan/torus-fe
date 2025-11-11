@@ -30,8 +30,12 @@ const ProfileView = () => {
   const now = new Date();
   const farFuture = new Date();
   farFuture.setFullYear(farFuture.getFullYear() + 10);
+  // Query from a week in the past to catch any active pauses
+  const startDate = new Date(now);
+  startDate.setDate(startDate.getDate() - 7);
+  
   const { data: pauseData } = useActivePauseQuery({
-    startDate: now.toISOString(),
+    startDate: startDate.toISOString(),
     endDate: farFuture.toISOString(),
   }) as {
     data?: {
@@ -53,10 +57,18 @@ const ProfileView = () => {
   };
 
   const activePause = pauseData?.expandedCalendarOccurrences?.find(
-    (occ) =>
-      occ?.originalEvent?.type === "unavailability" &&
-      occ?.originalEvent?.title === "Activity Paused" &&
-      !occ?.originalEvent?.deletedAt
+    (occ) => {
+      // Check if the pause is currently active or upcoming
+      const occurrenceEnd = new Date(occ.occurrenceEnd);
+      const isCurrentOrFuture = occurrenceEnd > now;
+      
+      return (
+        occ?.originalEvent?.type === "unavailability" &&
+        occ?.originalEvent?.title === "Activity Paused" &&
+        !occ?.originalEvent?.deletedAt &&
+        isCurrentOrFuture
+      );
+    }
   );
 
   // Resume activity mutation
@@ -65,13 +77,8 @@ const ProfileView = () => {
     useResumeActivityMutation();
 
   const handleResumeActivity = async () => {
-    if (!activePause?.originalEvent.id) return;
-
     try {
       await resumeActivity({
-        variables: {
-          eventId: activePause.originalEvent.id,
-        },
         refetchQueries: ["GetActivePause"],
       });
 

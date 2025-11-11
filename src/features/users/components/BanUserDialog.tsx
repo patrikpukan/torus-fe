@@ -73,7 +73,9 @@ export const BanUserDialog = ({
     }
 
     try {
-      const expiresAtIso = expiresAt ? startOfDay(expiresAt).toISOString() : null;
+      const expiresAtIso = expiresAt
+        ? startOfDay(expiresAt).toISOString()
+        : null;
 
       await banUser({
         variables: {
@@ -121,71 +123,71 @@ export const BanUserDialog = ({
               a reason and optionally schedule when the ban should expire.
             </DialogDescription>
           </DialogHeader>
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-2">
-            <Label htmlFor="ban-reason">Reason *</Label>
-            <Textarea
-              id="ban-reason"
-              placeholder="Explain why you need to ban this user"
-              value={reason}
-              onChange={(event) => setReason(event.target.value)}
-              disabled={loading}
-              minLength={5}
-              required
-            />
-            <p className="text-xs text-muted-foreground">
-              This will be stored for audit purposes and helps other admins
-              understand the context.
-            </p>
-          </div>
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="space-y-2">
+              <Label htmlFor="ban-reason">Reason *</Label>
+              <Textarea
+                id="ban-reason"
+                placeholder="Explain why you need to ban this user"
+                value={reason}
+                onChange={(event) => setReason(event.target.value)}
+                disabled={loading}
+                minLength={5}
+                required
+              />
+              <p className="text-xs text-muted-foreground">
+                This will be stored for audit purposes and helps other admins
+                understand the context.
+              </p>
+            </div>
 
-          <div className="space-y-2">
-            <Label>Optional expiry</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !expiresAt && "text-muted-foreground"
-                  )}
-                  disabled={loading}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {expiresAt ? format(expiresAt, "PPP") : "Pick a date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={expiresAt ?? undefined}
-                  onSelect={(date) => setExpiresAt(date ?? null)}
-                  disabled={(date) => date < today}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-            <p className="text-xs text-muted-foreground">
-              Leave empty to ban indefinitely. If set, the ban will lift at the
-              start of the selected day.
-            </p>
-          </div>
+            <div className="space-y-2">
+              <Label>Optional expiry</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !expiresAt && "text-muted-foreground"
+                    )}
+                    disabled={loading}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {expiresAt ? format(expiresAt, "PPP") : "Pick a date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={expiresAt ?? undefined}
+                    onSelect={(date) => setExpiresAt(date ?? null)}
+                    disabled={(date) => date < today}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <p className="text-xs text-muted-foreground">
+                Leave empty to ban indefinitely. If set, the ban will lift at
+                the start of the selected day.
+              </p>
+            </div>
 
-          <div className="flex justify-end gap-2">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => safeSetOpen(false)}
-              disabled={loading}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" variant="destructive" disabled={loading}>
-              {loading ? "Saving..." : "Ban user"}
-            </Button>
-          </div>
-        </form>
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => safeSetOpen(false)}
+                disabled={loading}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" variant="destructive" disabled={loading}>
+                {loading ? "Saving..." : "Ban user"}
+              </Button>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
     </>

@@ -1,5 +1,5 @@
-import { useMutation, useQuery } from '@apollo/client/react';
-import { graphql } from 'gql.tada';
+import { useMutation, useQuery } from "@apollo/client/react";
+import { graphql } from "gql.tada";
 
 export const PAUSE_ACTIVITY_MUTATION = graphql(`
   mutation PauseActivity($input: PauseActivityInput!) {
@@ -17,17 +17,14 @@ export const PAUSE_ACTIVITY_MUTATION = graphql(`
 `);
 
 export const RESUME_ACTIVITY_MUTATION = graphql(`
-  mutation ResumeActivity {
-    resumeActivity
+  mutation ResumeActivity($eventId: String!) {
+    resumeActivity(eventId: $eventId)
   }
 `);
 
 export const GET_ACTIVE_PAUSE_QUERY = graphql(`
   query GetActivePause($startDate: DateTime!, $endDate: DateTime!) {
-    expandedCalendarOccurrences(
-      startDate: $startDate
-      endDate: $endDate
-    ) {
+    expandedCalendarOccurrences(startDate: $startDate, endDate: $endDate) {
       id
       occurrenceStart
       occurrenceEnd
@@ -44,12 +41,17 @@ export const GET_ACTIVE_PAUSE_QUERY = graphql(`
   }
 `);
 
+// Type exports
+export type GetActivePauseData = ReturnType<typeof GET_ACTIVE_PAUSE_QUERY>;
+
 // Custom hooks
-export const usePauseActivityMutation = () => 
+export const usePauseActivityMutation = () =>
   useMutation(PAUSE_ACTIVITY_MUTATION);
 
-export const useResumeActivityMutation = () => 
+export const useResumeActivityMutation = () =>
   useMutation(RESUME_ACTIVITY_MUTATION);
 
-export const useActivePauseQuery = (variables: { startDate: string; endDate: string }) =>
-  useQuery(GET_ACTIVE_PAUSE_QUERY, { variables });
+export const useActivePauseQuery = (variables: {
+  startDate: string;
+  endDate: string;
+}) => useQuery(GET_ACTIVE_PAUSE_QUERY, { variables });

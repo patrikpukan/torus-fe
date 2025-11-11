@@ -76,10 +76,11 @@ const ProfileCalendar = () => {
   const [selectedEventForDelete, setSelectedEventForDelete] =
     useState<Occurrence | null>(null);
 
-  // Get date range for current week + 2 weeks ahead (to show upcoming events)
+  // Get date range for current week + extended future (to capture pause events)
   const today = Temporal.Now.plainDateISO();
   const startOfWeek = today.subtract({ days: (today.dayOfWeek + 6) % 7 });
-  const endOfWeek = startOfWeek.add({ days: 20 }); // Show 3 weeks ahead
+  // Extended to 60 days to ensure pause events are visible even if they start in the future
+  const endOfWeek = startOfWeek.add({ days: 60 });
 
   // Convert to ISO strings for API
   const startDate = startOfWeek.toString() + "T00:00:00Z";

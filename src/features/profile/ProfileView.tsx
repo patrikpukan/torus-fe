@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation } from "@apollo/client/react";
 import {
   useGetCurrentUserQuery,
@@ -26,18 +26,26 @@ const ProfileView = () => {
 
   const user = data?.getCurrentUser ?? null;
 
-  // Query for active pause events
-  const now = new Date();
-  const farFuture = new Date();
-  farFuture.setFullYear(farFuture.getFullYear() + 10);
-  // Query from a week in the past to catch any active pauses
-  const startDate = new Date(now);
-  startDate.setDate(startDate.getDate() - 7);
+  // Memoize query variables to prevent unnecessary re-fetches
+  // Using empty dependency array ensures stable variables across renders
+  const pauseQueryVariables = useMemo(() => {
+    const now = new Date();
+    const farFuture = new Date();
+    farFuture.setFullYear(farFuture.getFullYear() + 10);
+    // Query from a week in the past to catch any active pauses
+    const startDate = new Date(now);
+    startDate.setDate(startDate.getDate() - 7);
+    
+    return {
+      startDate: startDate.toISOString(),
+      endDate: farFuture.toISOString(),
+    };
+  }, []);
   
-  const { data: pauseData } = useActivePauseQuery({
-    startDate: startDate.toISOString(),
-    endDate: farFuture.toISOString(),
-  }) as {
+  // Create now for comparisons (this can change on each render since it's just for comparison logic)
+  const now = new Date();
+  
+  const { data: pauseData } = useActivePauseQuery(pauseQueryVariables) as {
     data?: {
       expandedCalendarOccurrences?: Array<{
         id: string;
@@ -205,8 +213,11 @@ const ProfileView = () => {
                 <p className="text-sm text-gray-600">
                   ✅ Active and will be included in next pairing
                 </p>
-                <Button onClick={() => setShowPauseModal(true)}>
-                  Pause Activity
+                <Button
+                  onClick={() => setShowPauseModal(true)}
+                  disabled={mutationLoading}
+                >
+                  {mutationLoading ? "Pausing..." : "Pause Activity"}
                 </Button>
               </div>
             ) : (

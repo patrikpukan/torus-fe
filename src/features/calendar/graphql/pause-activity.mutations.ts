@@ -54,4 +54,10 @@ export const useResumeActivityMutation = () =>
 export const useActivePauseQuery = (variables: {
   startDate: string;
   endDate: string;
-}) => useQuery(GET_ACTIVE_PAUSE_QUERY, { variables });
+}) =>
+  useQuery(GET_ACTIVE_PAUSE_QUERY, {
+    variables,
+    pollInterval: 0, // Disable polling
+    fetchPolicy: "cache-and-network", // Use cache first, then fetch latest
+    notifyOnNetworkStatusChange: true,
+  });

@@ -28,36 +28,40 @@ const convertToScheduleXEvents = (
       }>
     | undefined
 ): CalendarEvent[] => {
-  if (!calendarOccurrences) return [];
+  if (!calendarOccurrences) {
+    return [];
+  }
 
-  return calendarOccurrences
-    .filter((occ) => !occ.originalEvent.deletedAt) // Skip soft-deleted events
-    .map((occ) => {
-      const tz = Temporal.Now.zonedDateTimeISO().timeZoneId;
+  const filtered = calendarOccurrences.filter(
+    (occ) => !occ.originalEvent.deletedAt
+  );
 
-      // Convert backend ISO (UTC) to the user's timezone using occurrence times
-      const startZdt = Temporal.Instant.from(
-        occ.occurrenceStart
-      ).toZonedDateTimeISO(tz);
-      const endZdt = Temporal.Instant.from(
-        occ.occurrenceEnd
-      ).toZonedDateTimeISO(tz);
+  return filtered.map((occ) => {
+    const tz = Temporal.Now.zonedDateTimeISO().timeZoneId;
 
-      // Generate unique ID for each occurrence by combining event ID and occurrence start time
-      // The backend now provides unique IDs for each occurrence, so we use it directly
-      const uniqueId = occ.id;
+    // Convert backend ISO (UTC) to the user's timezone using occurrence times
+    const startZdt = Temporal.Instant.from(
+      occ.occurrenceStart
+    ).toZonedDateTimeISO(tz);
+    const endZdt = Temporal.Instant.from(
+      occ.occurrenceEnd
+    ).toZonedDateTimeISO(tz);
 
-      return {
-        id: uniqueId,
-        title: occ.originalEvent.title || "Untitled",
-        calendarId:
-          occ.originalEvent.type === "availability"
-            ? "available"
-            : "unavailable",
-        start: startZdt,
-        end: endZdt,
-      };
-    });
+    // Generate unique ID for each occurrence by combining event ID and occurrence start time
+    // The backend now provides unique IDs for each occurrence, so we use it directly
+    const uniqueId = occ.id;
+
+    return {
+      id: uniqueId,
+      title: occ.originalEvent.title || "Untitled",
+      calendarId:
+        occ.originalEvent.type === "availability"
+          ? "available"
+          : "unavailable",
+      start: startZdt,
+      end: endZdt,
+    };
+  });
 };
 
 const ProfileCalendar = () => {
@@ -156,7 +160,6 @@ const ProfileCalendar = () => {
     // Placeholder for future implementation
     console.log("Sync with Google Calendar clicked");
   };
-  console.log([...scheduleXEvents, ...scheduleXMeetingEvents]);
 
   return (
     <div>
@@ -176,7 +179,7 @@ const ProfileCalendar = () => {
           events={[...scheduleXEvents, ...scheduleXMeetingEvents]}
           onEditEvent={handleEditEvent}
           onDeleteEvent={handleDeleteEvent}
-          isEditVisible={(ev) => ev.calendarId !== "meeting"}
+          isEditVisible={(ev) => ev.calendarId !== "meeting" && ev.title !== "Activity Paused"}
           isDeleteVisible={(ev) => ev.calendarId !== "meeting"}
         />
       </div>

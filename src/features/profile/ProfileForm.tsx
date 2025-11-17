@@ -194,13 +194,10 @@ const ProfileForm = ({
         <h1 className="text-3xl font-semibold">Profile</h1>
         <div className="flex flex-col items-center gap-2">
           <Avatar className="h-24 w-24">
-            {currentAvatarSrc ? (
-              <AvatarImage src={currentAvatarSrc} alt="Profile picture" />
-            ) : (
-              <AvatarFallback>
-                <CircleUser className="h-16 w-16" strokeWidth={1.5} />
-              </AvatarFallback>
-            )}
+            <AvatarImage src={currentAvatarSrc || undefined} alt="Profile picture" />
+            <AvatarFallback>
+              <CircleUser className="h-16 w-16" strokeWidth={1.5} />
+            </AvatarFallback>
           </Avatar>
 
           {readOnly ? (

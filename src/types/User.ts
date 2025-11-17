@@ -8,6 +8,7 @@ export type UserProfile = {
   about?: string;
   hobbies?: string[] | string;
   interests?: string;
+  preferredActivity?: string;
   profileImageUrl?: string;
   isActive?: boolean;
   organizationId?: string;

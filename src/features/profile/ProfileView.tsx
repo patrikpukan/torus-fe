@@ -112,6 +112,7 @@ const ProfileView = () => {
         ? user.hobbies.split(",").map((hobby) => hobby.trim())
         : [],
       interests: user.interests || undefined,
+      preferredActivity: user.preferredActivity || undefined,
       profileImageUrl: user.profileImageUrl || undefined,
       pairingStatus: user.profileStatus || undefined,
       organization: user.organization?.name || undefined,
@@ -175,6 +176,7 @@ const ProfileView = () => {
             about: updatedProfile.about || null,
             hobbies: hobbiesArray.join(", ") || null,
             interests: updatedProfile.interests || null,
+            preferredActivity: updatedProfile.preferredActivity || null,
             avatarUrl: updatedProfile.profileImageUrl || null,
           },
         },

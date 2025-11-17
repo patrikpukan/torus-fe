@@ -5,7 +5,7 @@ export const LogoText = () => {
       viewBox="0 0 603 197"
       fill="none"
       preserveAspectRatio="xMidYMid meet"
-      style={{ width: "100%", height: "auto", display: "block" }}
+      style={{ width: "100%", height: "auto", display: "block", maxHeight: "2.5rem" }}
     >
       <path
         fill="url(#a)"

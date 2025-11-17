@@ -131,7 +131,7 @@ const BaseLayout = () => {
               </div>
             )}
             {!sidebarOpen && (
-              <div className="w-full max-w-10 hidden group-data-[collapsible=icon]:block ">
+              <div className="w-full max-w-8 h-8 hidden group-data-[collapsible=icon]:block ">
                 <Logo />
               </div>
             )}

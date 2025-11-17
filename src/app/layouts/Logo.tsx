@@ -5,7 +5,7 @@ export const Logo = () => {
       viewBox="0 0 202 197"
       fill="none"
       preserveAspectRatio="xMidYMid meet"
-      style={{ width: "100%", height: "auto", display: "block" }}
+      style={{ width: "100%", height: "100%", display: "block" }}
     >
       <path
         fill="url(#a)"

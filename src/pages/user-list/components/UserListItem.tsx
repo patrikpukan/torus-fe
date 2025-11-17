@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/tooltip";
 import type { UsersQueryItem } from "@/features/users/api/useUsersQuery";
 import BanUserDialog from "@/features/users/components/BanUserDialog";
+import { getRoleLabel } from "@/lib/roleUtils";
 
 export type UserTableRow = UsersQueryItem & {
   displayName: string;
@@ -126,8 +127,8 @@ export const getColumns = (currentUserId?: string): ColumnDef<UserTableRow>[] =>
       }
 
       return (
-        <Badge variant="outline" className="capitalize">
-          {role}
+        <Badge variant="outline">
+          {getRoleLabel(role)}
         </Badge>
       );
     },

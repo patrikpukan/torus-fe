@@ -29,6 +29,7 @@ import {
   type UsersQueryItem,
 } from "@/features/users/api/useUsersQuery";
 import { useAuth } from "@/hooks/useAuth";
+import { getRoleLabel, getRoleOptions } from "@/lib/roleUtils";
 
 import { getColumns, type UserTableRow } from "./UserListItem";
 
@@ -63,17 +64,6 @@ const AdminUserTable = () => {
       })),
     [users]
   );
-
-  const availableRoles = useMemo(() => {
-    const roles = new Set<string>();
-    tableData.forEach((user) => {
-      const role = user.role?.trim();
-      if (role) {
-        roles.add(role);
-      }
-    });
-    return Array.from(roles).sort((a, b) => a.localeCompare(b));
-  }, [tableData]);
 
   const availableStatuses = useMemo(() => {
     const statuses = new Set<string>();
@@ -154,9 +144,9 @@ const AdminUserTable = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All roles</SelectItem>
-                {availableRoles.map((role) => (
-                  <SelectItem key={role} value={role}>
-                    {role}
+                {getRoleOptions().map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>

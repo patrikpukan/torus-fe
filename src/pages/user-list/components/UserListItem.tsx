@@ -51,7 +51,7 @@ export const columns: ColumnDef<UserTableRow>[] = [
           className="flex items-center gap-3"
         >
           <Avatar className="h-9 w-9">
-            <AvatarImage alt={user.displayName} />
+            <AvatarImage alt={user.displayName} src={user.profileImageUrl || undefined} />
             <AvatarFallback delayMs={0}>
               {user.displayName?.[0]?.toUpperCase() ?? "U"}
             </AvatarFallback>

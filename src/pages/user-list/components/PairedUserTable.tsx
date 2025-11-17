@@ -36,7 +36,9 @@ type PairedUserTableProps = {
   errorMessage?: string | null;
 };
 
-const getColumnsForPairedTable = (currentUserId?: string): ColumnDef<PairedUserRow>[] => [
+const getColumnsForPairedTable = (
+  currentUserId?: string
+): ColumnDef<PairedUserRow>[] => [
   {
     accessorKey: "displayName",
     header: () => (
@@ -46,13 +48,13 @@ const getColumnsForPairedTable = (currentUserId?: string): ColumnDef<PairedUserR
     ),
     cell: ({ row }) => {
       const user = row.original;
-      const href = user.id === currentUserId ? "/profile" : `/user-list/${encodeURIComponent(user.id)}`;
+      const href =
+        user.id === currentUserId
+          ? "/profile"
+          : `/user-list/${encodeURIComponent(user.id)}`;
 
       return (
-        <Link
-          to={href}
-          className="flex items-center gap-3"
-        >
+        <Link to={href} className="flex items-center gap-3">
           <Avatar className="h-9 w-9">
             <AvatarImage alt={user.displayName} src={user.profileImageUrl} />
             <AvatarFallback delayMs={0}>
@@ -99,7 +101,10 @@ const getColumnsForPairedTable = (currentUserId?: string): ColumnDef<PairedUserR
     enableHiding: false,
     cell: ({ row }) => {
       const user = row.original;
-      const href = user.id === currentUserId ? "/profile" : `/user-list/${encodeURIComponent(user.id)}`;
+      const href =
+        user.id === currentUserId
+          ? "/profile"
+          : `/user-list/${encodeURIComponent(user.id)}`;
 
       return (
         <div className="flex justify-end">
@@ -109,10 +114,7 @@ const getColumnsForPairedTable = (currentUserId?: string): ColumnDef<PairedUserR
             className="h-10 w-10 text-muted-foreground hover:text-foreground [&_svg]:size-6"
             asChild
           >
-            <Link
-              to={href}
-              aria-label={`View details for ${user.displayName}`}
-            >
+            <Link to={href} aria-label={`View details for ${user.displayName}`}>
               <Eye />
             </Link>
           </Button>

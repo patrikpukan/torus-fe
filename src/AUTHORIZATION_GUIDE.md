@@ -34,6 +34,7 @@
 - ```tsx
 
   ```
+
 - import { ProtectedRoute } from "@/components/ProtectedRoute";
 - import AdminPage from "@/pages/AdminPage";
 -
@@ -63,6 +64,7 @@
 - ```
 
   ```
+
 -
 - ## Method 2: Hook-Based Conditional Rendering
 -
@@ -71,6 +73,7 @@
 - ```tsx
 
   ```
+
 - import { useAuth } from "@/hooks/useAuth";
 -
 - export function UserCard({ user }: { user: User }) {
@@ -88,6 +91,7 @@
 - ```
 
   ```
+
 -
 - ## Method 3: Role-Based Conditional Routes (in App.tsx)
 -
@@ -96,6 +100,7 @@
 - ```tsx
 
   ```
+
 - import { useAuth } from "@/hooks/useAuth";
 - import { Navigate } from "react-router-dom";
 -
@@ -120,6 +125,7 @@
 - ```
 
   ```
+
 -
 - ## useAuth() Hook Reference
 -
@@ -128,6 +134,7 @@
 - ```tsx
 
   ```
+
 - const {
 - appRole, // "user" | "org_admin" | "super_admin" | undefined
 - organizationId, // string (org ID) | undefined
@@ -141,6 +148,7 @@
 - ```
 
   ```
+
 -
 - ## Examples
 -
@@ -149,6 +157,7 @@
 - ```tsx
 
   ```
+
 - // In App.tsx
 - <Route
 - path="admin/users"
@@ -161,6 +170,7 @@
 - ```
 
   ```
+
 -
 - When a user without org_admin or super_admin role tries to access /admin/users,
 - they are redirected to /access-denied page.
@@ -170,6 +180,7 @@
 - ```tsx
 
   ```
+
 - import { useAuth } from "@/hooks/useAuth";
 -
 - export function UserProfile({ user }: { user: User }) {
@@ -188,12 +199,14 @@
 - ```
 
   ```
+
 -
 - ### Example 3: Check for Specific Role
 -
 - ```tsx
 
   ```
+
 - import { useAuth } from "@/hooks/useAuth";
 -
 - export function AdminPanel() {
@@ -214,12 +227,14 @@
 - ```
 
   ```
+
 -
 - ### Example 4: Show Navigation Links Based on Role
 -
 - ```tsx
 
   ```
+
 - import { useAuth } from "@/hooks/useAuth";
 -
 - export function Navigation() {
@@ -239,6 +254,7 @@
 - ```
 
   ```
+
 -
 - ## AccessDeniedPage
 -

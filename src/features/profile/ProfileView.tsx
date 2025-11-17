@@ -29,7 +29,7 @@ const ProfileView = () => {
   const user = data?.getCurrentUser ?? null;
 
   // Only show pause activity for regular members (not admins)
-  const canBePaired = appRole !== 'org_admin' && appRole !== 'super_admin';
+  const canBePaired = appRole !== "org_admin" && appRole !== "super_admin";
 
   // Memoize query variables to prevent unnecessary re-fetches
   // Using empty dependency array ensures stable variables across renders

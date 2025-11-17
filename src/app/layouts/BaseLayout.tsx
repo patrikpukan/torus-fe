@@ -186,7 +186,9 @@ const BaseLayout = () => {
                     </Avatar>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium">{userDisplayName}</span>
+                    <span className="text-sm font-medium">
+                      {userDisplayName}
+                    </span>
                     {userRole && (
                       <span className="text-xs text-muted-foreground capitalize">
                         {userRole.replace(/_/g, " ")}

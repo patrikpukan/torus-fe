@@ -187,7 +187,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
     // Clear Apollo Client cache to remove stale user data
     await apolloClient.clearStore();
-    
+
     resetAuthState();
   }, [apolloClient, resetAuthState]);
 

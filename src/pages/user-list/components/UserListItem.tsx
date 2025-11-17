@@ -19,7 +19,9 @@ export type UserTableRow = UsersQueryItem & {
   displayName: string;
 };
 
-export const getColumns = (currentUserId?: string): ColumnDef<UserTableRow>[] => [
+export const getColumns = (
+  currentUserId?: string
+): ColumnDef<UserTableRow>[] => [
   {
     accessorKey: "displayName",
     header: ({ column }) => {
@@ -45,15 +47,18 @@ export const getColumns = (currentUserId?: string): ColumnDef<UserTableRow>[] =>
     enableSorting: true,
     cell: ({ row }) => {
       const user = row.original;
-      const href = user.id === currentUserId ? "/profile" : `/user-list/${encodeURIComponent(user.id)}`;
+      const href =
+        user.id === currentUserId
+          ? "/profile"
+          : `/user-list/${encodeURIComponent(user.id)}`;
 
       return (
-        <Link
-          to={href}
-          className="flex items-center gap-3"
-        >
+        <Link to={href} className="flex items-center gap-3">
           <Avatar className="h-9 w-9">
-            <AvatarImage alt={user.displayName} src={user.profileImageUrl || undefined} />
+            <AvatarImage
+              alt={user.displayName}
+              src={user.profileImageUrl || undefined}
+            />
             <AvatarFallback delayMs={0}>
               {user.displayName?.[0]?.toUpperCase() ?? "U"}
             </AvatarFallback>
@@ -126,11 +131,7 @@ export const getColumns = (currentUserId?: string): ColumnDef<UserTableRow>[] =>
         return <span className="text-muted-foreground">-</span>;
       }
 
-      return (
-        <Badge variant="outline">
-          {getRoleLabel(role)}
-        </Badge>
-      );
+      return <Badge variant="outline">{getRoleLabel(role)}</Badge>;
     },
   },
   {

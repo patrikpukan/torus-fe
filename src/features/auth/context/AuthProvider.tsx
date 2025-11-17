@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 import type { Session, User } from "@supabase/supabase-js";
+import { useApolloClient } from "@apollo/client/react";
 import { supabaseClient } from "@/lib/supabaseClient.ts";
 import {
   AuthContext,
@@ -17,6 +18,7 @@ import { useGetCurrentUserQuery } from "../api/useGetCurrentUserQuery";
 import { useToast } from "@/hooks/use-toast";
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
+  const apolloClient = useApolloClient();
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [appRole, setAppRole] = useState<UserRoleType | undefined>(undefined);
@@ -183,8 +185,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       throw error;
     }
 
+    // Clear Apollo Client cache to remove stale user data
+    await apolloClient.clearStore();
+
     resetAuthState();
-  }, [resetAuthState]);
+  }, [apolloClient, resetAuthState]);
 
   const value = useMemo<AuthContextValue>(
     () => ({

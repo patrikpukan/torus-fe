@@ -6,6 +6,7 @@ export type UsersQueryItem = {
   email: string;
   firstName?: string | null;
   lastName?: string | null;
+  profileImageUrl?: string | null;
   profileStatus?: string | null;
   role?: string | null;
   activeBan?: {
@@ -27,6 +28,7 @@ export const USERS_QUERY = graphql(`
       email
       firstName
       lastName
+      profileImageUrl
       profileStatus
       role
       activeBan {

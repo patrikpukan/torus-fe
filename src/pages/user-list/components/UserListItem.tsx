@@ -13,12 +13,15 @@ import {
 } from "@/components/ui/tooltip";
 import type { UsersQueryItem } from "@/features/users/api/useUsersQuery";
 import BanUserDialog from "@/features/users/components/BanUserDialog";
+import { getRoleLabel } from "@/lib/roleUtils";
 
 export type UserTableRow = UsersQueryItem & {
   displayName: string;
 };
 
-export const columns: ColumnDef<UserTableRow>[] = [
+export const getColumns = (
+  currentUserId?: string
+): ColumnDef<UserTableRow>[] => [
   {
     accessorKey: "displayName",
     header: ({ column }) => {
@@ -44,14 +47,18 @@ export const columns: ColumnDef<UserTableRow>[] = [
     enableSorting: true,
     cell: ({ row }) => {
       const user = row.original;
+      const href =
+        user.id === currentUserId
+          ? "/profile"
+          : `/user-list/${encodeURIComponent(user.id)}`;
 
       return (
-        <Link
-          to={`/user-list/${encodeURIComponent(user.id)}`}
-          className="flex items-center gap-3"
-        >
+        <Link to={href} className="flex items-center gap-3">
           <Avatar className="h-9 w-9">
-            <AvatarImage alt={user.displayName} />
+            <AvatarImage
+              alt={user.displayName}
+              src={user.profileImageUrl || undefined}
+            />
             <AvatarFallback delayMs={0}>
               {user.displayName?.[0]?.toUpperCase() ?? "U"}
             </AvatarFallback>
@@ -124,11 +131,7 @@ export const columns: ColumnDef<UserTableRow>[] = [
         return <span className="text-muted-foreground">-</span>;
       }
 
-      return (
-        <Badge variant="outline" className="capitalize">
-          {role}
-        </Badge>
-      );
+      return <Badge variant="outline">{getRoleLabel(role)}</Badge>;
     },
   },
   {

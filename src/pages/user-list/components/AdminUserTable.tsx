@@ -28,8 +28,10 @@ import {
   useUsersQuery,
   type UsersQueryItem,
 } from "@/features/users/api/useUsersQuery";
+import { useAuth } from "@/hooks/useAuth";
+import { getRoleLabel, getRoleOptions } from "@/lib/roleUtils";
 
-import { columns, type UserTableRow } from "./UserListItem";
+import { getColumns, type UserTableRow } from "./UserListItem";
 
 const EMPTY_USERS: UsersQueryItem[] = [];
 
@@ -44,12 +46,15 @@ const buildDisplayName = (user: UsersQueryItem): string => {
 
 const AdminUserTable = () => {
   const { data, loading, error } = useUsersQuery();
+  const { user: currentUser } = useAuth();
   const users = data?.users ?? EMPTY_USERS;
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const columns = useMemo(() => getColumns(currentUser?.id), [currentUser?.id]);
 
   const tableData = useMemo<UserTableRow[]>(
     () =>
@@ -59,17 +64,6 @@ const AdminUserTable = () => {
       })),
     [users]
   );
-
-  const availableRoles = useMemo(() => {
-    const roles = new Set<string>();
-    tableData.forEach((user) => {
-      const role = user.role?.trim();
-      if (role) {
-        roles.add(role);
-      }
-    });
-    return Array.from(roles).sort((a, b) => a.localeCompare(b));
-  }, [tableData]);
 
   const availableStatuses = useMemo(() => {
     const statuses = new Set<string>();
@@ -150,9 +144,9 @@ const AdminUserTable = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All roles</SelectItem>
-                {availableRoles.map((role) => (
-                  <SelectItem key={role} value={role}>
-                    {role}
+                {getRoleOptions().map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>

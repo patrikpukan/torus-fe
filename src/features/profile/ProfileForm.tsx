@@ -18,6 +18,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { UserProfile } from "@/types/User.ts";
 import { useAuth } from "@/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -65,6 +72,7 @@ const ProfileForm = ({
         { key: "lastName", label: "Surname" },
         { key: "accountStatus", label: "Account status" },
         { key: "pairingStatus", label: "Pairing status" },
+        { key: "preferredActivity", label: "Preferred Activity" },
       ] as const,
     []
   );
@@ -194,13 +202,13 @@ const ProfileForm = ({
         <h1 className="text-3xl font-semibold">Profile</h1>
         <div className="flex flex-col items-center gap-2">
           <Avatar className="h-24 w-24">
-            {currentAvatarSrc ? (
-              <AvatarImage src={currentAvatarSrc} alt="Profile picture" />
-            ) : (
-              <AvatarFallback>
-                <CircleUser className="h-16 w-16" strokeWidth={1.5} />
-              </AvatarFallback>
-            )}
+            <AvatarImage
+              src={currentAvatarSrc || undefined}
+              alt="Profile picture"
+            />
+            <AvatarFallback>
+              <CircleUser className="h-16 w-16" strokeWidth={1.5} />
+            </AvatarFallback>
           </Avatar>
 
           {readOnly ? (
@@ -243,8 +251,41 @@ const ProfileForm = ({
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {fields.map(({ key, label }) => {
           const fieldId = `profile-${key}`;
-
           const isReadonly = isFieldReadOnly(key);
+
+          // Special handling for preferredActivity (Select component)
+          if (key === "preferredActivity") {
+            return (
+              <Field key={key}>
+                <FieldLabel htmlFor={fieldId}>{label}</FieldLabel>
+                <FieldContent className="bg-card">
+                  <Select
+                    value={getFieldValue(key) || ""}
+                    onValueChange={(newValue) => {
+                      if (!onChange) return;
+                      onChange({
+                        ...value,
+                        [key]: newValue || undefined,
+                      } as UserProfile);
+                    }}
+                    disabled={isReadonly}
+                  >
+                    <SelectTrigger id={fieldId}>
+                      <SelectValue placeholder="Select an activity" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Coffee">Coffee</SelectItem>
+                      <SelectItem value="Lunch">Lunch</SelectItem>
+                      <SelectItem value="Walk">Walk</SelectItem>
+                      <SelectItem value="Video Call">Video Call</SelectItem>
+                      <SelectItem value="Phone Call">Phone Call</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FieldContent>
+              </Field>
+            );
+          }
 
           return (
             <Field key={key}>

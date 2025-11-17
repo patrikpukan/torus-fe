@@ -15,9 +15,11 @@ import {
   useResumeActivityMutation,
 } from "@/features/calendar/graphql/pause-activity.mutations";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 const ProfileView = () => {
   const { data, loading, error } = useGetCurrentUserQuery();
+  const { appRole } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [updateProfile, { loading: mutationLoading }] =
@@ -25,6 +27,9 @@ const ProfileView = () => {
   const [showPauseModal, setShowPauseModal] = useState(false);
 
   const user = data?.getCurrentUser ?? null;
+
+  // Only show pause activity for regular members (not admins)
+  const canBePaired = appRole !== "org_admin" && appRole !== "super_admin";
 
   // Memoize query variables to prevent unnecessary re-fetches
   // Using empty dependency array ensures stable variables across renders
@@ -112,6 +117,7 @@ const ProfileView = () => {
         ? user.hobbies.split(",").map((hobby) => hobby.trim())
         : [],
       interests: user.interests || undefined,
+      preferredActivity: user.preferredActivity || undefined,
       profileImageUrl: user.profileImageUrl || undefined,
       pairingStatus: user.profileStatus || undefined,
       organization: user.organization?.name || undefined,
@@ -175,6 +181,7 @@ const ProfileView = () => {
             about: updatedProfile.about || null,
             hobbies: hobbiesArray.join(", ") || null,
             interests: updatedProfile.interests || null,
+            preferredActivity: updatedProfile.preferredActivity || null,
             avatarUrl: updatedProfile.profileImageUrl || null,
           },
         },
@@ -203,41 +210,43 @@ const ProfileView = () => {
             <SendResetPasswordButton email={profile.email} variant="outline" />
           </div>
 
-          {/* Pause Activity Section */}
-          <div className="mt-6 border-t pt-6">
-            <h3 className="text-lg font-medium mb-4">Pairing Availability</h3>
-            {!activePause ? (
-              <div className="space-y-4">
-                <p className="text-sm text-gray-600">
-                  ✅ Active and will be included in next pairing
-                </p>
-                <Button
-                  onClick={() => setShowPauseModal(true)}
-                  disabled={mutationLoading}
-                >
-                  {mutationLoading ? "Pausing..." : "Pause Activity"}
-                </Button>
-              </div>
-            ) : (
-              <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 space-y-3">
-                <p className="text-sm font-medium text-yellow-900">
-                  ⏸️ Your activity is paused
-                </p>
-                {activePause.originalEvent.description && (
-                  <p className="text-sm text-yellow-700">
-                    {activePause.originalEvent.description}
+          {/* Pause Activity Section - Only for regular members */}
+          {canBePaired && (
+            <div className="mt-6 border-t pt-6">
+              <h3 className="text-lg font-medium mb-4">Pairing Availability</h3>
+              {!activePause ? (
+                <div className="space-y-4">
+                  <p className="text-sm text-gray-600">
+                    ✅ Active and will be included in next pairing
                   </p>
-                )}
-                <Button
-                  onClick={handleResumeActivity}
-                  disabled={resumeLoading}
-                  variant="outline"
-                >
-                  {resumeLoading ? "Resuming..." : "Resume Activity"}
-                </Button>
-              </div>
-            )}
-          </div>
+                  <Button
+                    onClick={() => setShowPauseModal(true)}
+                    disabled={mutationLoading}
+                  >
+                    {mutationLoading ? "Pausing..." : "Pause Activity"}
+                  </Button>
+                </div>
+              ) : (
+                <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 space-y-3">
+                  <p className="text-sm font-medium text-yellow-900">
+                    ⏸️ Your activity is paused
+                  </p>
+                  {activePause.originalEvent.description && (
+                    <p className="text-sm text-yellow-700">
+                      {activePause.originalEvent.description}
+                    </p>
+                  )}
+                  <Button
+                    onClick={handleResumeActivity}
+                    disabled={resumeLoading}
+                    variant="outline"
+                  >
+                    {resumeLoading ? "Resuming..." : "Resume Activity"}
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
       <PauseActivityModal

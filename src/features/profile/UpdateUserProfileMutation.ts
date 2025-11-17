@@ -10,6 +10,7 @@ export const UPDATE_USER_PROFILE = graphql(`
       about
       hobbies
       interests
+      preferredActivity
       profileImageUrl
       profileStatus
       isActive

@@ -20,6 +20,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/features/pairings/components/dateUtils";
+import { useAuth } from "@/hooks/useAuth";
 
 export type PairedUserRow = {
   id: string;
@@ -35,7 +36,9 @@ type PairedUserTableProps = {
   errorMessage?: string | null;
 };
 
-const columns: ColumnDef<PairedUserRow>[] = [
+const getColumnsForPairedTable = (
+  currentUserId?: string
+): ColumnDef<PairedUserRow>[] => [
   {
     accessorKey: "displayName",
     header: () => (
@@ -45,12 +48,13 @@ const columns: ColumnDef<PairedUserRow>[] = [
     ),
     cell: ({ row }) => {
       const user = row.original;
+      const href =
+        user.id === currentUserId
+          ? "/profile"
+          : `/user-list/${encodeURIComponent(user.id)}`;
 
       return (
-        <Link
-          to={`/user-list/${encodeURIComponent(user.id)}`}
-          className="flex items-center gap-3"
-        >
+        <Link to={href} className="flex items-center gap-3">
           <Avatar className="h-9 w-9">
             <AvatarImage alt={user.displayName} src={user.profileImageUrl} />
             <AvatarFallback delayMs={0}>
@@ -97,6 +101,10 @@ const columns: ColumnDef<PairedUserRow>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const user = row.original;
+      const href =
+        user.id === currentUserId
+          ? "/profile"
+          : `/user-list/${encodeURIComponent(user.id)}`;
 
       return (
         <div className="flex justify-end">
@@ -106,10 +114,7 @@ const columns: ColumnDef<PairedUserRow>[] = [
             className="h-10 w-10 text-muted-foreground hover:text-foreground [&_svg]:size-6"
             asChild
           >
-            <Link
-              to={`/user-list/${encodeURIComponent(user.id)}`}
-              aria-label={`View details for ${user.displayName}`}
-            >
+            <Link to={href} aria-label={`View details for ${user.displayName}`}>
               <Eye />
             </Link>
           </Button>
@@ -124,7 +129,13 @@ const PairedUserTable = ({
   loading,
   errorMessage,
 }: PairedUserTableProps) => {
+  const { user: currentUser } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
+
+  const columns = useMemo(
+    () => getColumnsForPairedTable(currentUser?.id),
+    [currentUser?.id]
+  );
 
   const filteredData = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();

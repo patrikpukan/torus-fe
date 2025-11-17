@@ -28,8 +28,9 @@ import {
   useUsersQuery,
   type UsersQueryItem,
 } from "@/features/users/api/useUsersQuery";
+import { useAuth } from "@/hooks/useAuth";
 
-import { columns, type UserTableRow } from "./UserListItem";
+import { getColumns, type UserTableRow } from "./UserListItem";
 
 const EMPTY_USERS: UsersQueryItem[] = [];
 
@@ -44,12 +45,15 @@ const buildDisplayName = (user: UsersQueryItem): string => {
 
 const AdminUserTable = () => {
   const { data, loading, error } = useUsersQuery();
+  const { user: currentUser } = useAuth();
   const users = data?.users ?? EMPTY_USERS;
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const columns = useMemo(() => getColumns(currentUser?.id), [currentUser?.id]);
 
   const tableData = useMemo<UserTableRow[]>(
     () =>

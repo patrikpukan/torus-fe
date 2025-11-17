@@ -18,7 +18,7 @@ export type UserTableRow = UsersQueryItem & {
   displayName: string;
 };
 
-export const columns: ColumnDef<UserTableRow>[] = [
+export const getColumns = (currentUserId?: string): ColumnDef<UserTableRow>[] => [
   {
     accessorKey: "displayName",
     header: ({ column }) => {
@@ -44,10 +44,11 @@ export const columns: ColumnDef<UserTableRow>[] = [
     enableSorting: true,
     cell: ({ row }) => {
       const user = row.original;
+      const href = user.id === currentUserId ? "/profile" : `/user-list/${encodeURIComponent(user.id)}`;
 
       return (
         <Link
-          to={`/user-list/${encodeURIComponent(user.id)}`}
+          to={href}
           className="flex items-center gap-3"
         >
           <Avatar className="h-9 w-9">

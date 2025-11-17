@@ -173,9 +173,34 @@ const BaseLayout = () => {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter className="mt-auto">
-          <div className="px-2 py-1.5 text-xs text-sidebar-foreground/70">
-            {sidebarOpen && (
-              <div className="grid grid-cols-[auto_1fr] gap-2 items-center">
+          {user ? (
+            <div className="px-2 py-1.5 text-xs text-sidebar-foreground/70">
+              {sidebarOpen && (
+                <div className="grid grid-cols-[auto_1fr] gap-2 items-center">
+                  <div className="max-w-10">
+                    <Avatar>
+                      <AvatarImage src={profileImageUrl} />
+                      <AvatarFallback>
+                        {user?.email?.[0]?.toUpperCase() ?? "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">{userDisplayName}</span>
+                    {userRole && (
+                      <span className="text-xs text-muted-foreground capitalize">
+                        {userRole.replace(/_/g, " ")}
+                      </span>
+                    )}
+                    {userOrganization && (
+                      <span className="text-xs text-muted-foreground">
+                        {userOrganization}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+              {!sidebarOpen && (
                 <div className="max-w-10">
                   <Avatar>
                     <AvatarImage src={profileImageUrl} />
@@ -184,32 +209,9 @@ const BaseLayout = () => {
                     </AvatarFallback>
                   </Avatar>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium">{userDisplayName}</span>
-                  {userRole && (
-                    <span className="text-xs text-muted-foreground capitalize">
-                      {userRole.replace(/_/g, " ")}
-                    </span>
-                  )}
-                  {userOrganization && (
-                    <span className="text-xs text-muted-foreground">
-                      {userOrganization}
-                    </span>
-                  )}
-                </div>
-              </div>
-            )}
-            {!sidebarOpen && (
-              <div className="max-w-10">
-                <Avatar>
-                  <AvatarImage src={profileImageUrl} />
-                  <AvatarFallback>
-                    {user?.email?.[0]?.toUpperCase() ?? "U"}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          ) : null}
         </SidebarFooter>
         <SidebarRail />
       </Sidebar>

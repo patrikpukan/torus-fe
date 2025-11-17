@@ -29,7 +29,7 @@ import {
   type UsersQueryItem,
 } from "@/features/users/api/useUsersQuery";
 import { useAuth } from "@/hooks/useAuth";
-import { getRoleLabel, getRoleOptions } from "@/lib/roleUtils";
+import { getRoleOptions } from "@/lib/roleUtils";
 
 import { getColumns, type UserTableRow } from "./UserListItem";
 

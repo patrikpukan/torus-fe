@@ -11,8 +11,6 @@ const AuthCallbackPage = () => {
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    let isMounted = true;
-
     const completeAuth = async () => {
       // Some Supabase flows deliver a `code` via query params that must be exchanged manually.
       const searchParams = new URLSearchParams(window.location.search);
@@ -22,9 +20,6 @@ const AuthCallbackPage = () => {
         const { error } =
           await supabaseClient.auth.exchangeCodeForSession(verificationCode);
 
-        if (!isMounted) {
-          return;
-        }
 
         if (error) {
           setHasError(true);
@@ -34,10 +29,6 @@ const AuthCallbackPage = () => {
       }
 
       const { data, error } = await supabaseClient.auth.getSession();
-
-      if (!isMounted) {
-        return;
-      }
 
       if (error) {
         setHasError(true);
@@ -58,10 +49,6 @@ const AuthCallbackPage = () => {
     };
 
     void completeAuth();
-
-    return () => {
-      isMounted = false;
-    };
   }, [navigate]);
 
   return (

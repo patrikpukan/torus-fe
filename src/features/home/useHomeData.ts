@@ -3,6 +3,7 @@ import { useMemo } from "react";
 
 import { useAuth } from "@/features/auth/context/UseAuth.tsx";
 import { usePairingsQuery } from "@/features/pairings/api/usePairingsQuery";
+import { useActivePairingPeriodQuery } from "@/features/pairings/api/useActivePairingPeriodQuery";
 import type { PairingContact } from "@/mocks/mockPairings";
 
 type HomeStats = {
@@ -44,13 +45,19 @@ const getStats = (
 const useHomeData = (): UseHomeDataResult => {
   const authCtx = useAuth();
   const { pairingContacts, loading } = usePairingsQuery();
+  const { data: activePeriodData } = useActivePairingPeriodQuery();
+  const activePeriodStart =
+    activePeriodData?.activePairingPeriod?.startDate ?? null;
 
   return useMemo(() => {
     // Get the latest pairing (most recent)
     const currentPairing =
       pairingContacts.length > 0 ? pairingContacts[0] : null;
 
-    const stats = getStats(pairingContacts, currentPairing?.pairedAt ?? null);
+    const stats = getStats(
+      pairingContacts,
+      activePeriodStart ?? currentPairing?.pairedAt ?? null
+    );
 
     return {
       firstName: authCtx.user?.user_metadata?.first_name,
@@ -59,7 +66,7 @@ const useHomeData = (): UseHomeDataResult => {
       isLoading: loading,
       isEmpty: !currentPairing,
     };
-  }, [pairingContacts, loading]);
+  }, [pairingContacts, loading, activePeriodStart]);
 };
 
 export default useHomeData;

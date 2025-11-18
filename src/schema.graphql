@@ -124,6 +124,20 @@ enum PairingStatusEnum {
   planned
 }
 
+enum PairingPeriodStatusEnum {
+  upcoming
+  active
+  closed
+}
+
+type PairingPeriod {
+  id: ID!
+  organizationId: ID!
+  startDate: DateTime!
+  endDate: DateTime
+  status: PairingPeriodStatusEnum!
+}
+
 type PairingStatusOverviewType {
   count: Int!
   status: String!
@@ -149,6 +163,7 @@ enum ProfileStatusEnum {
 type Query {
   getAlgorithmSettings(organizationId: String!): AlgorithmSettings!
   getCurrentUser: CurrentUser
+  activePairingPeriod: PairingPeriod
   anonUsers: [User!]!
   getPairedUsers: [User!]!
   getPairingHistory: [PairingHistory!]!

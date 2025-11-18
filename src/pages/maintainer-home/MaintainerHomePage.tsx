@@ -28,6 +28,7 @@ import { useGetCurrentUserQuery } from "@/features/auth/api/useGetCurrentUserQue
 import { useStatisticsQuery } from "@/features/statistics/api/useStatisticsQuery";
 import { useAuth } from "@/hooks/useAuth";
 import { formatDate } from "@/features/pairings/components/dateUtils.ts";
+import { useActivePairingPeriodQuery } from "@/features/pairings/api/useActivePairingPeriodQuery";
 
 const MaintainerSkeleton = () => (
   <div className="space-y-6">
@@ -86,6 +87,10 @@ const MaintainerHomePage = () => {
   const { data: statsData, loading: statsLoading } =
     useStatisticsQuery(statsFilter);
   const statistics = statsData?.statistics;
+
+  const { data: activePeriodData } = useActivePairingPeriodQuery();
+  const activePeriodStart =
+    activePeriodData?.activePairingPeriod?.startDate ?? null;
 
   const newUsersCount = statistics?.newUsersCount ?? 0;
   const reportsCount = statistics?.reportsCount ?? 0;
@@ -200,7 +205,7 @@ const MaintainerHomePage = () => {
               A new pairing cycle has been running since
             </CardTitle>
             <CardDescription className="text-lg font-semibold text-foreground">
-              {formatDate("2025-11-18T00:00:00Z")}
+              {formatDate(activePeriodStart) || "—"}
             </CardDescription>
           </CardHeader>
         </Card>

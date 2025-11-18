@@ -129,7 +129,7 @@ const HomePage = () => {
               A new pairing has been running since
             </CardTitle>
             <CardDescription className="text-lg font-semibold text-foreground">
-              {activeSince}
+              {activeSince || "—"}
             </CardDescription>
           </CardHeader>
         </Card>

@@ -383,6 +383,20 @@ export type PairingHistory = {
   userBId: Scalars['ID']['output'];
 };
 
+export type PairingPeriod = {
+  __typename?: 'PairingPeriod';
+  endDate: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['ID']['output'];
+  organizationId: Scalars['ID']['output'];
+  startDate: Scalars['DateTime']['output'];
+  status: PairingPeriodStatusEnum;
+};
+
+export type PairingPeriodStatusEnum =
+  | 'active'
+  | 'closed'
+  | 'upcoming';
+
 export type PairingStatusByUserType = {
   __typename?: 'PairingStatusByUserType';
   count: Scalars['Int']['output'];
@@ -429,6 +443,7 @@ export type ProfileStatusEnum =
 
 export type Query = {
   __typename?: 'Query';
+  activePairingPeriod: Maybe<PairingPeriod>;
   allMeetingsForPairing: Array<MeetingEvent>;
   anonUsers: Array<User>;
   calendarEventById: Maybe<CalendarEvent>;
@@ -869,6 +884,11 @@ export type GetPairingHistoryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetPairingHistoryQuery = { __typename?: 'Query', getPairingHistory: Array<{ __typename?: 'PairingHistory', id: string, userAId: string, userBId: string, status: PairingStatusEnum, derivedStatus: PairingStatusEnum, createdAt: string, userA: { __typename?: 'User', id: string, email: string, firstName: string | null, lastName: string | null, profileImageUrl: string | null, profileStatus: ProfileStatusEnum }, userB: { __typename?: 'User', id: string, email: string, firstName: string | null, lastName: string | null, profileImageUrl: string | null, profileStatus: ProfileStatusEnum } }> };
+
+export type ActivePairingPeriodQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ActivePairingPeriodQuery = { __typename?: 'Query', activePairingPeriod: { __typename?: 'PairingPeriod', id: string, organizationId: string, startDate: string, endDate: string | null, status: PairingPeriodStatusEnum } | null };
 
 export type UpdateUserProfileMutationVariables = Exact<{
   input: UpdateCurrentUserProfileInputType;
@@ -1414,6 +1434,17 @@ export const GetPairingHistoryDocument = gql`
   }
 }
     `;
+export const ActivePairingPeriodDocument = gql`
+    query ActivePairingPeriod {
+  activePairingPeriod {
+    id
+    organizationId
+    startDate
+    endDate
+    status
+  }
+}
+    `;
 export const UpdateUserProfileDocument = gql`
     mutation UpdateUserProfile($input: UpdateCurrentUserProfileInputType!) {
   updateCurrentUserProfile(input: $input) {
@@ -1634,6 +1665,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     GetPairingHistory(variables?: GetPairingHistoryQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetPairingHistoryQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetPairingHistoryQuery>({ document: GetPairingHistoryDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetPairingHistory', 'query', variables);
+    },
+    ActivePairingPeriod(variables?: ActivePairingPeriodQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<ActivePairingPeriodQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ActivePairingPeriodQuery>({ document: ActivePairingPeriodDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'ActivePairingPeriod', 'query', variables);
     },
     UpdateUserProfile(variables: UpdateUserProfileMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<UpdateUserProfileMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateUserProfileMutation>({ document: UpdateUserProfileDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'UpdateUserProfile', 'mutation', variables);

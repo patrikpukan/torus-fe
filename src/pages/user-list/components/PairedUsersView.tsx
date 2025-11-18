@@ -4,9 +4,9 @@ import PairedUserTable, { type PairedUserRow } from "./PairedUserTable";
 import UnpairedUserGrid from "./UnpairedUserGrid";
 import { usePairingsQuery } from "@/features/pairings/api/usePairingsQuery";
 import {
-  useUsersQuery,
-  type UsersQueryItem,
-} from "@/features/users/api/useUsersQuery";
+  useAnonUsersQuery,
+  type AnonUsersQueryItem,
+} from "@/features/users/api/useAnonUsersQuery";
 import { useGetCurrentUserQuery } from "@/features/auth/api/useGetCurrentUserQuery";
 
 const PairedUsersView = () => {
@@ -16,10 +16,10 @@ const PairedUsersView = () => {
     error: pairingsError,
   } = usePairingsQuery();
   const {
-    data: usersData,
-    loading: usersLoading,
-    error: usersError,
-  } = useUsersQuery();
+    data: anonUsersData,
+    loading: anonUsersLoading,
+    error: anonUsersError,
+  } = useAnonUsersQuery();
   const {
     data: currentUserData,
     loading: currentUserLoading,
@@ -70,14 +70,14 @@ const PairedUsersView = () => {
     [pairedRows]
   );
 
-  const usersList = usersData?.users ?? null;
+  const usersList = anonUsersData?.anonUsers ?? null;
 
   const unpairedUsers = useMemo(() => {
     if (!usersList) {
       return [];
     }
 
-    return usersList.filter((user: UsersQueryItem) => {
+    return usersList.filter((user: AnonUsersQueryItem) => {
       if (user.id === currentUserId) {
         return false;
       }
@@ -85,8 +85,9 @@ const PairedUsersView = () => {
     });
   }, [currentUserId, pairedIds, usersList]);
 
-  const combinedLoading = pairingsLoading || usersLoading || currentUserLoading;
-  const combinedError = pairingsError || usersError || currentUserError;
+  const combinedLoading =
+    pairingsLoading || anonUsersLoading || currentUserLoading;
+  const combinedError = pairingsError || anonUsersError || currentUserError;
 
   return (
     <div className="container py-8">

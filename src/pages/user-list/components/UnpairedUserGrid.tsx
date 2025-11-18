@@ -2,10 +2,10 @@ import { Link } from "react-router-dom";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import type { UsersQueryItem } from "@/features/users/api/useUsersQuery";
+import type { AnonUsersQueryItem } from "@/features/users/api/useAnonUsersQuery";
 
 type UnpairedUserGridProps = {
-  users: UsersQueryItem[];
+  users: AnonUsersQueryItem[];
 };
 
 const UnpairedUserGrid = ({ users }: UnpairedUserGridProps) => {

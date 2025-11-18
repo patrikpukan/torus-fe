@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { formatDate } from "@/features/pairings/components/dateUtils";
+import { formatDateTime } from "@/features/pairings/components/dateUtils";
 import { useAuth } from "@/hooks/useAuth";
 
 export type PairedUserRow = {
@@ -92,7 +92,7 @@ const getColumnsForPairedTable = (
       </span>
     ),
     cell: ({ row }) =>
-      row.original.pairedAt ? formatDate(row.original.pairedAt) : "Unknown",
+      row.original.pairedAt ? formatDateTime(row.original.pairedAt) : "Unknown",
   },
   {
     id: "actions",

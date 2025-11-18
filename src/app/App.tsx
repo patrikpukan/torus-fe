@@ -5,6 +5,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { AlgorithmSettingsPage } from "@/features/pairing-algorithm/pages/AlgorithmSettingsPage";
 import InviteManagementPage from "@/pages/invite-management/InviteManagementPage";
+import MaintainerHomePage from "@/pages/maintainer-home/MaintainerHomePage";
+import ReportsPage from "@/pages/reports/ReportsPage";
 import StatisticsPage from "@/pages/statistics/StatisticsPage";
 import { ProtectedRoute } from "../components/ProtectedRoute";
 import AccessDeniedPage from "../pages/AccessDeniedPage";
@@ -24,6 +26,7 @@ import ResetPasswordPage from "../pages/reset-password/ResetPasswordPage";
 import UserDetailPage from "../pages/user-list/UserDetailPage";
 import UserListPage from "../pages/user-list/UserListPage";
 import BaseLayout from "./layouts/BaseLayout";
+import { useAuth } from "@/hooks/useAuth";
 
 // Role shortcuts for route protection
 const AUTHENTICATED_ROLES = ["user", "org_admin", "super_admin"] as const;
@@ -40,6 +43,16 @@ const theme = createTheme({
     },
   },
 });
+
+const HomeRoute = () => {
+  const { appRole } = useAuth();
+
+  if (appRole === "org_admin") {
+    return <MaintainerHomePage />;
+  }
+
+  return <HomePage />;
+};
 
 const App = () => {
   return (
@@ -70,7 +83,7 @@ const App = () => {
               path="home"
               element={
                 <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
-                  <HomePage />
+                  <HomeRoute />
                 </ProtectedRoute>
               }
             />
@@ -159,6 +172,22 @@ const App = () => {
               element={
                 <ProtectedRoute allowedRoles={ADMIN_ROLES}>
                   <StatisticsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="reports"
+              element={
+                <ProtectedRoute allowedRoles={ADMIN_ROLES}>
+                  <ReportsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="maintainer"
+              element={
+                <ProtectedRoute allowedRoles={ADMIN_ROLES}>
+                  <MaintainerHomePage />
                 </ProtectedRoute>
               }
             />

@@ -9,19 +9,6 @@ import {
 } from "@/features/users/api/useUsersQuery";
 import { useGetCurrentUserQuery } from "@/features/auth/api/useGetCurrentUserQuery";
 
-const buildDisplayName = (
-  firstName?: string | null,
-  lastName?: string | null,
-  fallback?: string | null
-) => {
-  const name = [firstName, lastName]
-    .filter((part) => part && part.trim().length > 0)
-    .join(" ")
-    .trim();
-
-  return name || fallback || "Unknown user";
-};
-
 const PairedUsersView = () => {
   const {
     pairings,
@@ -56,11 +43,6 @@ const PairedUsersView = () => {
         return;
       }
 
-      const displayName = buildDisplayName(
-        contact.firstName,
-        contact.lastName,
-        contact.email
-      );
       const pairedAt = pairing.createdAt;
       const existing = latestByUser.get(contact.id);
 
@@ -70,7 +52,7 @@ const PairedUsersView = () => {
       ) {
         latestByUser.set(contact.id, {
           id: contact.id,
-          displayName,
+          displayName: `${contact.firstName} ${contact.lastName}`,
           email: contact.email ?? "",
           pairedAt,
           profileImageUrl: contact.profileImageUrl ?? undefined,

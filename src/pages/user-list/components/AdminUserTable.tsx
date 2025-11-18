@@ -35,15 +35,6 @@ import { getColumns, type UserTableRow } from "./UserListItem";
 
 const EMPTY_USERS: UsersQueryItem[] = [];
 
-const buildDisplayName = (user: UsersQueryItem): string => {
-  const name = [user.firstName, user.lastName]
-    .filter((part) => part && part.trim().length > 0)
-    .join(" ")
-    .trim();
-
-  return name || user.email || "Unknown user";
-};
-
 const AdminUserTable = () => {
   const { data, loading, error } = useUsersQuery();
   const { user: currentUser } = useAuth();
@@ -60,7 +51,7 @@ const AdminUserTable = () => {
     () =>
       users.map((user) => ({
         ...user,
-        displayName: buildDisplayName(user),
+        displayName: `${user.firstName} ${user.lastName}`,
       })),
     [users]
   );

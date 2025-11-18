@@ -8,6 +8,8 @@ export type UserDetail = {
   lastName?: string | null;
   profileStatus?: string | null;
   role?: string | null;
+  hobbies?: string | null;
+  interests?: string | null;
   activeBan?: {
     id: string;
     reason: string;
@@ -31,6 +33,8 @@ export const USER_BY_ID_QUERY = graphql(`
       email
       firstName
       lastName
+      hobbies
+      interests
       profileStatus
       role
       activeBan {

@@ -149,6 +149,7 @@ enum ProfileStatusEnum {
 type Query {
   getAlgorithmSettings(organizationId: String!): AlgorithmSettings!
   getCurrentUser: CurrentUser
+  anonUsers: [User!]!
   getPairedUsers: [User!]!
   getPairingHistory: [PairingHistory!]!
   myOrganization: OrganizationType

@@ -124,8 +124,26 @@ const UserDetailPage = () => {
   }
 
   if (shouldMask) {
+    const maskedHobbies = user.hobbies?.trim() || null;
+    const maskedInterests = user.interests?.trim() || null;
+
+    const renderMaskedField = (
+      label: string,
+      value: string | null,
+      placeholder: string
+    ) => (
+      <div className="space-y-2 rounded-md border border-muted-foreground/20 bg-card/60 p-4">
+        <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          {label}
+        </span>
+        <p className="text-sm text-foreground">
+          {value ?? placeholder}
+        </p>
+      </div>
+    );
+
     return (
-      <div className="mx-auto max-w-3xl py-12">
+      <div className="mx-auto max-w-3xl space-y-8 py-12">
         <div className="flex flex-col items-center gap-6 rounded-lg border border-dashed border-muted-foreground/40 bg-muted/20 px-6 py-12 text-center shadow-sm">
           <Avatar
             className={cn(
@@ -147,6 +165,27 @@ const UserDetailPage = () => {
             </p>
           </div>
           <EyeOff className="h-6 w-6 text-muted-foreground" />
+        </div>
+        <div className="space-y-3 rounded-lg border border-muted-foreground/30 bg-background/80 p-6 shadow-sm">
+          <div>
+            <h2 className="text-lg font-semibold">Profile preview</h2>
+            <p className="text-sm text-muted-foreground">
+              Even without a match you can discover what this person enjoys
+              chatting about.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {renderMaskedField(
+              "Hobbies",
+              maskedHobbies,
+              "This user has not listed hobbies yet."
+            )}
+            {renderMaskedField(
+              "Interests",
+              maskedInterests,
+              "This user has not listed interests yet."
+            )}
+          </div>
         </div>
       </div>
     );

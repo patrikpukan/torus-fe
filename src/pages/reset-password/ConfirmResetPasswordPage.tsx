@@ -28,8 +28,6 @@ const ConfirmResetPasswordPage = () => {
   );
 
   useEffect(() => {
-    let isMounted = true;
-
     const hydrateSession = async () => {
       const hash = window.location.hash.substring(1);
       const params = new URLSearchParams(hash);
@@ -43,9 +41,6 @@ const ConfirmResetPasswordPage = () => {
       if (code) {
         const { error: exchangeError } =
           await supabaseClient.auth.exchangeCodeForSession(code);
-        if (!isMounted) {
-          return;
-        }
         if (exchangeError) {
           setStatus("error");
           setError(exchangeError.message);
@@ -56,10 +51,6 @@ const ConfirmResetPasswordPage = () => {
       // Wait for Supabase to pick up auth hash if present
       if (hasType && hasAccessToken) {
         await supabaseClient.auth.getSession();
-      }
-
-      if (!isMounted) {
-        return;
       }
 
       const { data, error: sessionError } =
@@ -83,10 +74,6 @@ const ConfirmResetPasswordPage = () => {
     };
 
     void hydrateSession();
-
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {

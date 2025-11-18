@@ -12,16 +12,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import useHomeData from "@/features/home/useHomeData";
 import { getInitials } from "@/features/pairings/utils/displayName";
-
-const formatDate = (iso: string | null) => {
-  if (!iso) return "—";
-  const date = new Date(iso);
-  return date.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-};
+import { formatDate } from "@/features/pairings/components/dateUtils.ts";
 
 const HomeSkeleton = () => (
   <div className="space-y-6">

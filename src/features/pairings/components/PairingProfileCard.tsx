@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { UserProfile } from "@/types/User";
-import { formatDate } from "@/features/pairings/components/dateUtils";
+import { formatDateTime } from "@/features/pairings/components/dateUtils";
 import { getInitials } from "@/features/pairings/utils/displayName";
 
 export type PairingProfileCardProps = {
@@ -135,7 +135,7 @@ export default function PairingProfileCard({
                 Paired Date
               </span>
               <p className="text-sm text-foreground">
-                {formatDate(pairingDate)}
+                {formatDateTime(pairingDate)}
               </p>
             </div>
           )}

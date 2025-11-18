@@ -2,7 +2,7 @@ import { Handshake, MessageSquare } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import type { PairingContact } from "@/mocks/mockPairings";
-import { formatDate } from "@/features/pairings/components/dateUtils";
+import { formatDateTime } from "@/features/pairings/components/dateUtils";
 import {
   getDisplayName,
   getInitials,
@@ -63,8 +63,8 @@ export default function PairingsList({
                   </span>
                   <span className="text-xs text-muted-foreground">
                     {sortMode === "message"
-                      ? formatDate(contact.lastMessageAt)
-                      : formatDate(contact.pairedAt)}
+                      ? formatDateTime(contact.lastMessageAt)
+                      : formatDateTime(contact.pairedAt)}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">

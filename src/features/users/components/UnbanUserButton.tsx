@@ -1,14 +1,24 @@
+import { useState } from "react";
 import type { ReactNode } from "react";
 
 import { useToast } from "@/hooks/use-toast";
 import { useUnbanUserMutation } from "../api/useUnbanUserMutation";
 import { USERS_QUERY } from "../api/useUsersQuery";
 import { USER_BY_ID_QUERY } from "../api/useUserByIdQuery";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 type UnbanUserButtonProps = {
   userId: string;
   userDisplayName?: string;
-  children: (props: { onUnban: () => void; loading: boolean }) => ReactNode;
+  children: (props: { openDialog: () => void; loading: boolean }) => ReactNode;
   onCompleted?: () => void;
 };
 
@@ -18,6 +28,7 @@ export const UnbanUserButton = ({
   children,
   onCompleted,
 }: UnbanUserButtonProps) => {
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [unbanUser, { loading }] = useUnbanUserMutation();
   const { toast } = useToast();
 
@@ -36,6 +47,7 @@ export const UnbanUserButton = ({
         description: `${userDisplayName ?? "The user"} can access the app again.`,
       });
       onCompleted?.();
+      setDialogOpen(false);
     } catch (error) {
       const description =
         error instanceof Error
@@ -49,7 +61,35 @@ export const UnbanUserButton = ({
     }
   };
 
-  return <>{children({ onUnban: handleUnban, loading })}</>;
+  return (
+    <>
+      {children({
+        openDialog: () => setDialogOpen(true),
+        loading,
+      })}
+      <Dialog open={dialogOpen} onOpenChange={(open) => !loading && setDialogOpen(open)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Unban {userDisplayName ?? "user"}</DialogTitle>
+            <DialogDescription>
+              This user will be able to sign in immediately after you confirm.
+            </DialogDescription>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Are you sure you want to restore access for {userDisplayName ?? "this user"}? They will appear in pairing pools again.
+          </p>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setDialogOpen(false)} disabled={loading}>
+              Cancel
+            </Button>
+            <Button variant="default" onClick={handleUnban} disabled={loading}>
+              {loading ? "Unbanning..." : "Confirm"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
 };
 
 export default UnbanUserButton;

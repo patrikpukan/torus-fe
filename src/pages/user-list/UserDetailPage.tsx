@@ -230,11 +230,11 @@ const UserDetailPage = () => {
               userId={user.id}
               userDisplayName={userDisplayName}
             >
-              {({ onUnban, loading }) => (
+              {({ openDialog, loading }) => (
                 <Button
                   type="button"
                   variant="secondary"
-                  onClick={onUnban}
+                  onClick={openDialog}
                   disabled={loading}
                 >
                   {loading ? "Working..." : "Unban user"}
@@ -262,4 +262,5 @@ const UserDetailPage = () => {
 };
 
 export default UserDetailPage;
+
 

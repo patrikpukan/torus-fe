@@ -3,7 +3,9 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { Toaster } from "@/components/ui/toaster";
+import { AuthProvider } from "@/features/auth/context/AuthProvider";
 import { AlgorithmSettingsPage } from "@/features/pairing-algorithm/pages/AlgorithmSettingsPage";
+import { useAuth } from "@/hooks/useAuth";
 import InviteManagementPage from "@/pages/invite-management/InviteManagementPage";
 import MaintainerHomePage from "@/pages/maintainer-home/MaintainerHomePage";
 import ReportsPage from "@/pages/reports/ReportsPage";
@@ -26,9 +28,7 @@ import ResetPasswordPage from "../pages/reset-password/ResetPasswordPage";
 import UserDetailPage from "../pages/user-list/UserDetailPage";
 import UserListPage from "../pages/user-list/UserListPage";
 import BaseLayout from "./layouts/BaseLayout";
-import { useAuth } from "@/hooks/useAuth";
 
-// Role shortcuts for route protection
 const AUTHENTICATED_ROLES = ["user", "org_admin", "super_admin"] as const;
 const ADMIN_ROLES = ["org_admin", "super_admin"] as const;
 
@@ -56,146 +56,148 @@ const HomeRoute = () => {
 
 const App = () => {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/auth/callback" element={<AuthCallbackPage />} />
-          <Route
-            path="/reset-password/confirm"
-            element={<ConfirmResetPasswordPage />}
-          />
-          <Route path="/access-denied" element={<AccessDeniedPage />} />
-          <Route path="/" element={<BaseLayout />}>
-            <Route index element={<LandingPage />} />
-            <Route path="login" element={<LoginPage />} />
-            <Route path="register" element={<RegisterPage />} />
+    <BrowserRouter>
+      <AuthProvider>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Routes>
+            <Route path="/auth/callback" element={<AuthCallbackPage />} />
             <Route
-              path="register-org"
-              element={
-                <ProtectedRoute allowedRoles={["super_admin"]}>
-                  <RegisterOrgPage />
-                </ProtectedRoute>
-              }
+              path="/reset-password/confirm"
+              element={<ConfirmResetPasswordPage />}
             />
-            <Route path="reset-password" element={<ResetPasswordPage />} />
-            <Route
-              path="home"
-              element={
-                <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
-                  <HomeRoute />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="profile"
-              element={
-                <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
-                  <ProfilePage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="profile-edit"
-              element={
-                <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
-                  <ProfileEditPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="user-list"
-              element={
-                <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
-                  <UserListPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="user-list/:id"
-              element={
-                <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
-                  <UserDetailPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="organization-list"
-              element={
-                <ProtectedRoute allowedRoles={["super_admin"]}>
-                  <OrganizationListPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="org-detail/:id"
-              element={
-                <ProtectedRoute allowedRoles={["super_admin"]}>
-                  <OrganizationDetailPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="my-org"
-              element={
-                <ProtectedRoute allowedRoles={["org_admin"]}>
-                  <OrganizationDetailPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="pairings"
-              element={
-                <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
-                  <PairingsRoute />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="algorithm-settings"
-              element={
-                <ProtectedRoute allowedRoles={ADMIN_ROLES}>
-                  <AlgorithmSettingsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="invite-management"
-              element={
-                <ProtectedRoute allowedRoles={ADMIN_ROLES}>
-                  <InviteManagementPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="statistics"
-              element={
-                <ProtectedRoute allowedRoles={ADMIN_ROLES}>
-                  <StatisticsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="reports"
-              element={
-                <ProtectedRoute allowedRoles={ADMIN_ROLES}>
-                  <ReportsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="maintainer"
-              element={
-                <ProtectedRoute allowedRoles={ADMIN_ROLES}>
-                  <MaintainerHomePage />
-                </ProtectedRoute>
-              }
-            />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-      <Toaster />
-    </ThemeProvider>
+            <Route path="/access-denied" element={<AccessDeniedPage />} />
+            <Route path="/" element={<BaseLayout />}>
+              <Route index element={<LandingPage />} />
+              <Route path="login" element={<LoginPage />} />
+              <Route path="register" element={<RegisterPage />} />
+              <Route
+                path="register-org"
+                element={
+                  <ProtectedRoute allowedRoles={["super_admin"]}>
+                    <RegisterOrgPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="reset-password" element={<ResetPasswordPage />} />
+              <Route
+                path="home"
+                element={
+                  <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
+                    <HomeRoute />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="profile"
+                element={
+                  <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
+                    <ProfilePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="profile-edit"
+                element={
+                  <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
+                    <ProfileEditPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="user-list"
+                element={
+                  <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
+                    <UserListPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="user-list/:id"
+                element={
+                  <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
+                    <UserDetailPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="organization-list"
+                element={
+                  <ProtectedRoute allowedRoles={["super_admin"]}>
+                    <OrganizationListPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="org-detail/:id"
+                element={
+                  <ProtectedRoute allowedRoles={["super_admin"]}>
+                    <OrganizationDetailPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="my-org"
+                element={
+                  <ProtectedRoute allowedRoles={["org_admin"]}>
+                    <OrganizationDetailPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="pairings"
+                element={
+                  <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
+                    <PairingsRoute />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="algorithm-settings"
+                element={
+                  <ProtectedRoute allowedRoles={ADMIN_ROLES}>
+                    <AlgorithmSettingsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="invite-management"
+                element={
+                  <ProtectedRoute allowedRoles={ADMIN_ROLES}>
+                    <InviteManagementPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="statistics"
+                element={
+                  <ProtectedRoute allowedRoles={ADMIN_ROLES}>
+                    <StatisticsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="reports"
+                element={
+                  <ProtectedRoute allowedRoles={ADMIN_ROLES}>
+                    <ReportsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="maintainer"
+                element={
+                  <ProtectedRoute allowedRoles={ADMIN_ROLES}>
+                    <MaintainerHomePage />
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
+          </Routes>
+          <Toaster />
+        </ThemeProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 };
 

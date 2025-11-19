@@ -16,6 +16,7 @@ import {
 import type { AuthContextValue } from "@/features/auth/context/AuthContext.ts";
 import { useGetCurrentUserQuery } from "../api/useGetCurrentUserQuery";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
   const apolloClient = useApolloClient();
@@ -29,6 +30,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [sessionLoaded, setSessionLoaded] = useState(false);
   const bannedHandledRef = useRef(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Query current user to get role and organization - only start after session is loaded and user has a session
   const {
@@ -96,6 +98,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
     await supabaseClient.auth.signOut();
     resetAuthState();
+    navigate("/access-denied");
 
     toast({
       variant: "destructive",
@@ -103,7 +106,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       description:
         "Your account has been banned. Please contact your organization administrator.",
     });
-  }, [resetAuthState, toast]);
+  }, [navigate, resetAuthState, toast]);
 
   useEffect(() => {
     if (!currentUserError) {

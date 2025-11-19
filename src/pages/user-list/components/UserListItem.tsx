@@ -213,25 +213,14 @@ export const getColumns = (
                 userId={user.id}
                 userDisplayName={user.displayName}
               >
-                {({ onUnban, loading }) => (
+                {({ openDialog, loading }) => (
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
                         type="button"
                         variant="ghost"
                         size="icon"
-                        onClick={() => {
-                          if (loading) {
-                            return;
-                          }
-                          if (
-                            window.confirm(
-                              `Allow ${user.displayName} to access Torus again?`
-                            )
-                          ) {
-                            onUnban();
-                          }
-                        }}
+                        onClick={openDialog}
                         disabled={loading}
                         className="h-10 w-10 text-muted-foreground hover:text-green-600 [&_svg]:size-6"
                       >
@@ -272,3 +261,4 @@ export const getColumns = (
     },
   },
 ];
+

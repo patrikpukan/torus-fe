@@ -61,6 +61,7 @@ type InviteUserResponseType {
 
 type Mutation {
   banUser(input: BanUserInput!): User!
+  unbanUser(userId: ID!): User!
   deleteUser(id: ID!): User!
   executePairingAlgorithm(organizationId: String!): PairingExecutionResult!
   inviteUserToOrganization(input: InviteUserInputType!): InviteUserResponseType!

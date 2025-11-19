@@ -14,6 +14,7 @@ import type { UserProfile } from "@/types/User";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import BanUserDialog from "@/features/users/components/BanUserDialog";
+import UnbanUserButton from "@/features/users/components/UnbanUserButton";
 
 const UserDetailPage = () => {
   const { appRole } = useAuth();
@@ -202,6 +203,7 @@ const UserDetailPage = () => {
   const userDisplayName =
     [user.firstName, user.lastName].filter(Boolean).join(" ").trim() ||
     user.email;
+  const isBanned = Boolean(activeBan);
 
   return (
     <div className="mx-auto max-w-3xl py-8">
@@ -223,18 +225,36 @@ const UserDetailPage = () => {
       {isAdmin && (
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <SendResetPasswordButton email={user.email} variant="outline" />
-          <BanUserDialog userId={user.id} userDisplayName={userDisplayName}>
-            {({ openDialog, loading }) => (
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={openDialog}
-                disabled={loading}
-              >
-                {loading ? "Opening..." : "Ban user"}
-              </Button>
-            )}
-          </BanUserDialog>
+          {isBanned ? (
+            <UnbanUserButton
+              userId={user.id}
+              userDisplayName={userDisplayName}
+            >
+              {({ onUnban, loading }) => (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={onUnban}
+                  disabled={loading}
+                >
+                  {loading ? "Working..." : "Unban user"}
+                </Button>
+              )}
+            </UnbanUserButton>
+          ) : (
+            <BanUserDialog userId={user.id} userDisplayName={userDisplayName}>
+              {({ openDialog, loading }) => (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={openDialog}
+                  disabled={loading}
+                >
+                  {loading ? "Opening..." : "Ban user"}
+                </Button>
+              )}
+            </BanUserDialog>
+          )}
         </div>
       )}
     </div>
@@ -242,3 +262,4 @@ const UserDetailPage = () => {
 };
 
 export default UserDetailPage;
+

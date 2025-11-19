@@ -234,6 +234,7 @@ export type Mutation = {
   rejectMeeting: MeetingEvent;
   resumeActivity: Scalars['Boolean']['output'];
   signUp: User;
+  unbanUser: User;
   updateAlgorithmSettings: AlgorithmSettingsResponse;
   updateCalendarEvent: Array<CalendarEvent>;
   updateCurrentUserProfile: CurrentUser;
@@ -317,6 +318,11 @@ export type MutationRejectMeetingArgs = {
 
 export type MutationSignUpArgs = {
   data: SignUpInputType;
+};
+
+
+export type MutationUnbanUserArgs = {
+  userId: Scalars['ID']['input'];
 };
 
 
@@ -920,6 +926,13 @@ export type GetPairedUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetPairedUsersQuery = { __typename?: 'Query', getPairedUsers: Array<{ __typename?: 'User', id: string, email: string, firstName: string | null, lastName: string | null, profileStatus: ProfileStatusEnum, role: UserRoleEnum }> };
+
+export type UnbanUserMutationVariables = Exact<{
+  userId: Scalars['ID']['input'];
+}>;
+
+
+export type UnbanUserMutation = { __typename?: 'Mutation', unbanUser: { __typename?: 'User', id: string, activeBan: { __typename?: 'UserBan', id: string } | null } };
 
 export type UserByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -1526,6 +1539,16 @@ export const GetPairedUsersDocument = gql`
   }
 }
     `;
+export const UnbanUserDocument = gql`
+    mutation UnbanUser($userId: ID!) {
+  unbanUser(userId: $userId) {
+    id
+    activeBan {
+      id
+    }
+  }
+}
+    `;
 export const UserByIdDocument = gql`
     query UserById($id: ID!) {
   userById(id: $id) {
@@ -1683,6 +1706,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     GetPairedUsers(variables?: GetPairedUsersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetPairedUsersQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetPairedUsersQuery>({ document: GetPairedUsersDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetPairedUsers', 'query', variables);
+    },
+    UnbanUser(variables: UnbanUserMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<UnbanUserMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UnbanUserMutation>({ document: UnbanUserDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'UnbanUser', 'mutation', variables);
     },
     UserById(variables: UserByIdQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<UserByIdQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<UserByIdQuery>({ document: UserByIdDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'UserById', 'query', variables);

@@ -1,5 +1,12 @@
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ArrowUpDown, Eye, UserRoundX } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  Eye,
+  UserRoundCheck,
+  UserRoundX,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -13,6 +20,7 @@ import {
 } from "@/components/ui/tooltip";
 import type { UsersQueryItem } from "@/features/users/api/useUsersQuery";
 import BanUserDialog from "@/features/users/components/BanUserDialog";
+import UnbanUserButton from "@/features/users/components/UnbanUserButton";
 import { getRoleLabel } from "@/lib/roleUtils";
 
 export type UserTableRow = UsersQueryItem & {
@@ -177,6 +185,7 @@ export const getColumns = (
     enableHiding: false,
     cell: ({ row }) => {
       const user = row.original;
+      const isBanned = Boolean(user.activeBan);
 
       return (
         <TooltipProvider>
@@ -199,25 +208,64 @@ export const getColumns = (
               </TooltipTrigger>
               <TooltipContent side="left">User detail</TooltipContent>
             </Tooltip>
-            <BanUserDialog userId={user.id} userDisplayName={user.displayName}>
-              {({ openDialog, loading }) => (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={openDialog}
-                      disabled={loading}
-                      className="h-10 w-10 text-muted-foreground hover:text-destructive [&_svg]:size-6"
-                    >
-                      <UserRoundX />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="left">Ban user</TooltipContent>
-                </Tooltip>
-              )}
-            </BanUserDialog>
+            {isBanned ? (
+              <UnbanUserButton
+                userId={user.id}
+                userDisplayName={user.displayName}
+              >
+                {({ onUnban, loading }) => (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          if (loading) {
+                            return;
+                          }
+                          if (
+                            window.confirm(
+                              `Allow ${user.displayName} to access Torus again?`
+                            )
+                          ) {
+                            onUnban();
+                          }
+                        }}
+                        disabled={loading}
+                        className="h-10 w-10 text-muted-foreground hover:text-green-600 [&_svg]:size-6"
+                      >
+                        <UserRoundCheck />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="left">Unban user</TooltipContent>
+                  </Tooltip>
+                )}
+              </UnbanUserButton>
+            ) : (
+              <BanUserDialog
+                userId={user.id}
+                userDisplayName={user.displayName}
+              >
+                {({ openDialog, loading }) => (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={openDialog}
+                        disabled={loading}
+                        className="h-10 w-10 text-muted-foreground hover:text-destructive [&_svg]:size-6"
+                      >
+                        <UserRoundX />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="left">Ban user</TooltipContent>
+                  </Tooltip>
+                )}
+              </BanUserDialog>
+            )}
           </div>
         </TooltipProvider>
       );

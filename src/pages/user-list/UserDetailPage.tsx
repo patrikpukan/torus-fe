@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { EyeOff, Home, ShieldAlert } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -15,11 +15,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import BanUserDialog from "@/features/users/components/BanUserDialog";
 import UnbanUserButton from "@/features/users/components/UnbanUserButton";
+import ReportUserDialog from "@/features/users/components/ReportUserDialog";
 
 const UserDetailPage = () => {
   const { appRole } = useAuth();
   const params = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const encodedUserId = params.id ?? "";
   const userId = encodedUserId ? decodeURIComponent(encodedUserId) : undefined;
@@ -60,6 +62,7 @@ const UserDetailPage = () => {
     !isAdmin &&
     !isSelf &&
     (!pairedInfoResolved || !isPaired || anonymizeByParam);
+  const canReportUser = !isAdmin && !isSelf && !shouldMask;
 
   const combinedLoading =
     loading || (!isAdmin && (pairedLoading || currentUserLoading));
@@ -77,6 +80,9 @@ const UserDetailPage = () => {
   if (error || pairedError || currentUserError) {
     const message =
       error?.message || pairedError?.message || currentUserError?.message;
+    const isForbiddenError = Boolean(
+      message && /forbidden|permission/i.test(message)
+    );
 
     return (
       <div className="mx-auto max-w-3xl py-8">
@@ -84,7 +90,11 @@ const UserDetailPage = () => {
           Unable to load user
         </h1>
         {message && (
-          <p className="mt-2 text-sm text-muted-foreground">{message}</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {isForbiddenError
+              ? "This profile is no longer available. Either you reported this user or they reported you."
+              : message}
+          </p>
         )}
       </div>
     );
@@ -221,6 +231,26 @@ const UserDetailPage = () => {
               : " — This ban does not expire"}
           </AlertDescription>
         </Alert>
+      )}
+      {canReportUser && (
+        <div className="mt-6 flex justify-center">
+          <ReportUserDialog
+            reportedUserId={user.id}
+            reportedUserName={userDisplayName}
+            onReported={() => navigate("/user-list")}
+          >
+            {({ openDialog, loading }) => (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={openDialog}
+                disabled={loading}
+              >
+                {loading ? "Opening..." : "Report user"}
+              </Button>
+            )}
+          </ReportUserDialog>
+        </div>
       )}
       {isAdmin && (
         <div className="mt-6 flex flex-wrap justify-center gap-3">

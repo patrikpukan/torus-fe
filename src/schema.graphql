@@ -69,6 +69,7 @@ type Mutation {
   registerOrganization(
     input: RegisterOrganizationInputType!
   ): RegisterOrganizationResponseType!
+  resolveReport(input: ResolveReportInput!): UserReport!
   signUp(data: SignUpInputType!): User!
   updateAlgorithmSettings(
     input: UpdateAlgorithmSettingsInput!
@@ -172,6 +173,8 @@ type Query {
   myOrganization: OrganizationType
   organizationById(id: ID!): OrganizationType
   organizations: [OrganizationType!]!
+  reportById(id: ID!): UserReport
+  reports: [UserReport!]!
   statistics(filter: StatisticsFilterInputType): StatisticsResponseType!
   userById(id: ID!): User
   users: [User!]!
@@ -187,6 +190,11 @@ input RegisterOrganizationInputType {
 input ReportUserInput {
   reportedUserId: ID!
   reason: String!
+}
+
+input ResolveReportInput {
+  reportId: ID!
+  resolutionNote: String
 }
 
 input StatisticsFilterInputType {
@@ -290,13 +298,24 @@ type UserBan {
   expiresAt: DateTime
 }
 
+enum ReportStatusEnum {
+  pending
+  resolved
+}
+
 type UserReport {
   id: ID!
+  reporter: User!
   reporterId: ID!
+  reportedUser: User!
   reportedUserId: ID!
   pairingId: ID!
   reason: String!
   createdAt: DateTime!
+  status: ReportStatusEnum!
+  resolvedBy: User
+  resolutionNote: String
+  resolvedAt: DateTime
 }
 
 """

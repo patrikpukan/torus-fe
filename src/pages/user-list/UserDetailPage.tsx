@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { EyeOff, Home, ShieldAlert } from "lucide-react";
+import { EyeOff, Flag, Home, ShieldAlert } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -233,7 +233,7 @@ const UserDetailPage = () => {
         </Alert>
       )}
       {canReportUser && (
-        <div className="mt-6 flex justify-center">
+        <div className="mt-6 flex justify-end">
           <ReportUserDialog
             reportedUserId={user.id}
             reportedUserName={userDisplayName}
@@ -243,9 +243,12 @@ const UserDetailPage = () => {
               <Button
                 type="button"
                 variant="outline"
+                size="sm"
                 onClick={openDialog}
                 disabled={loading}
+                className="inline-flex items-center gap-2"
               >
+                <Flag className="h-4 w-4" />
                 {loading ? "Opening..." : "Report user"}
               </Button>
             )}

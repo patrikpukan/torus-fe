@@ -6,7 +6,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
-import { Eye } from "lucide-react";
+import { Eye, Flag } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -19,8 +19,15 @@ import {
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { formatDateTime } from "@/features/pairings/components/dateUtils";
 import { useAuth } from "@/hooks/useAuth";
+import ReportUserDialog from "@/features/users/components/ReportUserDialog";
 
 export type PairedUserRow = {
   id: string;
@@ -105,20 +112,57 @@ const getColumnsForPairedTable = (
         user.id === currentUserId
           ? "/profile"
           : `/user-list/${encodeURIComponent(user.id)}`;
+      const displayName = user.displayName || user.email || "this user";
+      const canReportUser = user.id !== currentUserId;
 
       return (
-        <div className="flex justify-end">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-10 w-10 text-muted-foreground hover:text-foreground [&_svg]:size-6"
-            asChild
-          >
-            <Link to={href} aria-label={`View details for ${user.displayName}`}>
-              <Eye />
-            </Link>
-          </Button>
-        </div>
+        <TooltipProvider>
+          <div className="flex justify-end gap-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-10 text-muted-foreground hover:text-foreground [&_svg]:size-6"
+                  asChild
+                >
+                  <Link
+                    to={href}
+                    aria-label={`View details for ${displayName}`}
+                  >
+                    <Eye />
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="left">User detail</TooltipContent>
+            </Tooltip>
+            {canReportUser && (
+              <ReportUserDialog
+                reportedUserId={user.id}
+                reportedUserName={displayName}
+              >
+                {({ openDialog, loading }) => (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={openDialog}
+                        disabled={loading}
+                        className="h-10 w-10 text-muted-foreground hover:text-destructive [&_svg]:size-5"
+                      >
+                        <Flag />
+                        <span className="sr-only">Report {displayName}</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="left">Report user</TooltipContent>
+                  </Tooltip>
+                )}
+              </ReportUserDialog>
+            )}
+          </div>
+        </TooltipProvider>
       );
     },
   },

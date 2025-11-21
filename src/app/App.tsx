@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import InviteManagementPage from "@/pages/invite-management/InviteManagementPage";
 import MaintainerHomePage from "@/pages/maintainer-home/MaintainerHomePage";
 import ReportsPage from "@/pages/reports/ReportsPage";
+import ReportDetailPage from "@/pages/reports/ReportDetailPage";
 import StatisticsPage from "@/pages/statistics/StatisticsPage";
 import { ProtectedRoute } from "../components/ProtectedRoute";
 import AccessDeniedPage from "../pages/AccessDeniedPage";
@@ -181,6 +182,14 @@ const App = () => {
                 element={
                   <ProtectedRoute allowedRoles={ADMIN_ROLES}>
                     <ReportsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="reports/:id"
+                element={
+                  <ProtectedRoute allowedRoles={ADMIN_ROLES}>
+                    <ReportDetailPage />
                   </ProtectedRoute>
                 }
               />

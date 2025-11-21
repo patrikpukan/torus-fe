@@ -1,14 +1,15 @@
 import type { ReactNode } from "react";
 import {
-  Home,
+  BarChart3,
+  Building,
+  Flag,
   Handshake,
+  Home,
+  Mail,
+  Settings2,
   User,
   Users,
-  Settings2,
-  Building,
   Wrench,
-  Mail,
-  BarChart3,
 } from "lucide-react";
 export type NavItem = {
   label: string;
@@ -68,6 +69,12 @@ export const navConfig: NavItem[] = [
     path: "/statistics",
     roles: ["org_admin", "super_admin"],
     icon: <BarChart3 />,
+  },
+  {
+    label: "Reports",
+    path: "/reports",
+    roles: ["org_admin", "super_admin"],
+    icon: <Flag />,
   },
   {
     label: "My Organization",

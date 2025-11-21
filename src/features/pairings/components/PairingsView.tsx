@@ -14,6 +14,8 @@ import PairingsList from "./PairingsList";
 import PairingProfileCard from "./PairingProfileCard";
 import { usePairingsQuery } from "@/features/pairings/api/usePairingsQuery";
 import { getDisplayName } from "@/features/pairings/utils/displayName";
+import ReportUserDialog from "@/features/users/components/ReportUserDialog";
+import { Flag } from "lucide-react";
 
 type SortMode = "paired" | "message";
 
@@ -228,6 +230,30 @@ const PairingsView = () => {
                     value="profile"
                     className="mt-0 flex-1 overflow-y-auto px-6 py-12"
                   >
+                    {selectedContact && (
+                      <div className="mb-4 flex justify-end">
+                        <ReportUserDialog
+                          reportedUserId={selectedContact.id}
+                          reportedUserName={getDisplayName(
+                            selectedContact.profile
+                          )}
+                        >
+                          {({ openDialog, loading }) => (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={openDialog}
+                              disabled={loading}
+                              className="inline-flex items-center gap-2"
+                            >
+                              <Flag className="h-4 w-4" />
+                              {loading ? "Opening..." : "Report user"}
+                            </Button>
+                          )}
+                        </ReportUserDialog>
+                      </div>
+                    )}
                     <PairingProfileCard
                       profile={selectedContact.profile}
                       pairingStatus={

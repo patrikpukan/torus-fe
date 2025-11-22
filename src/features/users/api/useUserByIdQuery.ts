@@ -1,6 +1,12 @@
 import { useQuery } from "@apollo/client/react";
 import { graphql } from "gql.tada";
 
+export type TagObject = {
+  id: string;
+  name: string;
+  category: "HOBBY" | "INTEREST";
+};
+
 export type UserDetail = {
   id: string;
   email: string;
@@ -8,8 +14,8 @@ export type UserDetail = {
   lastName?: string | null;
   profileStatus?: string | null;
   role?: string | null;
-  hobbies?: string | null;
-  interests?: string | null;
+  hobbies?: TagObject[] | null;
+  interests?: TagObject[] | null;
   activeBan?: {
     id: string;
     reason: string;
@@ -33,8 +39,16 @@ export const USER_BY_ID_QUERY = graphql(`
       email
       firstName
       lastName
-      hobbies
-      interests
+      hobbies {
+        id
+        name
+        category
+      }
+      interests {
+        id
+        name
+        category
+      }
       profileStatus
       role
       activeBan {

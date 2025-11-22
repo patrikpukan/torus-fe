@@ -25,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { UserProfile } from "@/types/User.ts";
+import type { UserProfile, TagObject } from "@/types/User.ts";
 import { useAuth } from "@/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabaseClient } from "@/lib/supabaseClient";
@@ -102,6 +102,15 @@ const ProfileForm = ({
       return "";
     }
     if (Array.isArray(fieldValue)) {
+      // Handle TagObject[] arrays (hobbies, interests)
+      if (
+        fieldValue.length > 0 &&
+        typeof fieldValue[0] === "object" &&
+        "name" in fieldValue[0]
+      ) {
+        return fieldValue.map((tag: TagObject) => tag.name).join(", ");
+      }
+      // Handle regular string arrays
       return fieldValue.join(", ");
     }
     return String(fieldValue);
@@ -344,7 +353,7 @@ const ProfileForm = ({
             <FieldContent className="bg-card">
               <Input
                 id="profile-interests"
-                value={value.interests}
+                value={getFieldValue("interests")}
                 onChange={handleChange("interests")}
                 readOnly={readOnly}
                 disabled={readOnly}

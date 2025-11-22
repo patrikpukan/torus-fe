@@ -108,16 +108,27 @@ const ProfileView = () => {
     }
   };
 
-  const mapUserToProfile = (user: CurrentUserData) =>
-    ({
+  const mapUserToProfile = (user: CurrentUserData) => {
+    const hobbies = Array.isArray(user.hobbies)
+      ? user.hobbies
+      : user.hobbies
+        ? []
+        : [];
+    const interests = Array.isArray(user.interests)
+      ? user.interests
+      : user.interests
+        ? []
+        : [];
+
+    return {
       email: user.email,
       firstName: user.firstName || undefined,
       lastName: user.lastName || undefined,
       about: user.about || undefined,
-      hobbies: user.hobbies
-        ? user.hobbies.split(",").map((hobby) => hobby.trim())
-        : [],
-      interests: user.interests || undefined,
+      location: user.location || undefined,
+      position: user.position || undefined,
+      hobbies,
+      interests,
       preferredActivity: user.preferredActivity || undefined,
       profileImageUrl: user.profileImageUrl || undefined,
       pairingStatus: user.profileStatus || undefined,
@@ -129,7 +140,8 @@ const ProfileView = () => {
             ? "Active"
             : "Inactive",
       departmentId: user.departmentId || null,
-    }) satisfies UserProfile;
+    } satisfies UserProfile;
+  };
 
   useEffect(() => {
     if (user) {
@@ -168,12 +180,13 @@ const ProfileView = () => {
 
   const handleSubmit = async (updatedProfile: UserProfile) => {
     try {
-      const hobbiesArray = Array.isArray(updatedProfile.hobbies)
-        ? updatedProfile.hobbies
-        : updatedProfile.hobbies
-            ?.split(",")
-            .map((hobby) => hobby.trim())
-            .filter(Boolean) || [];
+      const hobbyIds = Array.isArray(updatedProfile.hobbies)
+        ? updatedProfile.hobbies.map((h) => h.id)
+        : [];
+
+      const interestIds = Array.isArray(updatedProfile.interests)
+        ? updatedProfile.interests.map((i) => i.id)
+        : [];
 
       await updateProfile({
         variables: {
@@ -181,8 +194,10 @@ const ProfileView = () => {
             firstName: updatedProfile.firstName || null,
             lastName: updatedProfile.lastName || null,
             about: updatedProfile.about || null,
-            hobbies: hobbiesArray.join(", ") || null,
-            interests: updatedProfile.interests || null,
+            location: updatedProfile.location || null,
+            position: updatedProfile.position || null,
+            hobbyIds: hobbyIds,
+            interestIds: interestIds,
             preferredActivity: updatedProfile.preferredActivity || null,
             avatarUrl: updatedProfile.profileImageUrl || null,
             departmentId: updatedProfile.departmentId || null,

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import type { UserProfile } from "@/types/User";
+import type { UserProfile, TagObject } from "@/types/User";
 import { formatDateTime } from "@/features/pairings/components/dateUtils";
 import { getInitials } from "@/features/pairings/utils/displayName";
 
@@ -57,6 +57,15 @@ export default function PairingProfileCard({
       return "";
     }
     if (Array.isArray(fieldValue)) {
+      // Handle TagObject[] arrays (hobbies, interests)
+      if (
+        fieldValue.length > 0 &&
+        typeof fieldValue[0] === "object" &&
+        "name" in fieldValue[0]
+      ) {
+        return fieldValue.map((tag: TagObject) => tag.name).join(", ");
+      }
+      // Handle regular string arrays
       return fieldValue.join(", ");
     }
     return String(fieldValue);
@@ -250,7 +259,7 @@ export default function PairingProfileCard({
             <FieldContent>
               <Input
                 id="profile-interests"
-                value={profile.interests || ""}
+                value={getFieldValue("interests")}
                 readOnly
               />
             </FieldContent>

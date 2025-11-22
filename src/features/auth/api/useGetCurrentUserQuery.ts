@@ -2,6 +2,12 @@ import { type GetCurrentUserQuery } from "@/graphql/generated/schema";
 import { useQuery } from "@apollo/client/react";
 import { graphql } from "gql.tada";
 
+export type TagObject = {
+  id: string;
+  name: string;
+  category: "HOBBY" | "INTEREST";
+};
+
 export type CurrentUserData = {
   id: string;
   email: string;
@@ -10,8 +16,10 @@ export type CurrentUserData = {
   firstName?: string | null;
   lastName?: string | null;
   about?: string | null;
-  hobbies?: string | null;
-  interests?: string | null;
+  location?: string | null;
+  position?: string | null;
+  hobbies?: TagObject[] | null;
+  interests?: TagObject[] | null;
   profileImageUrl?: string | null;
   profileStatus?: string | null;
   isActive?: boolean;
@@ -50,8 +58,18 @@ export const GET_CURRENT_USER = graphql(`
       firstName
       lastName
       about
-      hobbies
-      interests
+      location
+      position
+      hobbies {
+        id
+        name
+        category
+      }
+      interests {
+        id
+        name
+        category
+      }
       profileImageUrl
       profileStatus
       isActive

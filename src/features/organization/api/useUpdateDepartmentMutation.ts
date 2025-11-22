@@ -44,7 +44,9 @@ export const useUpdateDepartmentMutation = () =>
       refetchQueries: [
         {
           query: GET_DEPARTMENTS_BY_ORGANIZATION_QUERY,
-          variables: (mutationResult) =>
+          variables: (mutationResult: {
+            data?: UpdateDepartmentMutationData;
+          }) =>
             ({
               organizationId: (
                 mutationResult.data

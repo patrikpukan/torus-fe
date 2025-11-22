@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -30,6 +31,18 @@ import { useAuth } from "@/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabaseClient } from "@/lib/supabaseClient";
 import { useGetDepartmentsByOrganizationQuery } from "@/features/organization/api/useGetDepartmentsByOrganizationQuery";
+import { useQuery as useApolloQuery } from "@apollo/client/react";
+import { GET_ALL_TAGS } from "./api/useTagsQueries";
+import {
+  Tags,
+  TagsTrigger,
+  TagsContent,
+  TagsInput,
+  TagsList,
+  TagsGroup,
+  TagsItem,
+  TagsValue,
+} from "@/components/ui/shadcn-io/tags";
 
 export type ProfileFormProps = {
   value: UserProfile;
@@ -39,6 +52,94 @@ export type ProfileFormProps = {
   submitLabel?: string;
   onEditClick?: () => void;
 };
+
+// Tag selector component for editing tags
+const TagSelector = ({
+  tags,
+  category,
+  onChange,
+}: {
+  tags: TagObject[];
+  category: "HOBBY" | "INTEREST";
+  onChange: (tags: TagObject[]) => void;
+}) => {
+  const { data: tagsData, loading } = useApolloQuery(GET_ALL_TAGS);
+  const [searchValue, setSearchValue] = useState("");
+
+  const availableTags =
+    (tagsData as { getAllTags?: TagObject[] })?.getAllTags?.filter((tag: TagObject) => tag.category === category) || [];
+
+  const selectedIds = new Set(tags.map((t) => t.id));
+
+  const handleToggleTag = (tag: TagObject) => {
+    if (selectedIds.has(tag.id)) {
+      onChange(tags.filter((t) => t.id !== tag.id));
+    } else {
+      onChange([...tags, tag]);
+    }
+  };
+
+  const filteredTags = availableTags.filter((tag: TagObject) =>
+    tag.name.toLowerCase().includes(searchValue.toLowerCase())
+  );
+
+  if (loading) {
+    return <div className="text-sm text-muted-foreground">Loading tags...</div>;
+  }
+
+  return (
+    <Tags>
+      <TagsTrigger className="h-auto min-h-10">
+        {tags.length > 0 ? (
+          tags.map((tag) => (
+            <TagsValue
+              key={tag.id}
+              variant="secondary"
+              onRemove={() => onChange(tags.filter((t) => t.id !== tag.id))}
+            >
+              {tag.name}
+            </TagsValue>
+          ))
+        ) : (
+          <span className="text-muted-foreground">No {category.toLowerCase()}s selected</span>
+        )}
+      </TagsTrigger>
+      <TagsContent>
+        <TagsInput
+          placeholder={`Search ${category.toLowerCase()}s...`}
+          value={searchValue}
+          onValueChange={setSearchValue}
+        />
+        <TagsList>
+          {filteredTags.length > 0 ? (
+            <TagsGroup>
+              {filteredTags.map((tag: TagObject) => (
+                <TagsItem
+                  key={tag.id}
+                  value={tag.id}
+                  onSelect={() => handleToggleTag(tag)}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(tag.id)}
+                    onChange={() => handleToggleTag(tag)}
+                    className="mr-2"
+                  />
+                  {tag.name}
+                </TagsItem>
+              ))}
+            </TagsGroup>
+          ) : (
+            <div className="p-2 text-sm text-muted-foreground text-center">
+              No {category.toLowerCase()}s found
+            </div>
+          )}
+        </TagsList>
+      </TagsContent>
+    </Tags>
+  );
+};
+
 
 const ProfileForm = ({
   value,
@@ -337,27 +438,65 @@ const ProfileForm = ({
             </FieldContent>
           </Field>
           <Field>
-            <FieldLabel htmlFor="profile-hobbies">Hobbies</FieldLabel>
-            <FieldContent className="bg-card">
-              <Input
-                id="profile-hobbies"
-                value={getFieldValue("hobbies")}
-                onChange={handleChange("hobbies")}
-                readOnly={readOnly}
-                disabled={readOnly}
-              />
+            <FieldLabel>Hobbies</FieldLabel>
+            <FieldContent>
+              {readOnly ? (
+                <div className="min-h-10 flex items-center">
+                  {Array.isArray(value.hobbies) && value.hobbies.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {value.hobbies.map((hobby: TagObject) => (
+                        <Badge key={hobby.id} variant="secondary">
+                          {hobby.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-sm text-muted-foreground">No hobbies added</span>
+                  )}
+                </div>
+              ) : (
+                <TagSelector
+                  tags={Array.isArray(value.hobbies) ? value.hobbies : []}
+                  category="HOBBY"
+                  onChange={(tags) =>
+                    onChange?.({
+                      ...value,
+                      hobbies: tags,
+                    } as UserProfile)
+                  }
+                />
+              )}
             </FieldContent>
           </Field>
           <Field>
-            <FieldLabel htmlFor="profile-interests">Interests</FieldLabel>
-            <FieldContent className="bg-card">
-              <Input
-                id="profile-interests"
-                value={getFieldValue("interests")}
-                onChange={handleChange("interests")}
-                readOnly={readOnly}
-                disabled={readOnly}
-              />
+            <FieldLabel>Interests</FieldLabel>
+            <FieldContent>
+              {readOnly ? (
+                <div className="min-h-10 flex items-center">
+                  {Array.isArray(value.interests) && value.interests.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {value.interests.map((interest: TagObject) => (
+                        <Badge key={interest.id} variant="secondary">
+                          {interest.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-sm text-muted-foreground">No interests added</span>
+                  )}
+                </div>
+              ) : (
+                <TagSelector
+                  tags={Array.isArray(value.interests) ? value.interests : []}
+                  category="INTEREST"
+                  onChange={(tags) =>
+                    onChange?.({
+                      ...value,
+                      interests: tags,
+                    } as UserProfile)
+                  }
+                />
+              )}
             </FieldContent>
           </Field>
           <Field>

@@ -20,7 +20,6 @@ const AuthCallbackPage = () => {
         const { error } =
           await supabaseClient.auth.exchangeCodeForSession(verificationCode);
 
-
         if (error) {
           setHasError(true);
           setStatusMessage(error.message);

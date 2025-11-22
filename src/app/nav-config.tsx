@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import {
   BarChart3,
   Building,
+  Building2,
   Flag,
   Handshake,
   Home,
@@ -63,6 +64,12 @@ export const navConfig: NavItem[] = [
     path: "/invite-management",
     roles: ["org_admin"],
     icon: <Mail />,
+  },
+  {
+    label: "Department Management",
+    path: "/department-management",
+    roles: ["org_admin"],
+    icon: <Building2 />,
   },
   {
     label: "Statistics",

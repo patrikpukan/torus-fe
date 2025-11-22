@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Pencil, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -46,20 +46,23 @@ export default function DepartmentManagementPage() {
   const [editingDepartment, setEditingDepartment] = useState<Department | null>(
     null
   );
-  const [departmentToDelete, setDepartmentToDelete] = useState<Department | null>(
-    null
-  );
+  const [departmentToDelete, setDepartmentToDelete] =
+    useState<Department | null>(null);
 
   // Queries and mutations
-  const { data, loading: departmentsLoading } = useGetDepartmentsByOrganizationQuery(
-    organizationId
-  );
-  
+  const { data, loading: departmentsLoading } =
+    useGetDepartmentsByOrganizationQuery(organizationId);
+
   const departments = data?.getDepartmentsByOrganization ?? [];
 
   const [createDept, { loading: creating }] = useCreateDepartmentMutation();
   const [updateDept, { loading: updating }] = useUpdateDepartmentMutation();
   const [deleteDept, { loading: deleting }] = useDeleteDepartmentMutation();
+
+  // Set page title
+  useEffect(() => {
+    document.title = "Department Management | Torus";
+  }, []);
 
   // Handlers for create
   const handleCreateDepartment = async () => {
@@ -90,11 +93,11 @@ export default function DepartmentManagementPage() {
         title: "Success",
         description: "Department created successfully",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error instanceof Error ? error : new Error(String(error));
       toast({
         title: "Error",
-        description:
-          error?.message || "Failed to create department",
+        description: err?.message || "Failed to create department",
         variant: "destructive",
       });
     }
@@ -130,11 +133,11 @@ export default function DepartmentManagementPage() {
         title: "Success",
         description: "Department updated successfully",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error instanceof Error ? error : new Error(String(error));
       toast({
         title: "Error",
-        description:
-          error?.message || "Failed to update department",
+        description: err?.message || "Failed to update department",
         variant: "destructive",
       });
     }
@@ -160,11 +163,11 @@ export default function DepartmentManagementPage() {
         title: "Success",
         description: "Department deleted successfully",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error instanceof Error ? error : new Error(String(error));
       toast({
         title: "Error",
-        description:
-          error?.message || "Failed to delete department",
+        description: err?.message || "Failed to delete department",
         variant: "destructive",
       });
     }
@@ -242,15 +245,21 @@ export default function DepartmentManagementPage() {
                     key={dept?.id}
                     className="hover:bg-muted/50 transition-colors"
                   >
-                    <TableCell className="font-semibold">{dept?.name}</TableCell>
+                    <TableCell className="font-semibold">
+                      {dept?.name}
+                    </TableCell>
                     <TableCell>{dept?.employeeCount}</TableCell>
-                    <TableCell>{dept?.createdAt ? formatDate(dept.createdAt) : "-"}</TableCell>
+                    <TableCell>
+                      {dept?.createdAt ? formatDate(dept.createdAt) : "-"}
+                    </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => dept && openEditDialog(dept as Department)}
+                          onClick={() =>
+                            dept && openEditDialog(dept as Department)
+                          }
                           aria-label="Edit department"
                         >
                           <Pencil className="h-4 w-4" />
@@ -258,7 +267,9 @@ export default function DepartmentManagementPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => dept && openDeleteDialog(dept as Department)}
+                          onClick={() =>
+                            dept && openDeleteDialog(dept as Department)
+                          }
                           aria-label="Delete department"
                         >
                           <Trash2 className="h-4 w-4 text-destructive" />
@@ -347,9 +358,7 @@ export default function DepartmentManagementPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edit Department</DialogTitle>
-            <DialogDescription>
-              Update department details
-            </DialogDescription>
+            <DialogDescription>Update department details</DialogDescription>
           </DialogHeader>
 
           {editingDepartment && (

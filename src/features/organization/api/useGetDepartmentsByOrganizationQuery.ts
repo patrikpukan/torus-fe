@@ -34,10 +34,10 @@ export const GET_DEPARTMENTS_BY_ORGANIZATION_QUERY = graphql(`
 `);
 
 export const useGetDepartmentsByOrganizationQuery = (organizationId?: string) =>
-  useQuery<GetDepartmentsByOrganizationData, GetDepartmentsByOrganizationVariables>(
-    GET_DEPARTMENTS_BY_ORGANIZATION_QUERY,
-    {
-      skip: !organizationId,
-      variables: organizationId ? { organizationId } : undefined,
-    }
-  );
+  useQuery<
+    GetDepartmentsByOrganizationData,
+    GetDepartmentsByOrganizationVariables
+  >(GET_DEPARTMENTS_BY_ORGANIZATION_QUERY, {
+    skip: !organizationId,
+    variables: organizationId ? { organizationId } : { organizationId: "" },
+  });

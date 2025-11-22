@@ -147,9 +147,7 @@ const UserDetailPage = () => {
         <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           {label}
         </span>
-        <p className="text-sm text-foreground">
-          {value ?? placeholder}
-        </p>
+        <p className="text-sm text-foreground">{value ?? placeholder}</p>
       </div>
     );
 
@@ -259,10 +257,7 @@ const UserDetailPage = () => {
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <SendResetPasswordButton email={user.email} variant="outline" />
           {isBanned ? (
-            <UnbanUserButton
-              userId={user.id}
-              userDisplayName={userDisplayName}
-            >
+            <UnbanUserButton userId={user.id} userDisplayName={userDisplayName}>
               {({ openDialog, loading }) => (
                 <Button
                   type="button"
@@ -295,5 +290,3 @@ const UserDetailPage = () => {
 };
 
 export default UserDetailPage;
-
-

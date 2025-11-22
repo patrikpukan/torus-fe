@@ -36,6 +36,6 @@ export const useGetUsersByDepartmentQuery = (departmentId?: string) =>
     GET_USERS_BY_DEPARTMENT_QUERY,
     {
       skip: !departmentId,
-      variables: departmentId ? { departmentId } : undefined,
+      variables: departmentId ? { departmentId } : { departmentId: "" },
     }
   );

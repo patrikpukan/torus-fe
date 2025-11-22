@@ -12,4 +12,5 @@ export type UserProfile = {
   profileImageUrl?: string;
   isActive?: boolean;
   organizationId?: string;
+  departmentId?: string | null;
 };

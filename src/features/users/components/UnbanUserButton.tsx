@@ -67,7 +67,10 @@ export const UnbanUserButton = ({
         openDialog: () => setDialogOpen(true),
         loading,
       })}
-      <Dialog open={dialogOpen} onOpenChange={(open) => !loading && setDialogOpen(open)}>
+      <Dialog
+        open={dialogOpen}
+        onOpenChange={(open) => !loading && setDialogOpen(open)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Unban {userDisplayName ?? "user"}</DialogTitle>
@@ -76,10 +79,16 @@ export const UnbanUserButton = ({
             </DialogDescription>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Are you sure you want to restore access for {userDisplayName ?? "this user"}? They will appear in pairing pools again.
+            Are you sure you want to restore access for{" "}
+            {userDisplayName ?? "this user"}? They will appear in pairing pools
+            again.
           </p>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setDialogOpen(false)} disabled={loading}>
+            <Button
+              variant="ghost"
+              onClick={() => setDialogOpen(false)}
+              disabled={loading}
+            >
               Cancel
             </Button>
             <Button variant="default" onClick={handleUnban} disabled={loading}>

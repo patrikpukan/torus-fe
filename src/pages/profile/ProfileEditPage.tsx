@@ -37,6 +37,7 @@ const ProfileEditPage = () => {
     organization: user.organization?.name || undefined,
     accountStatus: user.isActive ? "Active" : "Inactive",
     pairingStatus: user.profileStatus || undefined,
+    departmentId: user.departmentId || null,
   };
 
   const handleChange = (updatedProfile: UserProfile) => {
@@ -58,6 +59,7 @@ const ProfileEditPage = () => {
             hobbies: hobbiesArray.join(", ") || null,
             interests: updatedProfile.interests || null,
             avatarUrl: updatedProfile.profileImageUrl || null,
+            departmentId: updatedProfile.departmentId || null,
           },
         },
         refetchQueries: ["GetCurrentUser"],

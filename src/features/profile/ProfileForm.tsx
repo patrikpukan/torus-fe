@@ -29,6 +29,7 @@ import type { UserProfile } from "@/types/User.ts";
 import { useAuth } from "@/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabaseClient } from "@/lib/supabaseClient";
+import { useGetDepartmentsByOrganizationQuery } from "@/features/organization/api/useGetDepartmentsByOrganizationQuery";
 
 export type ProfileFormProps = {
   value: UserProfile;
@@ -47,10 +48,16 @@ const ProfileForm = ({
   submitLabel = "Save",
   onEditClick,
 }: ProfileFormProps) => {
-  const { user } = useAuth();
+  const { user, organizationId } = useAuth();
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Fetch departments for the organization
+  const { data: departmentsData, loading: departmentsLoading } =
+    useGetDepartmentsByOrganizationQuery(organizationId || "");
+
+  const departments = departmentsData?.getDepartmentsByOrganization ?? [];
   // Fields that are always read-only
   const readOnlyFields = useMemo(
     () =>
@@ -342,6 +349,42 @@ const ProfileForm = ({
                 readOnly={readOnly}
                 disabled={readOnly}
               />
+            </FieldContent>
+          </Field>
+          <Field>
+            <div className="space-y-2">
+              <FieldLabel htmlFor="profile-department">Department</FieldLabel>
+              <p className="text-xs text-muted-foreground">
+                Assign yourself to a department within your organization
+                (optional)
+              </p>
+            </div>
+            <FieldContent className="bg-card">
+              <Select
+                value={value.departmentId || "none"}
+                onValueChange={(newValue) => {
+                  if (!onChange) return;
+                  onChange({
+                    ...value,
+                    departmentId: newValue === "none" ? null : newValue,
+                  } as UserProfile);
+                }}
+                disabled={readOnly || departmentsLoading}
+              >
+                <SelectTrigger id="profile-department">
+                  <SelectValue placeholder="Select a department" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none" className="text-muted-foreground">
+                    No Department
+                  </SelectItem>
+                  {departments.map((dept) => (
+                    <SelectItem key={dept?.id} value={dept?.id || ""}>
+                      {dept?.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </FieldContent>
           </Field>
         </FieldGroup>

@@ -14,6 +14,11 @@ export const UPDATE_USER_PROFILE = graphql(`
       profileImageUrl
       profileStatus
       isActive
+      departmentId
+      department {
+        id
+        name
+      }
     }
   }
 `);

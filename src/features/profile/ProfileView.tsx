@@ -9,6 +9,7 @@ import SendResetPasswordButton from "../auth/components/SendResetPasswordButton"
 import { UPDATE_USER_PROFILE } from "./UpdateUserProfileMutation";
 import type { UserProfile } from "@/types/User";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { PauseActivityModal } from "@/features/profile/components/PauseActivityModal";
 import {
   useActivePauseQuery,
@@ -127,6 +128,7 @@ const ProfileView = () => {
           : user.isActive
             ? "Active"
             : "Inactive",
+      departmentId: user.departmentId || null,
     }) satisfies UserProfile;
 
   useEffect(() => {
@@ -183,6 +185,7 @@ const ProfileView = () => {
             interests: updatedProfile.interests || null,
             preferredActivity: updatedProfile.preferredActivity || null,
             avatarUrl: updatedProfile.profileImageUrl || null,
+            departmentId: updatedProfile.departmentId || null,
           },
         },
         refetchQueries: ["GetCurrentUser"],
@@ -206,6 +209,14 @@ const ProfileView = () => {
       />
       {!isEditing && (
         <div className="mt-6 space-y-4">
+          {/* Department Section */}
+          {user.department && (
+            <div className="rounded-lg border border-border p-4 bg-card">
+              <p className="text-sm text-muted-foreground mb-2">Department</p>
+              <Badge variant="secondary">{user.department.name}</Badge>
+            </div>
+          )}
+
           <div className="flex justify-center">
             <SendResetPasswordButton email={profile.email} variant="outline" />
           </div>

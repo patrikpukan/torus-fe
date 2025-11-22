@@ -113,8 +113,8 @@ const ReportUserDialog = ({
                 minLength={5}
               />
               <p className="text-xs text-muted-foreground">
-                Be as specific as possible. The team will be notified and may reach out
-                if they need more detail.
+                Be as specific as possible. The team will be notified and may
+                reach out if they need more detail.
               </p>
             </div>
 
@@ -139,4 +139,3 @@ const ReportUserDialog = ({
 };
 
 export default ReportUserDialog;
-

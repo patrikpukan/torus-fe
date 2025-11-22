@@ -34,4 +34,3 @@ export const useReportUserMutation = () =>
   useMutation<ReportUserMutationData, { input: ReportUserInput }>(
     REPORT_USER_MUTATION
   );
-

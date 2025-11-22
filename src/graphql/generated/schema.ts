@@ -87,6 +87,12 @@ export type CreateCalendarEventInput = {
   userId: Scalars['ID']['input'];
 };
 
+export type CreateDepartmentInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+};
+
 export type CreateInviteCodeInputType = {
   /** Optional: hours until code expires (default: 30 days if not set) */
   expiresInHours?: InputMaybe<Scalars['Float']['input']>;
@@ -117,6 +123,8 @@ export type CurrentUser = {
   __typename?: 'CurrentUser';
   about: Maybe<Scalars['String']['output']>;
   activeBan: Maybe<UserBan>;
+  department: Maybe<Department>;
+  departmentId: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
   firstName: Maybe<Scalars['String']['output']>;
   hobbies: Maybe<Scalars['String']['output']>;
@@ -138,6 +146,32 @@ export type DeleteCalendarEventInput = {
   id: Scalars['ID']['input'];
   occurrenceStart?: InputMaybe<Scalars['DateTime']['input']>;
   scope: Scalars['String']['input'];
+};
+
+export type DeleteDepartmentInput = {
+  id: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
+};
+
+export type Department = {
+  __typename?: 'Department';
+  createdAt: Scalars['DateTime']['output'];
+  description: Maybe<Scalars['String']['output']>;
+  employeeCount: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  organizationId: Scalars['ID']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type DepartmentUser = {
+  __typename?: 'DepartmentUser';
+  email: Scalars['String']['output'];
+  firstName: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  lastName: Maybe<Scalars['String']['output']>;
+  profileImageUrl: Maybe<Scalars['String']['output']>;
+  role: UserRoleEnum;
 };
 
 export type ExpandedCalendarEventOccurrence = {
@@ -222,9 +256,11 @@ export type Mutation = {
   cancelMeeting: MeetingEvent;
   confirmMeeting: MeetingEvent;
   createCalendarEvent: CalendarEvent;
+  createDepartment: Department;
   createInviteCode: CreateInviteCodeResponseType;
   createMeetingEvent: MeetingEvent;
   deleteCalendarEvent: Scalars['Boolean']['output'];
+  deleteDepartment: Scalars['Boolean']['output'];
   deleteUser: User;
   executePairingAlgorithm: PairingExecutionResult;
   inviteUserToOrganization: InviteUserResponseType;
@@ -232,12 +268,15 @@ export type Mutation = {
   proposeMeetingTime: MeetingEvent;
   registerOrganization: RegisterOrganizationResponseType;
   rejectMeeting: MeetingEvent;
+  reportUser: UserReport;
+  resolveReport: UserReport;
   resumeActivity: Scalars['Boolean']['output'];
   signUp: User;
   unbanUser: User;
   updateAlgorithmSettings: AlgorithmSettingsResponse;
   updateCalendarEvent: Array<CalendarEvent>;
   updateCurrentUserProfile: CurrentUser;
+  updateDepartment: Department;
   updateMeetingToProposedTime: MeetingEvent;
   updateOrganization: OrganizationType;
   updateUser: User;
@@ -265,6 +304,11 @@ export type MutationCreateCalendarEventArgs = {
 };
 
 
+export type MutationCreateDepartmentArgs = {
+  input: CreateDepartmentInput;
+};
+
+
 export type MutationCreateInviteCodeArgs = {
   input: InputMaybe<CreateInviteCodeInputType>;
 };
@@ -277,6 +321,11 @@ export type MutationCreateMeetingEventArgs = {
 
 export type MutationDeleteCalendarEventArgs = {
   input: DeleteCalendarEventInput;
+};
+
+
+export type MutationDeleteDepartmentArgs = {
+  input: DeleteDepartmentInput;
 };
 
 
@@ -316,6 +365,16 @@ export type MutationRejectMeetingArgs = {
 };
 
 
+export type MutationReportUserArgs = {
+  input: ReportUserInput;
+};
+
+
+export type MutationResolveReportArgs = {
+  input: ResolveReportInput;
+};
+
+
 export type MutationSignUpArgs = {
   data: SignUpInputType;
 };
@@ -340,6 +399,11 @@ export type MutationUpdateCalendarEventArgs = {
 
 export type MutationUpdateCurrentUserProfileArgs = {
   input: UpdateCurrentUserProfileInputType;
+};
+
+
+export type MutationUpdateDepartmentArgs = {
+  input: UpdateDepartmentInput;
 };
 
 
@@ -457,9 +521,12 @@ export type Query = {
   expandedCalendarOccurrences: Array<ExpandedCalendarEventOccurrence>;
   getAlgorithmSettings: AlgorithmSettings;
   getCurrentUser: Maybe<CurrentUser>;
+  getDepartmentById: Maybe<Department>;
+  getDepartmentsByOrganization: Array<Department>;
   getOrganizationInvites: Array<InviteCodeType>;
   getPairedUsers: Array<User>;
   getPairingHistory: Array<PairingHistory>;
+  getUsersByDepartment: Array<DepartmentUser>;
   latestMeetingForPairing: Maybe<MeetingEvent>;
   meetingEventById: Maybe<MeetingEvent>;
   meetingEventsByDateRange: Array<MeetingEvent>;
@@ -467,6 +534,8 @@ export type Query = {
   organizationById: Maybe<OrganizationType>;
   organizations: Array<OrganizationType>;
   pendingMeetingConfirmations: Array<MeetingEvent>;
+  reportById: Maybe<UserReport>;
+  reports: Array<UserReport>;
   statistics: StatisticsResponseType;
   upcomingMeetings: Array<MeetingEvent>;
   userById: Maybe<User>;
@@ -503,6 +572,21 @@ export type QueryGetAlgorithmSettingsArgs = {
 };
 
 
+export type QueryGetDepartmentByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryGetDepartmentsByOrganizationArgs = {
+  organizationId: Scalars['String']['input'];
+};
+
+
+export type QueryGetUsersByDepartmentArgs = {
+  departmentId: Scalars['String']['input'];
+};
+
+
 export type QueryLatestMeetingForPairingArgs = {
   pairingId: Scalars['ID']['input'];
 };
@@ -520,6 +604,11 @@ export type QueryMeetingEventsByDateRangeArgs = {
 
 
 export type QueryOrganizationByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryReportByIdArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -550,6 +639,20 @@ export type RegisterOrganizationResponseType = {
   adminEmail: Scalars['String']['output'];
   message: Scalars['String']['output'];
   organization: OrganizationType;
+};
+
+export type ReportStatusEnum =
+  | 'pending'
+  | 'resolved';
+
+export type ReportUserInput = {
+  reason: Scalars['String']['input'];
+  reportedUserId: Scalars['ID']['input'];
+};
+
+export type ResolveReportInput = {
+  reportId: Scalars['ID']['input'];
+  resolutionNote?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type SignUpInputType = {
@@ -605,11 +708,19 @@ export type UpdateCalendarEventInput = {
 export type UpdateCurrentUserProfileInputType = {
   about?: InputMaybe<Scalars['String']['input']>;
   avatarUrl?: InputMaybe<Scalars['String']['input']>;
+  departmentId?: InputMaybe<Scalars['String']['input']>;
   firstName?: InputMaybe<Scalars['String']['input']>;
   hobbies?: InputMaybe<Scalars['String']['input']>;
   interests?: InputMaybe<Scalars['String']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
   preferredActivity?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateDepartmentInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  organizationId: Scalars['String']['input'];
 };
 
 export type UpdateMeetingEventConfirmationInput = {
@@ -647,6 +758,8 @@ export type User = {
   about: Maybe<Scalars['String']['output']>;
   activeBan: Maybe<UserBan>;
   createdAt: Scalars['DateTime']['output'];
+  department: Maybe<Department>;
+  departmentId: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
   firstName: Maybe<Scalars['String']['output']>;
   hobbies: Maybe<Scalars['String']['output']>;
@@ -675,6 +788,22 @@ export type UserBan = {
   userId: Scalars['ID']['output'];
 };
 
+export type UserReport = {
+  __typename?: 'UserReport';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  pairingId: Scalars['ID']['output'];
+  reason: Scalars['String']['output'];
+  reportedUser: User;
+  reportedUserId: Scalars['ID']['output'];
+  reporter: User;
+  reporterId: Scalars['ID']['output'];
+  resolutionNote: Maybe<Scalars['String']['output']>;
+  resolvedAt: Maybe<Scalars['DateTime']['output']>;
+  resolvedBy: Maybe<User>;
+  status: ReportStatusEnum;
+};
+
 /** User role */
 export type UserRoleEnum =
   | 'org_admin'
@@ -684,7 +813,7 @@ export type UserRoleEnum =
 export type GetCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCurrentUserQuery = { __typename?: 'Query', getCurrentUser: { __typename?: 'CurrentUser', id: string, email: string, organizationId: string, role: UserRoleEnum, firstName: string | null, lastName: string | null, about: string | null, hobbies: string | null, interests: string | null, profileImageUrl: string | null, profileStatus: ProfileStatusEnum, isActive: boolean, preferredActivity: string | null, suspendedUntil: string | null, activeBan: { __typename?: 'UserBan', id: string, reason: string, createdAt: string, expiresAt: string | null } | null, organization: { __typename?: 'SimpleOrganizationType', id: string, name: string, code: string, imageUrl: string | null } } | null };
+export type GetCurrentUserQuery = { __typename?: 'Query', getCurrentUser: { __typename?: 'CurrentUser', id: string, email: string, organizationId: string, role: UserRoleEnum, firstName: string | null, lastName: string | null, about: string | null, hobbies: string | null, interests: string | null, profileImageUrl: string | null, profileStatus: ProfileStatusEnum, isActive: boolean, preferredActivity: string | null, suspendedUntil: string | null, departmentId: string | null, activeBan: { __typename?: 'UserBan', id: string, reason: string, createdAt: string, expiresAt: string | null } | null, organization: { __typename?: 'SimpleOrganizationType', id: string, name: string, code: string, imageUrl: string | null }, department: { __typename?: 'Department', id: string, name: string } | null } | null };
 
 export type GetCalendarEventsQueryVariables = Exact<{
   startDate: Scalars['DateTime']['input'];
@@ -808,12 +937,40 @@ export type GetActivePauseQueryVariables = Exact<{
 
 export type GetActivePauseQuery = { __typename?: 'Query', expandedCalendarOccurrences: Array<{ __typename?: 'ExpandedCalendarEventOccurrence', id: string, occurrenceStart: string, occurrenceEnd: string, originalEvent: { __typename?: 'CalendarEvent', id: string, type: CalendarEventType, title: string | null, description: string | null, startDateTime: string, endDateTime: string, deletedAt: string | null } }> };
 
+export type CreateDepartmentMutationVariables = Exact<{
+  input: CreateDepartmentInput;
+}>;
+
+
+export type CreateDepartmentMutation = { __typename?: 'Mutation', createDepartment: { __typename?: 'Department', id: string, name: string, description: string | null, organizationId: string, employeeCount: number, createdAt: string, updatedAt: string } };
+
 export type CreateInviteCodeMutationVariables = Exact<{
   input: InputMaybe<CreateInviteCodeInputType>;
 }>;
 
 
 export type CreateInviteCodeMutation = { __typename?: 'Mutation', createInviteCode: { __typename?: 'CreateInviteCodeResponseType', success: boolean, message: string, code: string, inviteUrl: string, expiresAt: string | null } };
+
+export type DeleteDepartmentMutationVariables = Exact<{
+  input: DeleteDepartmentInput;
+}>;
+
+
+export type DeleteDepartmentMutation = { __typename?: 'Mutation', deleteDepartment: boolean };
+
+export type GetDepartmentsByOrganizationQueryVariables = Exact<{
+  organizationId: Scalars['String']['input'];
+}>;
+
+
+export type GetDepartmentsByOrganizationQuery = { __typename?: 'Query', getDepartmentsByOrganization: Array<{ __typename?: 'Department', id: string, name: string, description: string | null, organizationId: string, employeeCount: number, createdAt: string, updatedAt: string }> };
+
+export type GetUsersByDepartmentQueryVariables = Exact<{
+  departmentId: Scalars['String']['input'];
+}>;
+
+
+export type GetUsersByDepartmentQuery = { __typename?: 'Query', getUsersByDepartment: Array<{ __typename?: 'DepartmentUser', id: string, email: string, firstName: string | null, lastName: string | null, profileImageUrl: string | null, role: UserRoleEnum }> };
 
 export type GetOrganizationInvitesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -850,6 +1007,13 @@ export type RegisterOrganizationMutationVariables = Exact<{
 
 
 export type RegisterOrganizationMutation = { __typename?: 'Mutation', registerOrganization: { __typename?: 'RegisterOrganizationResponseType', adminEmail: string, message: string, organization: { __typename?: 'OrganizationType', id: string, name: string, code: string, size: number | null, address: string | null, createdAt: string, updatedAt: string } } };
+
+export type UpdateDepartmentMutationVariables = Exact<{
+  input: UpdateDepartmentInput;
+}>;
+
+
+export type UpdateDepartmentMutation = { __typename?: 'Mutation', updateDepartment: { __typename?: 'Department', id: string, name: string, description: string | null, organizationId: string, employeeCount: number, createdAt: string, updatedAt: string } };
 
 export type UpdateOrganizationMutationVariables = Exact<{
   input: UpdateOrganizationInputType;
@@ -901,7 +1065,26 @@ export type UpdateUserProfileMutationVariables = Exact<{
 }>;
 
 
-export type UpdateUserProfileMutation = { __typename?: 'Mutation', updateCurrentUserProfile: { __typename?: 'CurrentUser', id: string, email: string, firstName: string | null, lastName: string | null, about: string | null, hobbies: string | null, interests: string | null, preferredActivity: string | null, profileImageUrl: string | null, profileStatus: ProfileStatusEnum, isActive: boolean } };
+export type UpdateUserProfileMutation = { __typename?: 'Mutation', updateCurrentUserProfile: { __typename?: 'CurrentUser', id: string, email: string, firstName: string | null, lastName: string | null, about: string | null, hobbies: string | null, interests: string | null, preferredActivity: string | null, profileImageUrl: string | null, profileStatus: ProfileStatusEnum, isActive: boolean, departmentId: string | null, department: { __typename?: 'Department', id: string, name: string } | null } };
+
+export type ReportByIdQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type ReportByIdQuery = { __typename?: 'Query', reportById: { __typename?: 'UserReport', id: string, createdAt: string, reason: string, status: ReportStatusEnum, resolvedAt: string | null, resolutionNote: string | null, reporter: { __typename?: 'User', id: string, firstName: string | null, lastName: string | null, email: string }, reportedUser: { __typename?: 'User', id: string, firstName: string | null, lastName: string | null, email: string }, resolvedBy: { __typename?: 'User', id: string, firstName: string | null, lastName: string | null, email: string } | null } | null };
+
+export type ReportsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ReportsQuery = { __typename?: 'Query', reports: Array<{ __typename?: 'UserReport', id: string, createdAt: string, reason: string, status: ReportStatusEnum, resolvedAt: string | null, reporter: { __typename?: 'User', id: string, firstName: string | null, lastName: string | null, email: string }, reportedUser: { __typename?: 'User', id: string, firstName: string | null, lastName: string | null, email: string } }> };
+
+export type ResolveReportMutationVariables = Exact<{
+  input: ResolveReportInput;
+}>;
+
+
+export type ResolveReportMutation = { __typename?: 'Mutation', resolveReport: { __typename?: 'UserReport', id: string, status: ReportStatusEnum, resolvedBy: { __typename?: 'User', id: string } | null } };
 
 export type StatisticsQueryVariables = Exact<{
   filter: InputMaybe<StatisticsFilterInputType>;
@@ -926,6 +1109,13 @@ export type GetPairedUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetPairedUsersQuery = { __typename?: 'Query', getPairedUsers: Array<{ __typename?: 'User', id: string, email: string, firstName: string | null, lastName: string | null, profileStatus: ProfileStatusEnum, role: UserRoleEnum }> };
+
+export type ReportUserMutationVariables = Exact<{
+  input: ReportUserInput;
+}>;
+
+
+export type ReportUserMutation = { __typename?: 'Mutation', reportUser: { __typename?: 'UserReport', id: string, reporterId: string, reportedUserId: string, pairingId: string, reason: string, createdAt: string } };
 
 export type UnbanUserMutationVariables = Exact<{
   userId: Scalars['ID']['input'];
@@ -964,6 +1154,7 @@ export const GetCurrentUserDocument = gql`
     isActive
     preferredActivity
     suspendedUntil
+    departmentId
     activeBan {
       id
       reason
@@ -975,6 +1166,10 @@ export const GetCurrentUserDocument = gql`
       name
       code
       imageUrl
+    }
+    department {
+      id
+      name
     }
   }
 }
@@ -1261,6 +1456,19 @@ export const GetActivePauseDocument = gql`
   }
 }
     `;
+export const CreateDepartmentDocument = gql`
+    mutation CreateDepartment($input: CreateDepartmentInput!) {
+  createDepartment(input: $input) {
+    id
+    name
+    description
+    organizationId
+    employeeCount
+    createdAt
+    updatedAt
+  }
+}
+    `;
 export const CreateInviteCodeDocument = gql`
     mutation CreateInviteCode($input: CreateInviteCodeInputType) {
   createInviteCode(input: $input) {
@@ -1269,6 +1477,36 @@ export const CreateInviteCodeDocument = gql`
     code
     inviteUrl
     expiresAt
+  }
+}
+    `;
+export const DeleteDepartmentDocument = gql`
+    mutation DeleteDepartment($input: DeleteDepartmentInput!) {
+  deleteDepartment(input: $input)
+}
+    `;
+export const GetDepartmentsByOrganizationDocument = gql`
+    query GetDepartmentsByOrganization($organizationId: String!) {
+  getDepartmentsByOrganization(organizationId: $organizationId) {
+    id
+    name
+    description
+    organizationId
+    employeeCount
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export const GetUsersByDepartmentDocument = gql`
+    query GetUsersByDepartment($departmentId: String!) {
+  getUsersByDepartment(departmentId: $departmentId) {
+    id
+    email
+    firstName
+    lastName
+    profileImageUrl
+    role
   }
 }
     `;
@@ -1357,6 +1595,19 @@ export const RegisterOrganizationDocument = gql`
     }
     adminEmail
     message
+  }
+}
+    `;
+export const UpdateDepartmentDocument = gql`
+    mutation UpdateDepartment($input: UpdateDepartmentInput!) {
+  updateDepartment(input: $input) {
+    id
+    name
+    description
+    organizationId
+    employeeCount
+    createdAt
+    updatedAt
   }
 }
     `;
@@ -1472,6 +1723,75 @@ export const UpdateUserProfileDocument = gql`
     profileImageUrl
     profileStatus
     isActive
+    departmentId
+    department {
+      id
+      name
+    }
+  }
+}
+    `;
+export const ReportByIdDocument = gql`
+    query ReportById($id: ID!) {
+  reportById(id: $id) {
+    id
+    createdAt
+    reason
+    status
+    resolvedAt
+    reporter {
+      id
+      firstName
+      lastName
+      email
+    }
+    reportedUser {
+      id
+      firstName
+      lastName
+      email
+    }
+    resolvedBy {
+      id
+      firstName
+      lastName
+      email
+    }
+    resolutionNote
+  }
+}
+    `;
+export const ReportsDocument = gql`
+    query Reports {
+  reports {
+    id
+    createdAt
+    reason
+    status
+    resolvedAt
+    reporter {
+      id
+      firstName
+      lastName
+      email
+    }
+    reportedUser {
+      id
+      firstName
+      lastName
+      email
+    }
+  }
+}
+    `;
+export const ResolveReportDocument = gql`
+    mutation ResolveReport($input: ResolveReportInput!) {
+  resolveReport(input: $input) {
+    id
+    status
+    resolvedBy {
+      id
+    }
   }
 }
     `;
@@ -1536,6 +1856,18 @@ export const GetPairedUsersDocument = gql`
     lastName
     profileStatus
     role
+  }
+}
+    `;
+export const ReportUserDocument = gql`
+    mutation ReportUser($input: ReportUserInput!) {
+  reportUser(input: $input) {
+    id
+    reporterId
+    reportedUserId
+    pairingId
+    reason
+    createdAt
   }
 }
     `;
@@ -1650,8 +1982,20 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     GetActivePause(variables: GetActivePauseQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetActivePauseQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetActivePauseQuery>({ document: GetActivePauseDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetActivePause', 'query', variables);
     },
+    CreateDepartment(variables: CreateDepartmentMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CreateDepartmentMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CreateDepartmentMutation>({ document: CreateDepartmentDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'CreateDepartment', 'mutation', variables);
+    },
     CreateInviteCode(variables?: CreateInviteCodeMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CreateInviteCodeMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<CreateInviteCodeMutation>({ document: CreateInviteCodeDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'CreateInviteCode', 'mutation', variables);
+    },
+    DeleteDepartment(variables: DeleteDepartmentMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<DeleteDepartmentMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<DeleteDepartmentMutation>({ document: DeleteDepartmentDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'DeleteDepartment', 'mutation', variables);
+    },
+    GetDepartmentsByOrganization(variables: GetDepartmentsByOrganizationQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetDepartmentsByOrganizationQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetDepartmentsByOrganizationQuery>({ document: GetDepartmentsByOrganizationDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetDepartmentsByOrganization', 'query', variables);
+    },
+    GetUsersByDepartment(variables: GetUsersByDepartmentQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetUsersByDepartmentQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetUsersByDepartmentQuery>({ document: GetUsersByDepartmentDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetUsersByDepartment', 'query', variables);
     },
     GetOrganizationInvites(variables?: GetOrganizationInvitesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetOrganizationInvitesQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetOrganizationInvitesQuery>({ document: GetOrganizationInvitesDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetOrganizationInvites', 'query', variables);
@@ -1670,6 +2014,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     RegisterOrganization(variables: RegisterOrganizationMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<RegisterOrganizationMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<RegisterOrganizationMutation>({ document: RegisterOrganizationDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'RegisterOrganization', 'mutation', variables);
+    },
+    UpdateDepartment(variables: UpdateDepartmentMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<UpdateDepartmentMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UpdateDepartmentMutation>({ document: UpdateDepartmentDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'UpdateDepartment', 'mutation', variables);
     },
     UpdateOrganization(variables: UpdateOrganizationMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<UpdateOrganizationMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateOrganizationMutation>({ document: UpdateOrganizationDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'UpdateOrganization', 'mutation', variables);
@@ -1695,6 +2042,15 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     UpdateUserProfile(variables: UpdateUserProfileMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<UpdateUserProfileMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateUserProfileMutation>({ document: UpdateUserProfileDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'UpdateUserProfile', 'mutation', variables);
     },
+    ReportById(variables: ReportByIdQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<ReportByIdQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ReportByIdQuery>({ document: ReportByIdDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'ReportById', 'query', variables);
+    },
+    Reports(variables?: ReportsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<ReportsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ReportsQuery>({ document: ReportsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'Reports', 'query', variables);
+    },
+    ResolveReport(variables: ResolveReportMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<ResolveReportMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ResolveReportMutation>({ document: ResolveReportDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'ResolveReport', 'mutation', variables);
+    },
     Statistics(variables?: StatisticsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<StatisticsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<StatisticsQuery>({ document: StatisticsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'Statistics', 'query', variables);
     },
@@ -1706,6 +2062,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     GetPairedUsers(variables?: GetPairedUsersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetPairedUsersQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetPairedUsersQuery>({ document: GetPairedUsersDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetPairedUsers', 'query', variables);
+    },
+    ReportUser(variables: ReportUserMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<ReportUserMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ReportUserMutation>({ document: ReportUserDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'ReportUser', 'mutation', variables);
     },
     UnbanUser(variables: UnbanUserMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<UnbanUserMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UnbanUserMutation>({ document: UnbanUserDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'UnbanUser', 'mutation', variables);

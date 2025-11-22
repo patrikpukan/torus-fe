@@ -10,7 +10,8 @@ import OrganizationForm, {
 import InviteUserModal from "@/features/organization/components/InviteUserModal";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, UserPlus } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { ArrowLeft, UserPlus, Building2 } from "lucide-react";
 
 const OrganizationDetailPage = () => {
   const { appRole } = useAuth();
@@ -176,6 +177,32 @@ const OrganizationDetailPage = () => {
           >
             Cancel
           </Button>
+        </div>
+      )}
+
+      {/* Department Management Section */}
+      {isMyOrg && appRole === "org_admin" && (
+        <div className="mt-8">
+          <Card className="p-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="text-lg font-semibold mb-2">
+                  Department Management
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Organize your team into departments and assign members to
+                  manage structure and collaboration.
+                </p>
+              </div>
+              <Button
+                onClick={() => navigate("/department-management")}
+                className="gap-2"
+              >
+                <Building2 className="h-4 w-4" />
+                Manage Departments
+              </Button>
+            </div>
+          </Card>
         </div>
       )}
 

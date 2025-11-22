@@ -17,6 +17,7 @@ export type CurrentUserData = {
   isActive?: boolean;
   preferredActivity?: string | null;
   suspendedUntil?: string | null;
+  departmentId?: string | null;
   activeBan?: {
     id: string;
     reason: string;
@@ -28,6 +29,10 @@ export type CurrentUserData = {
     name: string;
     code: string;
     imageUrl?: string | null;
+  } | null;
+  department?: {
+    id: string;
+    name: string;
   } | null;
 };
 
@@ -52,6 +57,7 @@ export const GET_CURRENT_USER = graphql(`
       isActive
       preferredActivity
       suspendedUntil
+      departmentId
       activeBan {
         id
         reason
@@ -63,6 +69,10 @@ export const GET_CURRENT_USER = graphql(`
         name
         code
         imageUrl
+      }
+      department {
+        id
+        name
       }
     }
   }

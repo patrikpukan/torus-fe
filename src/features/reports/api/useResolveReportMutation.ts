@@ -33,4 +33,3 @@ export const useResolveReportMutation = () =>
   useMutation<ResolveReportMutationData, { input: ResolveReportInput }>(
     RESOLVE_REPORT_MUTATION
   );
-

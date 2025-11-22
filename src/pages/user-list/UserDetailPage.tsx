@@ -135,8 +135,12 @@ const UserDetailPage = () => {
   }
 
   if (shouldMask) {
-    const maskedHobbies = user.hobbies?.trim() || null;
-    const maskedInterests = user.interests?.trim() || null;
+    const maskedHobbies = Array.isArray(user.hobbies)
+      ? user.hobbies.map((h) => h.name).join(", ") || null
+      : null;
+    const maskedInterests = Array.isArray(user.interests)
+      ? user.interests.map((i) => i.name).join(", ") || null
+      : null;
 
     const renderMaskedField = (
       label: string,

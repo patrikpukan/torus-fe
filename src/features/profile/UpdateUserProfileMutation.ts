@@ -8,8 +8,18 @@ export const UPDATE_USER_PROFILE = graphql(`
       firstName
       lastName
       about
-      hobbies
-      interests
+      location
+      position
+      hobbies {
+        id
+        name
+        category
+      }
+      interests {
+        id
+        name
+        category
+      }
       preferredActivity
       profileImageUrl
       profileStatus

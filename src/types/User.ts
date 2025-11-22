@@ -1,3 +1,9 @@
+export type TagObject = {
+  id: string;
+  name: string;
+  category: "HOBBY" | "INTEREST";
+};
+
 export type UserProfile = {
   organization?: string;
   email: string;
@@ -6,8 +12,10 @@ export type UserProfile = {
   accountStatus?: string;
   pairingStatus?: string;
   about?: string;
-  hobbies?: string[] | string;
-  interests?: string;
+  location?: string;
+  position?: string;
+  hobbies?: TagObject[] | null;
+  interests?: TagObject[] | null;
   preferredActivity?: string;
   profileImageUrl?: string;
   isActive?: boolean;

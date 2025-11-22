@@ -31,8 +31,10 @@ const ProfileEditPage = () => {
     firstName: user.firstName || undefined,
     lastName: user.lastName || undefined,
     about: user.about || undefined,
-    hobbies: user.hobbies ? user.hobbies.split(",").map((h) => h.trim()) : [],
-    interests: user.interests || undefined,
+    location: user.location || undefined,
+    position: user.position || undefined,
+    hobbies: user.hobbies || null,
+    interests: user.interests || null,
     profileImageUrl: user.profileImageUrl || undefined,
     organization: user.organization?.name || undefined,
     accountStatus: user.isActive ? "Active" : "Inactive",
@@ -46,9 +48,13 @@ const ProfileEditPage = () => {
 
   const handleSubmit = async (updatedProfile: UserProfile) => {
     try {
-      const hobbiesArray = Array.isArray(updatedProfile.hobbies)
-        ? updatedProfile.hobbies
-        : updatedProfile.hobbies?.split(",").map((h) => h.trim()) || [];
+      const hobbyIds = Array.isArray(updatedProfile.hobbies)
+        ? updatedProfile.hobbies.map((h) => h.id)
+        : [];
+
+      const interestIds = Array.isArray(updatedProfile.interests)
+        ? updatedProfile.interests.map((i) => i.id)
+        : [];
 
       await updateProfile({
         variables: {
@@ -56,8 +62,10 @@ const ProfileEditPage = () => {
             firstName: updatedProfile.firstName || null,
             lastName: updatedProfile.lastName || null,
             about: updatedProfile.about || null,
-            hobbies: hobbiesArray.join(", ") || null,
-            interests: updatedProfile.interests || null,
+            location: updatedProfile.location || null,
+            position: updatedProfile.position || null,
+            hobbyIds: hobbyIds,
+            interestIds: interestIds,
             avatarUrl: updatedProfile.profileImageUrl || null,
             departmentId: updatedProfile.departmentId || null,
           },

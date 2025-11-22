@@ -42,6 +42,20 @@ export type AlgorithmSettingsResponse = {
   warning: Maybe<Scalars['String']['output']>;
 };
 
+export type AnonUser = {
+  __typename?: 'AnonUser';
+  email: Maybe<Scalars['String']['output']>;
+  firstName: Maybe<Scalars['String']['output']>;
+  hobbies: Maybe<Array<Tag>>;
+  id: Scalars['ID']['output'];
+  interests: Maybe<Array<Tag>>;
+  lastName: Maybe<Scalars['String']['output']>;
+  organizationId: Scalars['ID']['output'];
+  preferredActivity: Maybe<Scalars['String']['output']>;
+  profileImageUrl: Maybe<Scalars['String']['output']>;
+  role: Maybe<UserRoleEnum>;
+};
+
 export type BanUserInput = {
   expiresAt?: InputMaybe<Scalars['DateTime']['input']>;
   reason: Scalars['String']['input'];
@@ -90,7 +104,7 @@ export type CreateCalendarEventInput = {
 export type CreateDepartmentInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
-  organizationId: Scalars['String']['input'];
+  organizationId: Scalars['ID']['input'];
 };
 
 export type CreateInviteCodeInputType = {
@@ -127,13 +141,15 @@ export type CurrentUser = {
   departmentId: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
   firstName: Maybe<Scalars['String']['output']>;
-  hobbies: Maybe<Scalars['String']['output']>;
+  hobbies: Maybe<Array<Tag>>;
   id: Scalars['ID']['output'];
-  interests: Maybe<Scalars['String']['output']>;
+  interests: Maybe<Array<Tag>>;
   isActive: Scalars['Boolean']['output'];
   lastName: Maybe<Scalars['String']['output']>;
+  location: Maybe<Scalars['String']['output']>;
   organization: SimpleOrganizationType;
   organizationId: Scalars['ID']['output'];
+  position: Maybe<Scalars['String']['output']>;
   preferredActivity: Maybe<Scalars['String']['output']>;
   profileImageUrl: Maybe<Scalars['String']['output']>;
   profileStatus: ProfileStatusEnum;
@@ -149,29 +165,19 @@ export type DeleteCalendarEventInput = {
 };
 
 export type DeleteDepartmentInput = {
-  id: Scalars['String']['input'];
-  organizationId: Scalars['String']['input'];
+  id: Scalars['ID']['input'];
+  organizationId: Scalars['ID']['input'];
 };
 
 export type Department = {
   __typename?: 'Department';
   createdAt: Scalars['DateTime']['output'];
   description: Maybe<Scalars['String']['output']>;
-  employeeCount: Scalars['Int']['output'];
+  employeeCount: Scalars['Float']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   organizationId: Scalars['ID']['output'];
   updatedAt: Scalars['DateTime']['output'];
-};
-
-export type DepartmentUser = {
-  __typename?: 'DepartmentUser';
-  email: Scalars['String']['output'];
-  firstName: Maybe<Scalars['String']['output']>;
-  id: Scalars['ID']['output'];
-  lastName: Maybe<Scalars['String']['output']>;
-  profileImageUrl: Maybe<Scalars['String']['output']>;
-  role: UserRoleEnum;
 };
 
 export type ExpandedCalendarEventOccurrence = {
@@ -426,6 +432,7 @@ export type OrganizationType = {
   address: Maybe<Scalars['String']['output']>;
   code: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
+  departments: Maybe<Array<Department>>;
   id: Scalars['ID']['output'];
   imageUrl: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
@@ -520,13 +527,15 @@ export type Query = {
   calendarEventsByDateRange: Array<CalendarEvent>;
   expandedCalendarOccurrences: Array<ExpandedCalendarEventOccurrence>;
   getAlgorithmSettings: AlgorithmSettings;
+  getAllTags: Array<Tag>;
   getCurrentUser: Maybe<CurrentUser>;
   getDepartmentById: Maybe<Department>;
   getDepartmentsByOrganization: Array<Department>;
   getOrganizationInvites: Array<InviteCodeType>;
   getPairedUsers: Array<User>;
   getPairingHistory: Array<PairingHistory>;
-  getUsersByDepartment: Array<DepartmentUser>;
+  getTagsByCategory: Array<Tag>;
+  getUsersByDepartment: Array<AnonUser>;
   latestMeetingForPairing: Maybe<MeetingEvent>;
   meetingEventById: Maybe<MeetingEvent>;
   meetingEventsByDateRange: Array<MeetingEvent>;
@@ -573,12 +582,17 @@ export type QueryGetAlgorithmSettingsArgs = {
 
 
 export type QueryGetDepartmentByIdArgs = {
-  id: Scalars['ID']['input'];
+  id: Scalars['String']['input'];
 };
 
 
 export type QueryGetDepartmentsByOrganizationArgs = {
   organizationId: Scalars['String']['input'];
+};
+
+
+export type QueryGetTagsByCategoryArgs = {
+  category: TagCategory;
 };
 
 
@@ -690,6 +704,20 @@ export type StatisticsResponseType = {
   reportsCount: Scalars['Int']['output'];
 };
 
+export type Tag = {
+  __typename?: 'Tag';
+  category: TagCategory;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+/** Category of a tag (hobby or interest) */
+export type TagCategory =
+  | 'HOBBY'
+  | 'INTEREST';
+
 export type UpdateAlgorithmSettingsInput = {
   organizationId: Scalars['String']['input'];
   periodLengthDays?: InputMaybe<Scalars['Int']['input']>;
@@ -710,17 +738,18 @@ export type UpdateCurrentUserProfileInputType = {
   avatarUrl?: InputMaybe<Scalars['String']['input']>;
   departmentId?: InputMaybe<Scalars['String']['input']>;
   firstName?: InputMaybe<Scalars['String']['input']>;
-  hobbies?: InputMaybe<Scalars['String']['input']>;
-  interests?: InputMaybe<Scalars['String']['input']>;
+  hobbyIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  interestIds?: InputMaybe<Array<Scalars['String']['input']>>;
   lastName?: InputMaybe<Scalars['String']['input']>;
+  location?: InputMaybe<Scalars['String']['input']>;
+  position?: InputMaybe<Scalars['String']['input']>;
   preferredActivity?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateDepartmentInput = {
   description?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['String']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
-  organizationId: Scalars['String']['input'];
+  id: Scalars['ID']['input'];
+  name: Scalars['String']['input'];
 };
 
 export type UpdateMeetingEventConfirmationInput = {
@@ -762,12 +791,14 @@ export type User = {
   departmentId: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
   firstName: Maybe<Scalars['String']['output']>;
-  hobbies: Maybe<Scalars['String']['output']>;
+  hobbies: Maybe<Array<Tag>>;
   id: Scalars['ID']['output'];
-  interests: Maybe<Scalars['String']['output']>;
+  interests: Maybe<Array<Tag>>;
   isActive: Scalars['Boolean']['output'];
   lastName: Maybe<Scalars['String']['output']>;
+  location: Maybe<Scalars['String']['output']>;
   organizationId: Scalars['ID']['output'];
+  position: Maybe<Scalars['String']['output']>;
   preferredActivity: Maybe<Scalars['String']['output']>;
   profileImageUrl: Maybe<Scalars['String']['output']>;
   profileStatus: ProfileStatusEnum;
@@ -813,7 +844,7 @@ export type UserRoleEnum =
 export type GetCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCurrentUserQuery = { __typename?: 'Query', getCurrentUser: { __typename?: 'CurrentUser', id: string, email: string, organizationId: string, role: UserRoleEnum, firstName: string | null, lastName: string | null, about: string | null, hobbies: string | null, interests: string | null, profileImageUrl: string | null, profileStatus: ProfileStatusEnum, isActive: boolean, preferredActivity: string | null, suspendedUntil: string | null, departmentId: string | null, activeBan: { __typename?: 'UserBan', id: string, reason: string, createdAt: string, expiresAt: string | null } | null, organization: { __typename?: 'SimpleOrganizationType', id: string, name: string, code: string, imageUrl: string | null }, department: { __typename?: 'Department', id: string, name: string } | null } | null };
+export type GetCurrentUserQuery = { __typename?: 'Query', getCurrentUser: { __typename?: 'CurrentUser', id: string, email: string, organizationId: string, role: UserRoleEnum, firstName: string | null, lastName: string | null, about: string | null, location: string | null, position: string | null, profileImageUrl: string | null, profileStatus: ProfileStatusEnum, isActive: boolean, preferredActivity: string | null, suspendedUntil: string | null, departmentId: string | null, hobbies: Array<{ __typename?: 'Tag', id: string, name: string, category: TagCategory }> | null, interests: Array<{ __typename?: 'Tag', id: string, name: string, category: TagCategory }> | null, activeBan: { __typename?: 'UserBan', id: string, reason: string, createdAt: string, expiresAt: string | null } | null, organization: { __typename?: 'SimpleOrganizationType', id: string, name: string, code: string, imageUrl: string | null }, department: { __typename?: 'Department', id: string, name: string } | null } | null };
 
 export type GetCalendarEventsQueryVariables = Exact<{
   startDate: Scalars['DateTime']['input'];
@@ -970,7 +1001,7 @@ export type GetUsersByDepartmentQueryVariables = Exact<{
 }>;
 
 
-export type GetUsersByDepartmentQuery = { __typename?: 'Query', getUsersByDepartment: Array<{ __typename?: 'DepartmentUser', id: string, email: string, firstName: string | null, lastName: string | null, profileImageUrl: string | null, role: UserRoleEnum }> };
+export type GetUsersByDepartmentQuery = { __typename?: 'Query', getUsersByDepartment: Array<{ __typename?: 'AnonUser', id: string, email: string | null, firstName: string | null, lastName: string | null, profileImageUrl: string | null, role: UserRoleEnum | null }> };
 
 export type GetOrganizationInvitesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1065,7 +1096,19 @@ export type UpdateUserProfileMutationVariables = Exact<{
 }>;
 
 
-export type UpdateUserProfileMutation = { __typename?: 'Mutation', updateCurrentUserProfile: { __typename?: 'CurrentUser', id: string, email: string, firstName: string | null, lastName: string | null, about: string | null, hobbies: string | null, interests: string | null, preferredActivity: string | null, profileImageUrl: string | null, profileStatus: ProfileStatusEnum, isActive: boolean, departmentId: string | null, department: { __typename?: 'Department', id: string, name: string } | null } };
+export type UpdateUserProfileMutation = { __typename?: 'Mutation', updateCurrentUserProfile: { __typename?: 'CurrentUser', id: string, email: string, firstName: string | null, lastName: string | null, about: string | null, location: string | null, position: string | null, preferredActivity: string | null, profileImageUrl: string | null, profileStatus: ProfileStatusEnum, isActive: boolean, departmentId: string | null, hobbies: Array<{ __typename?: 'Tag', id: string, name: string, category: TagCategory }> | null, interests: Array<{ __typename?: 'Tag', id: string, name: string, category: TagCategory }> | null, department: { __typename?: 'Department', id: string, name: string } | null } };
+
+export type GetAllTagsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllTagsQuery = { __typename?: 'Query', getAllTags: Array<{ __typename?: 'Tag', id: string, name: string, category: TagCategory }> };
+
+export type GetTagsByCategoryQueryVariables = Exact<{
+  category: TagCategory;
+}>;
+
+
+export type GetTagsByCategoryQuery = { __typename?: 'Query', getTagsByCategory: Array<{ __typename?: 'Tag', id: string, name: string, category: TagCategory }> };
 
 export type ReportByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -1129,7 +1172,7 @@ export type UserByIdQueryVariables = Exact<{
 }>;
 
 
-export type UserByIdQuery = { __typename?: 'Query', userById: { __typename?: 'User', id: string, email: string, firstName: string | null, lastName: string | null, hobbies: string | null, interests: string | null, profileStatus: ProfileStatusEnum, role: UserRoleEnum, activeBan: { __typename?: 'UserBan', id: string, reason: string, createdAt: string, expiresAt: string | null } | null } | null };
+export type UserByIdQuery = { __typename?: 'Query', userById: { __typename?: 'User', id: string, email: string, firstName: string | null, lastName: string | null, profileStatus: ProfileStatusEnum, role: UserRoleEnum, hobbies: Array<{ __typename?: 'Tag', id: string, name: string, category: TagCategory }> | null, interests: Array<{ __typename?: 'Tag', id: string, name: string, category: TagCategory }> | null, activeBan: { __typename?: 'UserBan', id: string, reason: string, createdAt: string, expiresAt: string | null } | null } | null };
 
 export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1147,8 +1190,18 @@ export const GetCurrentUserDocument = gql`
     firstName
     lastName
     about
-    hobbies
-    interests
+    location
+    position
+    hobbies {
+      id
+      name
+      category
+    }
+    interests {
+      id
+      name
+      category
+    }
     profileImageUrl
     profileStatus
     isActive
@@ -1717,8 +1770,18 @@ export const UpdateUserProfileDocument = gql`
     firstName
     lastName
     about
-    hobbies
-    interests
+    location
+    position
+    hobbies {
+      id
+      name
+      category
+    }
+    interests {
+      id
+      name
+      category
+    }
     preferredActivity
     profileImageUrl
     profileStatus
@@ -1728,6 +1791,24 @@ export const UpdateUserProfileDocument = gql`
       id
       name
     }
+  }
+}
+    `;
+export const GetAllTagsDocument = gql`
+    query GetAllTags {
+  getAllTags {
+    id
+    name
+    category
+  }
+}
+    `;
+export const GetTagsByCategoryDocument = gql`
+    query GetTagsByCategory($category: TagCategory!) {
+  getTagsByCategory(category: $category) {
+    id
+    name
+    category
   }
 }
     `;
@@ -1888,8 +1969,16 @@ export const UserByIdDocument = gql`
     email
     firstName
     lastName
-    hobbies
-    interests
+    hobbies {
+      id
+      name
+      category
+    }
+    interests {
+      id
+      name
+      category
+    }
     profileStatus
     role
     activeBan {
@@ -2041,6 +2130,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     UpdateUserProfile(variables: UpdateUserProfileMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<UpdateUserProfileMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateUserProfileMutation>({ document: UpdateUserProfileDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'UpdateUserProfile', 'mutation', variables);
+    },
+    GetAllTags(variables?: GetAllTagsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetAllTagsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetAllTagsQuery>({ document: GetAllTagsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetAllTags', 'query', variables);
+    },
+    GetTagsByCategory(variables: GetTagsByCategoryQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetTagsByCategoryQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetTagsByCategoryQuery>({ document: GetTagsByCategoryDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetTagsByCategory', 'query', variables);
     },
     ReportById(variables: ReportByIdQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<ReportByIdQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<ReportByIdQuery>({ document: ReportByIdDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'ReportById', 'query', variables);

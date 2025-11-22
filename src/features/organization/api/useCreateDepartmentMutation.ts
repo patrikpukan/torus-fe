@@ -1,5 +1,9 @@
 import { useMutation } from "@apollo/client/react";
 import { graphql } from "gql.tada";
+import {
+  GET_DEPARTMENTS_BY_ORGANIZATION_QUERY,
+  type GetDepartmentsByOrganizationVariables,
+} from "./useGetDepartmentsByOrganizationQuery";
 
 export type CreateDepartmentInput = {
   name: string;
@@ -33,7 +37,17 @@ export const CREATE_DEPARTMENT_MUTATION = graphql(`
   }
 `);
 
-export const useCreateDepartmentMutation = () =>
+export const useCreateDepartmentMutation = (organizationId: string) =>
   useMutation<CreateDepartmentMutationData, { input: CreateDepartmentInput }>(
-    CREATE_DEPARTMENT_MUTATION
+    CREATE_DEPARTMENT_MUTATION,
+    {
+      refetchQueries: [
+        {
+          query: GET_DEPARTMENTS_BY_ORGANIZATION_QUERY,
+          variables: {
+            organizationId,
+          } as GetDepartmentsByOrganizationVariables,
+        },
+      ],
+    }
   );

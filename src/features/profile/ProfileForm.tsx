@@ -352,9 +352,13 @@ const ProfileForm = ({
             </FieldContent>
           </Field>
           <Field>
-            <FieldLabel htmlFor="profile-department">
-              Department (Optional)
-            </FieldLabel>
+            <div className="space-y-2">
+              <FieldLabel htmlFor="profile-department">Department</FieldLabel>
+              <p className="text-xs text-muted-foreground">
+                Assign yourself to a department within your organization
+                (optional)
+              </p>
+            </div>
             <FieldContent className="bg-card">
               <Select
                 value={value.departmentId || "none"}
@@ -381,10 +385,6 @@ const ProfileForm = ({
                   ))}
                 </SelectContent>
               </Select>
-              <p className="mt-1.5 text-sm text-muted-foreground">
-                Optionally assign yourself to a department within your
-                organization
-              </p>
             </FieldContent>
           </Field>
         </FieldGroup>

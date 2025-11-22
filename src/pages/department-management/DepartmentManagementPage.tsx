@@ -55,9 +55,13 @@ export default function DepartmentManagementPage() {
 
   const departments = data?.getDepartmentsByOrganization ?? [];
 
-  const [createDept, { loading: creating }] = useCreateDepartmentMutation();
+  const [createDept, { loading: creating }] = useCreateDepartmentMutation(
+    organizationId || ""
+  );
   const [updateDept, { loading: updating }] = useUpdateDepartmentMutation();
-  const [deleteDept, { loading: deleting }] = useDeleteDepartmentMutation();
+  const [deleteDept, { loading: deleting }] = useDeleteDepartmentMutation(
+    organizationId || ""
+  );
 
   // Set page title
   useEffect(() => {

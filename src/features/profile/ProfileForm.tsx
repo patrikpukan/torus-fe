@@ -67,7 +67,9 @@ const TagSelector = ({
   const [searchValue, setSearchValue] = useState("");
 
   const availableTags =
-    (tagsData as { getAllTags?: TagObject[] })?.getAllTags?.filter((tag: TagObject) => tag.category === category) || [];
+    (tagsData as { getAllTags?: TagObject[] })?.getAllTags?.filter(
+      (tag: TagObject) => tag.category === category
+    ) || [];
 
   const selectedIds = new Set(tags.map((t) => t.id));
 
@@ -89,7 +91,7 @@ const TagSelector = ({
 
   return (
     <Tags>
-      <TagsTrigger className="h-auto min-h-10">
+      <TagsTrigger className="h-auto min-h-10 justify-start">
         {tags.length > 0 ? (
           tags.map((tag) => (
             <TagsValue
@@ -101,7 +103,7 @@ const TagSelector = ({
             </TagsValue>
           ))
         ) : (
-          <span className="text-muted-foreground">No {category.toLowerCase()}s selected</span>
+          <span className="text-muted-foreground">Select a tag...</span>
         )}
       </TagsTrigger>
       <TagsContent>
@@ -118,6 +120,7 @@ const TagSelector = ({
                   key={tag.id}
                   value={tag.id}
                   onSelect={() => handleToggleTag(tag)}
+                  className="justify-start"
                 >
                   <input
                     type="checkbox"
@@ -139,7 +142,6 @@ const TagSelector = ({
     </Tags>
   );
 };
-
 
 const ProfileForm = ({
   value,
@@ -451,7 +453,9 @@ const ProfileForm = ({
                       ))}
                     </div>
                   ) : (
-                    <span className="text-sm text-muted-foreground">No hobbies added</span>
+                    <span className="text-sm text-muted-foreground">
+                      No hobbies added
+                    </span>
                   )}
                 </div>
               ) : (
@@ -473,7 +477,8 @@ const ProfileForm = ({
             <FieldContent>
               {readOnly ? (
                 <div className="min-h-10 flex items-center">
-                  {Array.isArray(value.interests) && value.interests.length > 0 ? (
+                  {Array.isArray(value.interests) &&
+                  value.interests.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
                       {value.interests.map((interest: TagObject) => (
                         <Badge key={interest.id} variant="secondary">
@@ -482,7 +487,9 @@ const ProfileForm = ({
                       ))}
                     </div>
                   ) : (
-                    <span className="text-sm text-muted-foreground">No interests added</span>
+                    <span className="text-sm text-muted-foreground">
+                      No interests added
+                    </span>
                   )}
                 </div>
               ) : (

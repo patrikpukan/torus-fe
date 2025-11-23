@@ -62,11 +62,24 @@ const AuthCallbackPage = () => {
 
               // Try to get provider token from session first, then from identity
               const providerToken =
-                (currentSession as any)?.provider_token ||
-                (currentSession as any)?.access_token ||
-                (googleIdentity as any)?.identity_data?.provider_token ||
-                (userData.user as any)?.user_metadata?.provider_token ||
-                (userData.user as any)?.app_metadata?.provider_token;
+                (currentSession as { provider_token?: string })
+                  ?.provider_token ||
+                (currentSession as { access_token?: string })?.access_token ||
+                (
+                  googleIdentity as {
+                    identity_data?: { provider_token?: string };
+                  }
+                )?.identity_data?.provider_token ||
+                (
+                  userData.user as {
+                    user_metadata?: { provider_token?: string };
+                  }
+                )?.user_metadata?.provider_token ||
+                (
+                  userData.user as {
+                    app_metadata?: { provider_token?: string };
+                  }
+                )?.app_metadata?.provider_token;
 
               // Store the access token
               if (providerToken) {

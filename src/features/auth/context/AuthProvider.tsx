@@ -200,6 +200,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       user,
       appRole,
       organizationId,
+      currentUserData: currentUserData?.getCurrentUser ?? null,
       loading:
         loading ||
         currentUserLoading ||
@@ -213,6 +214,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       user,
       appRole,
       organizationId,
+      currentUserData,
       loading,
       currentUserLoading,
       sessionLoaded,

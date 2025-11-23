@@ -98,6 +98,6 @@ export const GET_CURRENT_USER = graphql(`
 
 export const useGetCurrentUserQuery = (options?: { skip?: boolean }) =>
   useQuery<GetCurrentUserQuery>(GET_CURRENT_USER, {
-    fetchPolicy: "cache-first",
+    fetchPolicy: "network-only",
     skip: options?.skip,
   });

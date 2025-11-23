@@ -27,13 +27,11 @@ import { Logo } from "./Logo";
 import { LogoText } from "./LogoText";
 
 import { useAuth } from "@/hooks/useAuth";
-import { useGetCurrentUserQuery } from "@/features/auth/api/useGetCurrentUserQuery";
 
 const BaseLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const navigate = useNavigate();
-  const { user, signOut, appRole } = useAuth();
-  const { data: currentUserData } = useGetCurrentUserQuery();
+  const { user, signOut, appRole, currentUserData } = useAuth();
 
   const filteredNavConfig = navConfig.filter((item) => {
     // Check role restriction
@@ -46,7 +44,7 @@ const BaseLayout = () => {
       return "Signed out";
     }
 
-    const dbUser = currentUserData?.getCurrentUser;
+    const dbUser = currentUserData;
     if (dbUser?.firstName || dbUser?.lastName) {
       const parts = [dbUser?.firstName, dbUser?.lastName].filter(
         (part): part is string =>
@@ -112,7 +110,7 @@ const BaseLayout = () => {
     return `${base}/${src}`;
   };
 
-  const dbUser = currentUserData?.getCurrentUser;
+  const dbUser = currentUserData;
   const profileImageUrl =
     normalizeUrl(dbUser?.profileImageUrl) ||
     (user?.user_metadata?.avatar_url as string | undefined) ||

@@ -13,6 +13,7 @@ import {
   CreateEventModal,
   EditEventModal,
   DeleteEventModal,
+  GoogleCalendarSyncDialog,
 } from "./components";
 import { CalendarPlus, CalendarSync } from "lucide-react";
 import { useMeetingEvents } from "./api/useMeetingEvents";
@@ -51,13 +52,21 @@ const convertToScheduleXEvents = (
     // The backend now provides unique IDs for each occurrence, so we use it directly
     const uniqueId = occ.id;
 
+    // Add cloud emoji prefix for Google Calendar events
+    const title =
+      occ.originalEvent.externalSource === "google"
+        ? `☁️ ${occ.originalEvent.title || "Untitled"}`
+        : occ.originalEvent.title || "Untitled";
+
     return {
       id: uniqueId,
-      title: occ.originalEvent.title || "Untitled",
+      title,
       calendarId:
         occ.originalEvent.type === "availability" ? "available" : "unavailable",
       start: startZdt,
       end: endZdt,
+      // Store externalSource in a custom data field for later retrieval
+      _externalSource: occ.originalEvent.externalSource,
     };
   });
 };
@@ -66,6 +75,7 @@ const ProfileCalendar = () => {
   const [createEventModalOpen, setCreateEventModalOpen] = useState(false);
   const [editEventModalOpen, setEditEventModalOpen] = useState(false);
   const [deleteEventModalOpen, setDeleteEventModalOpen] = useState(false);
+  const [googleSyncDialogOpen, setGoogleSyncDialogOpen] = useState(false);
   type Occurrence = {
     id: string;
     occurrenceStart: string;
@@ -89,8 +99,9 @@ const ProfileCalendar = () => {
   const endDate = endOfWeek.toString() + "T23:59:59Z";
 
   // Fetch calendar events
-  const { data: calendarData } = useCalendarEvents(startDate, endDate);
-  const { data: meetingsData } = useMeetingEvents(startDate, endDate);
+  const { data: calendarData, refetch: refetchCalendarEvents } =
+    useCalendarEvents(startDate, endDate);
+  const { data: meetingData } = useMeetingEvents(startDate, endDate);
 
   // Convert real calendar events to ScheduleX format
   const scheduleXEvents = useMemo(
@@ -100,7 +111,7 @@ const ProfileCalendar = () => {
 
   // Convert confirmed meetings to yellow ScheduleX events
   const scheduleXMeetingEvents = useMemo(() => {
-    const items = meetingsData?.meetingEventsByDateRange ?? [];
+    const items = meetingData?.meetingEventsByDateRange ?? [];
     const tz = Temporal.Now.zonedDateTimeISO().timeZoneId;
     return items
       .filter(
@@ -122,7 +133,7 @@ const ProfileCalendar = () => {
           end,
         } as CalendarEvent;
       });
-  }, [meetingsData]);
+  }, [meetingData]);
 
   // Map from unique occurrence ID to the occurrence object for edit/delete operations
   const eventItemsMap = useMemo(() => {
@@ -155,8 +166,7 @@ const ProfileCalendar = () => {
   };
 
   const handleSyncGoogle = () => {
-    // Placeholder for future implementation
-    console.log("Sync with Google Calendar clicked");
+    setGoogleSyncDialogOpen(true);
   };
 
   return (
@@ -215,6 +225,11 @@ const ProfileCalendar = () => {
         onOpenChange={setDeleteEventModalOpen}
         startDate={startDate}
         endDate={endDate}
+      />
+      <GoogleCalendarSyncDialog
+        open={googleSyncDialogOpen}
+        onOpenChange={setGoogleSyncDialogOpen}
+        onSyncSuccess={() => refetchCalendarEvents()}
       />
     </div>
   );

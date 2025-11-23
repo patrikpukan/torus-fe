@@ -11,6 +11,8 @@ export type CalendarEventItem = {
   rrule?: string | null;
   exceptionDates?: string | null;
   exceptionRrules?: string | null;
+  externalId?: string | null;
+  externalSource?: string | null;
   createdAt: string;
   updatedAt: string;
   deletedAt?: string | null;
@@ -41,6 +43,8 @@ export const CALENDAR_EVENTS_QUERY = graphql(`
         rrule
         exceptionDates
         exceptionRrules
+        externalId
+        externalSource
         createdAt
         updatedAt
         deletedAt

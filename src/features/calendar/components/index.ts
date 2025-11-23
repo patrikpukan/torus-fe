@@ -8,3 +8,4 @@ export { EventPopover } from "./EventPopover";
 export { CreateEventModal } from "./CreateEventModal";
 export { EditEventModal } from "./EditEventModal";
 export { DeleteEventModal } from "./DeleteEventModal";
+export { GoogleCalendarSyncDialog } from "./GoogleCalendarSyncDialog";

@@ -35,6 +35,7 @@ import {
   Link,
   Loader2,
   QrCode,
+  Mail,
 } from "lucide-react";
 import { useState } from "react";
 import QRCodeCanvas from "react-qr-code";
@@ -227,7 +228,10 @@ const InviteManagementPage = () => {
     <div className="container mx-auto max-w-6xl px-4 py-8 space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">Create Invitations</h1>
+        <h1 className="flex items-center gap-3 text-3xl font-bold">
+          <Mail className="h-8 w-8 text-primary" />
+          <span>Create Invitations</span>
+        </h1>
         <p className="text-muted-foreground mt-2">
           Generate invitation links or QR codes for new users
         </p>

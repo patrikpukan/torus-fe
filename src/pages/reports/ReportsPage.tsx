@@ -8,7 +8,7 @@ import {
   type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ArrowUpDown, Eye } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Eye, Flag } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -248,7 +248,10 @@ const ReportsPage = () => {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="space-y-1">
-          <h1 className="text-3xl font-semibold tracking-tight">Reports</h1>
+          <h1 className="flex items-center gap-3 text-3xl font-semibold tracking-tight">
+            <Flag aria-hidden className="h-8 w-8 text-primary" />
+            <span>Reports</span>
+          </h1>
           <p className="text-sm text-muted-foreground">
             Review incident reports submitted by users. Click a row to see full
             details along with the reasoning provided by the reporter.

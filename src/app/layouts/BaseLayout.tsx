@@ -16,7 +16,13 @@ import {
 } from "@/components/ui/sidebar";
 import { LogIn, LogOut } from "lucide-react";
 import { useCallback, useState } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import {
+  NavLink,
+  Outlet,
+  matchPath,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import {
   Avatar,
   AvatarFallback,
@@ -30,6 +36,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 const BaseLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut, appRole, currentUserData } = useAuth();
 
@@ -83,6 +90,15 @@ const BaseLayout = () => {
       console.error("Failed to sign out", error);
     }
   }, [navigate, signOut]);
+
+  const isNavItemActive = useCallback(
+    (path: string) => {
+      const exactMatch = matchPath({ path, end: true }, location.pathname);
+      const nestedMatch = matchPath({ path: `${path}/*` }, location.pathname);
+      return Boolean(exactMatch || nestedMatch);
+    },
+    [location.pathname]
+  );
 
   const apiBaseFromGraphQL = (() => {
     const gql = import.meta.env.VITE_GRAPHQL_API as string | undefined;
@@ -142,7 +158,10 @@ const BaseLayout = () => {
               <SidebarMenu>
                 {filteredNavConfig.map((item) => (
                   <SidebarMenuItem key={item.path}>
-                    <SidebarMenuButton asChild>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isNavItemActive(item.path)}
+                    >
                       <NavLink to={item.path}>
                         {item.icon}
                         <span>{item.label}</span>

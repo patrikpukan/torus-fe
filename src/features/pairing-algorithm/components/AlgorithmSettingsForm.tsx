@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format, startOfToday } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Settings2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -209,7 +209,10 @@ export function AlgorithmSettingsForm({
 
   return (
     <div className="mx-auto w-full max-w-5xl px-8 py-12">
-      <h1 className="mb-12 text-3xl font-bold">Algorithm settings</h1>
+      <h1 className="flex items-center gap-3 mb-12 text-3xl font-bold">
+        <Settings2 aria-hidden className="h-8 w-8 text-primary" />
+        <span>Algorithm settings</span>
+      </h1>
 
       {/* Execute Pairing Section */}
       <div className="mb-12 bg-card rounded-lg border border-gray-200  p-6">

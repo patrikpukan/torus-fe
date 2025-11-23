@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Pencil, Trash2, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -209,7 +209,10 @@ export default function DepartmentManagementPage() {
       {/* Header Section */}
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <div>
-          <h1 className="text-3xl font-bold">Department Management</h1>
+          <h1 className="flex items-center gap-3 text-3xl font-bold">
+            <Building2 aria-hidden className="h-8 w-8 text-primary" />
+            <span>Department Management</span>
+          </h1>
           <p className="text-sm text-muted-foreground">
             Manage departments within your organization
           </p>

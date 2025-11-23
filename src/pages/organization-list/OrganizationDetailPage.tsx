@@ -11,7 +11,7 @@ import InviteUserModal from "@/features/organization/components/InviteUserModal"
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, UserPlus, Building2 } from "lucide-react";
+import { ArrowLeft, UserPlus, Building2, Building } from "lucide-react";
 
 const OrganizationDetailPage = () => {
   const { appRole } = useAuth();
@@ -155,8 +155,9 @@ const OrganizationDetailPage = () => {
         </Button>
       </div>
 
-      <h1 className="mb-4 text-3xl font-semibold">
-        {isMyOrg ? "My Organization" : "Organization Details"}
+      <h1 className="flex items-center gap-3 mb-4 text-3xl font-semibold">
+        <Building aria-hidden className="h-8 w-8 text-primary" />
+        <span>{isMyOrg ? "My Organization" : "Organization Details"}</span>
       </h1>
 
       <OrganizationForm

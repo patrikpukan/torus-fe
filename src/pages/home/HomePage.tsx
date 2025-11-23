@@ -1,4 +1,4 @@
-import { Handshake, User } from "lucide-react";
+import { Handshake, Home, User } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -55,8 +55,9 @@ const HomePage = () => {
   return (
     <div className="space-y-6">
       <header className="space-y-1">
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-          {welcomeMessage}
+        <h1 className="flex items-center gap-3 text-3xl font-semibold tracking-tight text-foreground">
+          <Home aria-hidden className="h-8 w-8 text-primary" />
+          <span>{welcomeMessage}</span>
         </h1>
         <p className="text-sm text-muted-foreground">
           See what&#39;s happening with your colleagues.

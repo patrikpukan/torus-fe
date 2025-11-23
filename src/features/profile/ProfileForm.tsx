@@ -5,7 +5,7 @@ import {
   type ChangeEvent,
   type FormEvent,
 } from "react";
-import { CircleUser, Pencil, Upload } from "lucide-react";
+import { CircleUser, Pencil, Upload, User } from "lucide-react";
 
 import {
   Field,
@@ -318,7 +318,10 @@ const ProfileForm = ({
       className="mx-auto flex w-full max-w-4xl flex-col gap-8"
     >
       <div className="flex flex-col items-center gap-3">
-        <h1 className="text-3xl font-semibold">Profile</h1>
+        <h1 className="flex items-center gap-3 text-3xl font-semibold">
+          <User aria-hidden className="h-8 w-8 text-primary" />
+          <span>Profile</span>
+        </h1>
         <div className="flex flex-col items-center gap-2">
           <Avatar className="h-24 w-24">
             <AvatarImage

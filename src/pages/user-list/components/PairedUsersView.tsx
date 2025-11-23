@@ -8,6 +8,7 @@ import {
   type AnonUsersQueryItem,
 } from "@/features/users/api/useAnonUsersQuery";
 import { useGetCurrentUserQuery } from "@/features/auth/api/useGetCurrentUserQuery";
+import { Users } from "lucide-react";
 
 const PairedUsersView = () => {
   const {
@@ -93,8 +94,9 @@ const PairedUsersView = () => {
     <div className="container py-8">
       <div className="space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-3xl font-semibold tracking-tight">
-            Paired users
+          <h1 className="flex items-center gap-3 text-3xl font-semibold tracking-tight">
+            <Users aria-hidden className="h-8 w-8 text-primary" />
+            <span>Paired users</span>
           </h1>
         </div>
 

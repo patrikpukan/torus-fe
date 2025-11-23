@@ -155,6 +155,12 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   }, [session]);
 
   const signIn = useCallback(async (email: string, password: string) => {
+    // Clear any leftover Google Calendar tokens from previous sessions
+    sessionStorage.removeItem("google_calendar_access_token");
+    sessionStorage.removeItem("calendar_oauth_restore_session");
+    sessionStorage.removeItem("calendar_oauth_in_progress");
+    sessionStorage.removeItem("google_calendar_redirect");
+
     const { data, error } = await supabaseClient.auth.signInWithPassword({
       email,
       password,
@@ -173,6 +179,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
+        // Don't request calendar scope during sign-in - we'll request it later when syncing
       },
     });
 
@@ -187,6 +194,12 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     if (error) {
       throw error;
     }
+
+    // Clear Google Calendar OAuth tokens
+    sessionStorage.removeItem("google_calendar_access_token");
+    sessionStorage.removeItem("calendar_oauth_restore_session");
+    sessionStorage.removeItem("calendar_oauth_in_progress");
+    sessionStorage.removeItem("google_calendar_redirect");
 
     // Clear Apollo Client cache to remove stale user data
     await apolloClient.clearStore();

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import { type CalendarEvent } from "@schedule-x/calendar";
 import { Button } from "@/components/ui/button";
+import { Cloud } from "lucide-react";
 
 type PopState = {
   open: boolean;
@@ -114,6 +115,10 @@ export const EventPopover: React.FC<EventPopoverProps> = ({
   const left = clamp(pop.x - cx + PADDING, 0, Math.max(0, cw - POPOVER_W));
   const top = clamp(pop.y - cy + PADDING, 0, Math.max(0, ch - POPOVER_H));
 
+  // Check if this is a Google Calendar event
+  const isGoogleEvent =
+    (pop.event as { _externalSource?: string })._externalSource === "google";
+
   return (
     <div
       ref={popRef}
@@ -122,8 +127,16 @@ export const EventPopover: React.FC<EventPopoverProps> = ({
       className="absolute z-50 rounded-lg border border-gray-200 bg-white p-3 shadow-xl w-[280px] select-text"
       style={{ left, top }}
     >
-      <div className="mb-1 text-sm font-semibold line-clamp-2">
-        {pop.event.title || "Untitled event"}
+      <div className="mb-1 flex items-center gap-2">
+        <div className="text-sm font-semibold line-clamp-2 flex-1">
+          {pop.event.title || "Untitled event"}
+        </div>
+        {isGoogleEvent && (
+          <Cloud
+            className="h-4 w-4 text-blue-500 flex-shrink-0"
+            title="Synced from Google Calendar"
+          />
+        )}
       </div>
 
       <div className="space-y-1 text-xs text-muted-foreground">

@@ -70,6 +70,8 @@ export type CalendarEvent = {
   endDateTime: Scalars['DateTime']['output'];
   exceptionDates: Maybe<Scalars['String']['output']>;
   exceptionRrules: Maybe<Scalars['String']['output']>;
+  externalId: Maybe<Scalars['String']['output']>;
+  externalSource: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   rrule: Maybe<Scalars['String']['output']>;
   rruleRecurringId: Maybe<Scalars['String']['output']>;
@@ -188,6 +190,29 @@ export type ExpandedCalendarEventOccurrence = {
   originalEvent: CalendarEvent;
 };
 
+export type GoogleCalendar = {
+  __typename?: 'GoogleCalendar';
+  backgroundColor: Maybe<Scalars['String']['output']>;
+  foregroundColor: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  primary: Maybe<Scalars['Boolean']['output']>;
+  summary: Scalars['String']['output'];
+};
+
+export type GoogleCalendarImportResult = {
+  __typename?: 'GoogleCalendarImportResult';
+  importedCount: Scalars['Float']['output'];
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
+export type ImportGoogleCalendarEventsInput = {
+  accessToken?: InputMaybe<Scalars['String']['input']>;
+  calendarIds: Array<Scalars['String']['input']>;
+  endDate: Scalars['DateTime']['input'];
+  startDate: Scalars['DateTime']['input'];
+};
+
 export type InviteCodeType = {
   __typename?: 'InviteCodeType';
   code: Scalars['String']['output'];
@@ -269,6 +294,7 @@ export type Mutation = {
   deleteDepartment: Scalars['Boolean']['output'];
   deleteUser: User;
   executePairingAlgorithm: PairingExecutionResult;
+  importGoogleCalendarEvents: GoogleCalendarImportResult;
   inviteUserToOrganization: InviteUserResponseType;
   pauseActivity: CalendarEvent;
   proposeMeetingTime: MeetingEvent;
@@ -342,6 +368,11 @@ export type MutationDeleteUserArgs = {
 
 export type MutationExecutePairingAlgorithmArgs = {
   organizationId: Scalars['String']['input'];
+};
+
+
+export type MutationImportGoogleCalendarEventsArgs = {
+  input: ImportGoogleCalendarEventsInput;
 };
 
 
@@ -536,6 +567,7 @@ export type Query = {
   getPairingHistory: Array<PairingHistory>;
   getTagsByCategory: Array<Tag>;
   getUsersByDepartment: Array<AnonUser>;
+  googleCalendarList: Array<GoogleCalendar>;
   latestMeetingForPairing: Maybe<MeetingEvent>;
   meetingEventById: Maybe<MeetingEvent>;
   meetingEventsByDateRange: Array<MeetingEvent>;
@@ -598,6 +630,11 @@ export type QueryGetTagsByCategoryArgs = {
 
 export type QueryGetUsersByDepartmentArgs = {
   departmentId: Scalars['String']['input'];
+};
+
+
+export type QueryGoogleCalendarListArgs = {
+  accessToken: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -852,7 +889,7 @@ export type GetCalendarEventsQueryVariables = Exact<{
 }>;
 
 
-export type GetCalendarEventsQuery = { __typename?: 'Query', expandedCalendarOccurrences: Array<{ __typename?: 'ExpandedCalendarEventOccurrence', id: string, occurrenceStart: string, occurrenceEnd: string, originalEvent: { __typename?: 'CalendarEvent', id: string, title: string | null, description: string | null, type: CalendarEventType, startDateTime: string, endDateTime: string, rrule: string | null, exceptionDates: string | null, exceptionRrules: string | null, createdAt: string, updatedAt: string, deletedAt: string | null } }> };
+export type GetCalendarEventsQuery = { __typename?: 'Query', expandedCalendarOccurrences: Array<{ __typename?: 'ExpandedCalendarEventOccurrence', id: string, occurrenceStart: string, occurrenceEnd: string, originalEvent: { __typename?: 'CalendarEvent', id: string, title: string | null, description: string | null, type: CalendarEventType, startDateTime: string, endDateTime: string, rrule: string | null, exceptionDates: string | null, exceptionRrules: string | null, externalId: string | null, externalSource: string | null, createdAt: string, updatedAt: string, deletedAt: string | null } }> };
 
 export type UpdateCalendarEventMutationVariables = Exact<{
   input: UpdateCalendarEventInput;
@@ -869,6 +906,20 @@ export type DeleteCalendarEventMutationVariables = Exact<{
 
 
 export type DeleteCalendarEventMutation = { __typename?: 'Mutation', deleteCalendarEvent: boolean };
+
+export type GetGoogleCalendarListQueryVariables = Exact<{
+  accessToken: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type GetGoogleCalendarListQuery = { __typename?: 'Query', googleCalendarList: Array<{ __typename?: 'GoogleCalendar', id: string, summary: string, backgroundColor: string | null, foregroundColor: string | null, primary: boolean | null }> };
+
+export type ImportGoogleCalendarEventsMutationVariables = Exact<{
+  input: ImportGoogleCalendarEventsInput;
+}>;
+
+
+export type ImportGoogleCalendarEventsMutation = { __typename?: 'Mutation', importGoogleCalendarEvents: { __typename?: 'GoogleCalendarImportResult', success: boolean, importedCount: number, message: string } };
 
 export type GetMeetingEventsQueryVariables = Exact<{
   startDate: Scalars['DateTime']['input'];
@@ -1243,6 +1294,8 @@ export const GetCalendarEventsDocument = gql`
       rrule
       exceptionDates
       exceptionRrules
+      externalId
+      externalSource
       createdAt
       updatedAt
       deletedAt
@@ -1275,6 +1328,26 @@ export const UpdateCalendarEventDocument = gql`
 export const DeleteCalendarEventDocument = gql`
     mutation DeleteCalendarEvent($input: DeleteCalendarEventInput!) {
   deleteCalendarEvent(input: $input)
+}
+    `;
+export const GetGoogleCalendarListDocument = gql`
+    query GetGoogleCalendarList($accessToken: String) {
+  googleCalendarList(accessToken: $accessToken) {
+    id
+    summary
+    backgroundColor
+    foregroundColor
+    primary
+  }
+}
+    `;
+export const ImportGoogleCalendarEventsDocument = gql`
+    mutation ImportGoogleCalendarEvents($input: ImportGoogleCalendarEventsInput!) {
+  importGoogleCalendarEvents(input: $input) {
+    success
+    importedCount
+    message
+  }
 }
     `;
 export const GetMeetingEventsDocument = gql`
@@ -2028,6 +2101,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     DeleteCalendarEvent(variables: DeleteCalendarEventMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<DeleteCalendarEventMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<DeleteCalendarEventMutation>({ document: DeleteCalendarEventDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'DeleteCalendarEvent', 'mutation', variables);
+    },
+    GetGoogleCalendarList(variables?: GetGoogleCalendarListQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetGoogleCalendarListQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetGoogleCalendarListQuery>({ document: GetGoogleCalendarListDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetGoogleCalendarList', 'query', variables);
+    },
+    ImportGoogleCalendarEvents(variables: ImportGoogleCalendarEventsMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<ImportGoogleCalendarEventsMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ImportGoogleCalendarEventsMutation>({ document: ImportGoogleCalendarEventsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'ImportGoogleCalendarEvents', 'mutation', variables);
     },
     GetMeetingEvents(variables: GetMeetingEventsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetMeetingEventsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetMeetingEventsQuery>({ document: GetMeetingEventsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetMeetingEvents', 'query', variables);

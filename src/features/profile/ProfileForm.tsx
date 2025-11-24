@@ -151,7 +151,7 @@ const ProfileForm = ({
   submitLabel = "Save",
   onEditClick,
 }: ProfileFormProps) => {
-  const { user, organizationId } = useAuth();
+  const { appRole, organizationId, user } = useAuth();
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -172,21 +172,28 @@ const ProfileForm = ({
       ]),
     []
   );
+  const fields = useMemo(() => {
+    const baseFields: Array<{ key: keyof UserProfile; label: string }> = [
+      { key: "organization", label: "Organization" },
+      { key: "email", label: "Email" },
+      { key: "firstName", label: "Name" },
+      { key: "lastName", label: "Surname" },
+      { key: "accountStatus", label: "Account status" },
+    ];
 
-  const fields = useMemo(
-    () =>
-      [
-        { key: "organization", label: "Organization" },
-        { key: "email", label: "Email" },
-        { key: "firstName", label: "Name" },
-        { key: "lastName", label: "Surname" },
-        { key: "accountStatus", label: "Account status" },
-        { key: "pairingStatus", label: "Pairing status" },
-        { key: "preferredActivity", label: "Preferred Activity" },
-      ] as const,
-    []
-  );
+    // Only show pairing status for regular users (not admins)
+    if (appRole !== "org_admin" && appRole !== "super_admin") {
+      baseFields.push({ key: "pairingStatus", label: "Pairing status" });
+    }
 
+    baseFields.push(
+      { key: "location", label: "Location" },
+      { key: "position", label: "Position" },
+      { key: "preferredActivity", label: "Preferred Activity" }
+    );
+
+    return baseFields;
+  }, [appRole]);
   const handleChange =
     (key: keyof UserProfile) =>
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -415,6 +422,11 @@ const ProfileForm = ({
               <FieldContent className="bg-card">
                 <Input
                   id={fieldId}
+                  placeholder={
+                    key === "location"
+                      ? "e.g., Prague, Czech Republic"
+                      : undefined
+                  }
                   value={getFieldValue(key)}
                   onChange={handleChange(key)}
                   readOnly={isReadonly}

@@ -3,6 +3,7 @@ import { ScheduleXCalendar } from "@schedule-x/react";
 import {
   createCalendar,
   createViewWeek,
+  createViewDay,
   type CalendarEvent,
 } from "@schedule-x/calendar";
 import "@schedule-x/theme-default/dist/index.css";
@@ -190,12 +191,18 @@ export const CustomCalendar: React.FC<CustomCalendarProps> = ({
 
   if (!calendarRef.current) {
     calendarRef.current = createCalendar({
-      views: [createViewWeek()],
+      views: [createViewDay(), createViewWeek()],
       defaultView: "week",
       timezone: (timezone || "Europe/Prague") as never,
       calendars,
       events,
-      weekOptions: { gridHeight: 720 },
+      dayBoundaries: {
+        start: "07:00",
+        end: "22:00",
+      },
+      weekOptions: {
+        gridHeight: 720,
+      },
       callbacks: {
         onEventClick: handleEventClick,
       },

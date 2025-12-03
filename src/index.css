@@ -22,59 +22,59 @@ h3 {
 
 @layer base {
   :root {
-    /* Generic tokens (slate) */
-    --background: 210 40% 98%;
-    --foreground: 222.2 84% 4.9%;
-    --border: 215 20.2% 65.1%;
-    /* Shadcn slate tokens */
-    --card: 210 40% 98%;
-    --card-foreground: var(--foreground);
-    --muted: 212.7 26.8% 83.9%;
-    --muted-foreground: 215 19% 35%;
-    --input: var(--border);
-    --ring: var(--sidebar-ring);
-    --primary: 222.2 84% 4.9%;
-    --primary-foreground: 210 38% 95%;
-    --secondary: 212.7 26.8% 83.9%;
-    --secondary-foreground: var(--foreground);
-    --accent: 212.7 26.8% 83.9%;
-    --accent-foreground: var(--foreground);
+    /* Generic tokens */
+    --background: 0 0% 98%;
+    --foreground: 220 13% 20%;
+    --border: 220 13% 85%;
+    /* Shadcn blue tokens */
+    --card: 0 0% 100%;
+    --card-foreground: 220 13% 20%;
+    --muted: 220 10% 88%;
+    --muted-foreground: 220 8% 48%;
+    --input: 0 0% 100%;
+    --ring: 0 0% 20%;
+    --primary: 220 13% 35%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 13% 50%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 39 84% 55%;
+    --accent-foreground: 220 13% 18%;
     --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 96%;
-    --popover: 210 40% 98%;
-    --popover-foreground: var(--foreground);
-    /* Sidebar tokens (slate) */
-    --sidebar-background: 210 38% 95%;
-    --sidebar-foreground: var(--foreground);
-    --sidebar-primary: var(--foreground);
-    --sidebar-primary-foreground: 210 38% 95%;
-    --sidebar-accent: 212.7 26.8% 83.9%;
-    --sidebar-accent-foreground: var(--foreground);
-    --sidebar-border: 215 20.2% 65.1%;
-    --sidebar-ring: 215.4 16.3% 46.9%;
+    --destructive-foreground: 0 0% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 13% 20%;
+    /* Sidebar tokens (dark) */
+    --sidebar-background: 220 13% 18%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 39 84% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 39 84% 55%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 220 13% 28%;
+    --sidebar-ring: 0 0% 98%;
   }
   .dark {
-    --background: 222.2 84% 3.5%;
-    --foreground: 210 38% 95%;
-    --border: 222.2 47.4% 11.2%;
-    /* Shadcn slate tokens (dark) */
-    --card: 222.2 84% 3.5%;
-    --card-foreground: 210 38% 95%;
-    --muted: 222.2 47.4% 11.2%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --input: var(--border);
-    --ring: 215 20.2% 65.1%;
-    --popover: 222.2 84% 3.5%;
-    --popover-foreground: 210 38% 95%;
-    /* Sidebar tokens (dark, slate) */
-    --sidebar-background: 222.2 84% 3.5%;
-    --sidebar-foreground: 210 38% 95%;
-    --sidebar-primary: 210 38% 95%;
-    --sidebar-primary-foreground: 222.2 84% 3.5%;
-    --sidebar-accent: 222.2 47.4% 11.2%;
-    --sidebar-accent-foreground: 210 38% 95%;
-    --sidebar-border: 222.2 47.4% 11.2%;
-    --sidebar-ring: 215.4 16.3% 46.9%;
+    --background: 220 100% 8%;
+    --foreground: 180 100% 92%;
+    --border: 220 80% 32%;
+    /* Shadcn blue tokens (dark) */
+    --card: 210 90% 16%;
+    --card-foreground: 180 100% 92%;
+    --muted: 220 60% 22%;
+    --muted-foreground: 180 70% 65%;
+    --input: 220 80% 28%;
+    --ring: 180 100% 55%;
+    --popover: 220 100% 10%;
+    --popover-foreground: 180 100% 92%;
+    /* Sidebar tokens (dark, blue spectrum) */
+    --sidebar-background: 220 100% 6%;
+    --sidebar-foreground: 180 100% 92%;
+    --sidebar-primary: 200 100% 48%;
+    --sidebar-primary-foreground: 220 100% 6%;
+    --sidebar-accent: 180 100% 52%;
+    --sidebar-accent-foreground: 220 100% 6%;
+    --sidebar-border: 220 80% 32%;
+    --sidebar-ring: 180 100% 55%;
   }
 }
 
@@ -83,7 +83,18 @@ h3 {
     border-color: hsl(var(--border));
   }
   body {
-    background-color: hsl(var(--background));
+    background: hsl(var(--background));
     color: hsl(var(--foreground));
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  [class*="sidebar"] {
+    background: hsl(var(--sidebar-background));
+  }
+  
+  .dark [class*="sidebar"] {
+    background: hsl(var(--sidebar-background));
   }
 }

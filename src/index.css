@@ -93,7 +93,7 @@ h3 {
   [class*="sidebar"] {
     background: hsl(var(--sidebar-background));
   }
-  
+
   .dark [class*="sidebar"] {
     background: hsl(var(--sidebar-background));
   }

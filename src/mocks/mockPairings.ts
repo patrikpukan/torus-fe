@@ -15,6 +15,9 @@ export type PairingContact = {
   pairedAt: string;
   lastMessageAt: string;
   messages: PairingMessage[];
+  pairingId?: string;
+  pairingStatus?: string;
+  isCurrentlyMatched?: boolean;
 };
 
 const makeUserProfile = (overrides: Partial<UserProfile>): UserProfile => ({

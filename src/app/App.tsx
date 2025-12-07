@@ -155,6 +155,14 @@ const App = () => {
                 }
               />
               <Route
+                path="pairings/:id"
+                element={
+                  <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
+                    <PairingsRoute />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="algorithm-settings"
                 element={
                   <ProtectedRoute allowedRoles={ADMIN_ROLES}>

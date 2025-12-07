@@ -281,6 +281,16 @@ export type MeetingEvent = {
   userBProposedStartDateTime: Maybe<Scalars['DateTime']['output']>;
 };
 
+export type MessageModel = {
+  __typename?: 'MessageModel';
+  content: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  isRead: Scalars['Boolean']['output'];
+  pairingId: Scalars['ID']['output'];
+  senderId: Scalars['ID']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   banUser: User;
@@ -303,6 +313,8 @@ export type Mutation = {
   reportUser: UserReport;
   resolveReport: UserReport;
   resumeActivity: Scalars['Boolean']['output'];
+  /** Send a message to a user you are paired with */
+  sendMessage: MessageModel;
   signUp: User;
   unbanUser: User;
   updateAlgorithmSettings: AlgorithmSettingsResponse;
@@ -409,6 +421,11 @@ export type MutationReportUserArgs = {
 
 export type MutationResolveReportArgs = {
   input: ResolveReportInput;
+};
+
+
+export type MutationSendMessageArgs = {
+  input: SendMessageInput;
 };
 
 
@@ -562,6 +579,8 @@ export type Query = {
   getCurrentUser: Maybe<CurrentUser>;
   getDepartmentById: Maybe<Department>;
   getDepartmentsByOrganization: Array<Department>;
+  /** Get all messages for a specific pairing */
+  getMessages: Array<MessageModel>;
   getOrganizationInvites: Array<InviteCodeType>;
   getPairedUsers: Array<User>;
   getPairingHistory: Array<PairingHistory>;
@@ -609,7 +628,7 @@ export type QueryExpandedCalendarOccurrencesArgs = {
 
 
 export type QueryGetAlgorithmSettingsArgs = {
-  organizationId: Scalars['String']['input'];
+  organizationId: Scalars['ID']['input'];
 };
 
 
@@ -620,6 +639,11 @@ export type QueryGetDepartmentByIdArgs = {
 
 export type QueryGetDepartmentsByOrganizationArgs = {
   organizationId: Scalars['String']['input'];
+};
+
+
+export type QueryGetMessagesArgs = {
+  pairingId: Scalars['ID']['input'];
 };
 
 
@@ -706,6 +730,11 @@ export type ResolveReportInput = {
   resolutionNote?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type SendMessageInput = {
+  content: Scalars['String']['input'];
+  pairingId: Scalars['ID']['input'];
+};
+
 export type SignUpInputType = {
   email: Scalars['String']['input'];
   firstName?: InputMaybe<Scalars['String']['input']>;
@@ -739,6 +768,17 @@ export type StatisticsResponseType = {
   pairingsByStatus: Array<PairingStatusOverviewType>;
   pairingsByStatusAndUser: Array<PairingStatusByUserType>;
   reportsCount: Scalars['Int']['output'];
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  /** Subscribe to new messages in a pairing */
+  messageSent: MessageModel;
+};
+
+
+export type SubscriptionMessageSentArgs = {
+  pairingId: Scalars['ID']['input'];
 };
 
 export type Tag = {
@@ -1019,6 +1059,27 @@ export type GetActivePauseQueryVariables = Exact<{
 
 export type GetActivePauseQuery = { __typename?: 'Query', expandedCalendarOccurrences: Array<{ __typename?: 'ExpandedCalendarEventOccurrence', id: string, occurrenceStart: string, occurrenceEnd: string, originalEvent: { __typename?: 'CalendarEvent', id: string, type: CalendarEventType, title: string | null, description: string | null, startDateTime: string, endDateTime: string, deletedAt: string | null } }> };
 
+export type GetMessagesQueryVariables = Exact<{
+  pairingId: Scalars['ID']['input'];
+}>;
+
+
+export type GetMessagesQuery = { __typename?: 'Query', getMessages: Array<{ __typename?: 'MessageModel', id: string, pairingId: string, senderId: string, content: string, isRead: boolean, createdAt: string }> };
+
+export type SendMessageMutationVariables = Exact<{
+  input: SendMessageInput;
+}>;
+
+
+export type SendMessageMutation = { __typename?: 'Mutation', sendMessage: { __typename?: 'MessageModel', id: string, pairingId: string, senderId: string, content: string, isRead: boolean, createdAt: string } };
+
+export type MessageSentSubscriptionVariables = Exact<{
+  pairingId: Scalars['ID']['input'];
+}>;
+
+
+export type MessageSentSubscription = { __typename?: 'Subscription', messageSent: { __typename?: 'MessageModel', id: string, pairingId: string, senderId: string, content: string, isRead: boolean, createdAt: string } };
+
 export type CreateDepartmentMutationVariables = Exact<{
   input: CreateDepartmentInput;
 }>;
@@ -1112,7 +1173,7 @@ export type ValidateInviteCodeQueryVariables = Exact<{
 export type ValidateInviteCodeQuery = { __typename?: 'Query', validateInviteCode: { __typename?: 'InviteCodeValidationResponseType', isValid: boolean, message: string, organizationId: string | null, organizationName: string | null, remainingUses: number | null } };
 
 export type GetAlgorithmSettingsQueryVariables = Exact<{
-  organizationId: Scalars['String']['input'];
+  organizationId: Scalars['ID']['input'];
 }>;
 
 
@@ -1582,6 +1643,42 @@ export const GetActivePauseDocument = gql`
   }
 }
     `;
+export const GetMessagesDocument = gql`
+    query GetMessages($pairingId: ID!) {
+  getMessages(pairingId: $pairingId) {
+    id
+    pairingId
+    senderId
+    content
+    isRead
+    createdAt
+  }
+}
+    `;
+export const SendMessageDocument = gql`
+    mutation SendMessage($input: SendMessageInput!) {
+  sendMessage(input: $input) {
+    id
+    pairingId
+    senderId
+    content
+    isRead
+    createdAt
+  }
+}
+    `;
+export const MessageSentDocument = gql`
+    subscription MessageSent($pairingId: ID!) {
+  messageSent(pairingId: $pairingId) {
+    id
+    pairingId
+    senderId
+    content
+    isRead
+    createdAt
+  }
+}
+    `;
 export const CreateDepartmentDocument = gql`
     mutation CreateDepartment($input: CreateDepartmentInput!) {
   createDepartment(input: $input) {
@@ -1763,7 +1860,7 @@ export const ValidateInviteCodeDocument = gql`
 }
     `;
 export const GetAlgorithmSettingsDocument = gql`
-    query GetAlgorithmSettings($organizationId: String!) {
+    query GetAlgorithmSettings($organizationId: ID!) {
   getAlgorithmSettings(organizationId: $organizationId) {
     id
     organizationId
@@ -2149,6 +2246,15 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     GetActivePause(variables: GetActivePauseQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetActivePauseQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetActivePauseQuery>({ document: GetActivePauseDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetActivePause', 'query', variables);
+    },
+    GetMessages(variables: GetMessagesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetMessagesQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetMessagesQuery>({ document: GetMessagesDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetMessages', 'query', variables);
+    },
+    SendMessage(variables: SendMessageMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<SendMessageMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<SendMessageMutation>({ document: SendMessageDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'SendMessage', 'mutation', variables);
+    },
+    MessageSent(variables: MessageSentSubscriptionVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<MessageSentSubscription> {
+      return withWrapper((wrappedRequestHeaders) => client.request<MessageSentSubscription>({ document: MessageSentDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'MessageSent', 'subscription', variables);
     },
     CreateDepartment(variables: CreateDepartmentMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CreateDepartmentMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<CreateDepartmentMutation>({ document: CreateDepartmentDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'CreateDepartment', 'mutation', variables);

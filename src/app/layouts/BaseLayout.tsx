@@ -235,7 +235,7 @@ const BaseLayout = () => {
         <SidebarRail />
       </Sidebar>
       <SidebarInset>
-        <div className="sticky top-0 z-10 flex h-12 items-center gap-2 border-b px-3 bg-muted/40">
+        <div className="sticky top-0 ml-[0.5rem] z-10 flex h-12 items-center gap-2 border-b px-3 bg-muted/40">
           <SidebarTrigger />
           <div className="ml-auto" />
         </div>

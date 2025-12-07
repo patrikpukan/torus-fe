@@ -33,7 +33,7 @@ type ExecutePairingAlgorithmVariables = {
 };
 
 export const GET_ALGORITHM_SETTINGS = graphql(`
-  query GetAlgorithmSettings($organizationId: String!) {
+  query GetAlgorithmSettings($organizationId: ID!) {
     getAlgorithmSettings(organizationId: $organizationId) {
       id
       organizationId

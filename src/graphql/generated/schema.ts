@@ -291,6 +291,12 @@ export type MessageModel = {
   senderId: Scalars['ID']['output'];
 };
 
+export type MessagesReadEvent = {
+  __typename?: 'MessagesReadEvent';
+  pairingId: Scalars['ID']['output'];
+  userId: Scalars['ID']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   banUser: User;
@@ -306,6 +312,8 @@ export type Mutation = {
   executePairingAlgorithm: PairingExecutionResult;
   importGoogleCalendarEvents: GoogleCalendarImportResult;
   inviteUserToOrganization: InviteUserResponseType;
+  /** Mark all messages in a pairing as read */
+  markMessagesAsRead: Scalars['Boolean']['output'];
   pauseActivity: CalendarEvent;
   proposeMeetingTime: MeetingEvent;
   registerOrganization: RegisterOrganizationResponseType;
@@ -315,6 +323,8 @@ export type Mutation = {
   resumeActivity: Scalars['Boolean']['output'];
   /** Send a message to a user you are paired with */
   sendMessage: MessageModel;
+  /** Set typing status for a pairing */
+  setTypingStatus: Scalars['Boolean']['output'];
   signUp: User;
   unbanUser: User;
   updateAlgorithmSettings: AlgorithmSettingsResponse;
@@ -393,6 +403,11 @@ export type MutationInviteUserToOrganizationArgs = {
 };
 
 
+export type MutationMarkMessagesAsReadArgs = {
+  pairingId: Scalars['ID']['input'];
+};
+
+
 export type MutationPauseActivityArgs = {
   input: PauseActivityInput;
 };
@@ -426,6 +441,12 @@ export type MutationResolveReportArgs = {
 
 export type MutationSendMessageArgs = {
   input: SendMessageInput;
+};
+
+
+export type MutationSetTypingStatusArgs = {
+  isTyping: Scalars['Boolean']['input'];
+  pairingId: Scalars['ID']['input'];
 };
 
 
@@ -774,11 +795,27 @@ export type Subscription = {
   __typename?: 'Subscription';
   /** Subscribe to new messages in a pairing */
   messageSent: MessageModel;
+  /** Subscribe to read receipt events in a pairing */
+  messagesRead: MessagesReadEvent;
+  /** Subscribe to typing status changes in a pairing */
+  typingStatus: TypingStatus;
 };
 
 
 export type SubscriptionMessageSentArgs = {
   pairingId: Scalars['ID']['input'];
+};
+
+
+export type SubscriptionMessagesReadArgs = {
+  pairingId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
+};
+
+
+export type SubscriptionTypingStatusArgs = {
+  pairingId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
 };
 
 export type Tag = {
@@ -794,6 +831,13 @@ export type Tag = {
 export type TagCategory =
   | 'HOBBY'
   | 'INTEREST';
+
+export type TypingStatus = {
+  __typename?: 'TypingStatus';
+  isTyping: Scalars['Boolean']['output'];
+  pairingId: Scalars['ID']['output'];
+  userId: Scalars['ID']['output'];
+};
 
 export type UpdateAlgorithmSettingsInput = {
   organizationId: Scalars['String']['input'];
@@ -1079,6 +1123,37 @@ export type MessageSentSubscriptionVariables = Exact<{
 
 
 export type MessageSentSubscription = { __typename?: 'Subscription', messageSent: { __typename?: 'MessageModel', id: string, pairingId: string, senderId: string, content: string, isRead: boolean, createdAt: string } };
+
+export type TypingStatusSubscriptionVariables = Exact<{
+  pairingId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
+}>;
+
+
+export type TypingStatusSubscription = { __typename?: 'Subscription', typingStatus: { __typename?: 'TypingStatus', pairingId: string, userId: string, isTyping: boolean } };
+
+export type SetTypingStatusMutationVariables = Exact<{
+  pairingId: Scalars['ID']['input'];
+  isTyping: Scalars['Boolean']['input'];
+}>;
+
+
+export type SetTypingStatusMutation = { __typename?: 'Mutation', setTypingStatus: boolean };
+
+export type MessagesReadSubscriptionVariables = Exact<{
+  pairingId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
+}>;
+
+
+export type MessagesReadSubscription = { __typename?: 'Subscription', messagesRead: { __typename?: 'MessagesReadEvent', pairingId: string, userId: string } };
+
+export type MarkMessagesAsReadMutationVariables = Exact<{
+  pairingId: Scalars['ID']['input'];
+}>;
+
+
+export type MarkMessagesAsReadMutation = { __typename?: 'Mutation', markMessagesAsRead: boolean };
 
 export type CreateDepartmentMutationVariables = Exact<{
   input: CreateDepartmentInput;
@@ -1679,6 +1754,33 @@ export const MessageSentDocument = gql`
   }
 }
     `;
+export const TypingStatusDocument = gql`
+    subscription TypingStatus($pairingId: ID!, $userId: ID!) {
+  typingStatus(pairingId: $pairingId, userId: $userId) {
+    pairingId
+    userId
+    isTyping
+  }
+}
+    `;
+export const SetTypingStatusDocument = gql`
+    mutation SetTypingStatus($pairingId: ID!, $isTyping: Boolean!) {
+  setTypingStatus(pairingId: $pairingId, isTyping: $isTyping)
+}
+    `;
+export const MessagesReadDocument = gql`
+    subscription MessagesRead($pairingId: ID!, $userId: ID!) {
+  messagesRead(pairingId: $pairingId, userId: $userId) {
+    pairingId
+    userId
+  }
+}
+    `;
+export const MarkMessagesAsReadDocument = gql`
+    mutation MarkMessagesAsRead($pairingId: ID!) {
+  markMessagesAsRead(pairingId: $pairingId)
+}
+    `;
 export const CreateDepartmentDocument = gql`
     mutation CreateDepartment($input: CreateDepartmentInput!) {
   createDepartment(input: $input) {
@@ -2255,6 +2357,18 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     MessageSent(variables: MessageSentSubscriptionVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<MessageSentSubscription> {
       return withWrapper((wrappedRequestHeaders) => client.request<MessageSentSubscription>({ document: MessageSentDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'MessageSent', 'subscription', variables);
+    },
+    TypingStatus(variables: TypingStatusSubscriptionVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<TypingStatusSubscription> {
+      return withWrapper((wrappedRequestHeaders) => client.request<TypingStatusSubscription>({ document: TypingStatusDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'TypingStatus', 'subscription', variables);
+    },
+    SetTypingStatus(variables: SetTypingStatusMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<SetTypingStatusMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<SetTypingStatusMutation>({ document: SetTypingStatusDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'SetTypingStatus', 'mutation', variables);
+    },
+    MessagesRead(variables: MessagesReadSubscriptionVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<MessagesReadSubscription> {
+      return withWrapper((wrappedRequestHeaders) => client.request<MessagesReadSubscription>({ document: MessagesReadDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'MessagesRead', 'subscription', variables);
+    },
+    MarkMessagesAsRead(variables: MarkMessagesAsReadMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<MarkMessagesAsReadMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<MarkMessagesAsReadMutation>({ document: MarkMessagesAsReadDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'MarkMessagesAsRead', 'mutation', variables);
     },
     CreateDepartment(variables: CreateDepartmentMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<CreateDepartmentMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<CreateDepartmentMutation>({ document: CreateDepartmentDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'CreateDepartment', 'mutation', variables);

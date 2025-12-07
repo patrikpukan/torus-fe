@@ -1,6 +1,40 @@
 import { useMutation, useQuery, useSubscription } from "@apollo/client/react";
 import { graphql } from "gql.tada";
 
+// Type definitions
+export type MessageModel = {
+  id: string;
+  pairingId: string;
+  senderId: string;
+  content: string;
+  isRead: boolean;
+  createdAt: string;
+};
+
+export type GetMessagesData = {
+  getMessages: MessageModel[];
+};
+
+export type MessageSentData = {
+  messageSent: MessageModel;
+};
+
+export type TypingStatusData = {
+  typingStatus: {
+    pairingId: string;
+    userId: string;
+    isTyping: boolean;
+  };
+};
+
+export type MessagesReadData = {
+  messagesRead: {
+    pairingId: string;
+    userId: string;
+  };
+};
+
+// GraphQL operations
 export const GET_MESSAGES_QUERY = graphql(`
   query GetMessages($pairingId: ID!) {
     getMessages(pairingId: $pairingId) {
@@ -73,9 +107,9 @@ export const MARK_MESSAGES_AS_READ_MUTATION = graphql(`
 
 // Custom hooks
 export const useGetMessagesQuery = (pairingId: string) =>
-  useQuery(GET_MESSAGES_QUERY, {
+  useQuery<GetMessagesData>(GET_MESSAGES_QUERY, {
     variables: { pairingId },
-    skip: !pairingId, // Don't run query if pairingId is not set
+    skip: !pairingId,
   });
 
 export const useSendMessageMutation = () => useMutation(SEND_MESSAGE_MUTATION);
@@ -87,16 +121,16 @@ export const useMarkMessagesAsReadMutation = () =>
   useMutation(MARK_MESSAGES_AS_READ_MUTATION);
 
 export const useMessageSentSubscription = (pairingId: string) =>
-  useSubscription(MESSAGE_SENT_SUBSCRIPTION, {
+  useSubscription<MessageSentData>(MESSAGE_SENT_SUBSCRIPTION, {
     variables: { pairingId },
-    skip: !pairingId, // Don't subscribe if pairingId is not set
+    skip: !pairingId,
   });
 
 export const useTypingStatusSubscription = (
   pairingId: string,
   userId: string
 ) =>
-  useSubscription(TYPING_STATUS_SUBSCRIPTION, {
+  useSubscription<TypingStatusData>(TYPING_STATUS_SUBSCRIPTION, {
     variables: { pairingId, userId },
     skip: !pairingId || !userId,
   });
@@ -105,14 +139,7 @@ export const useMessagesReadSubscription = (
   pairingId: string,
   userId: string
 ) =>
-  useSubscription(MESSAGES_READ_SUBSCRIPTION, {
+  useSubscription<MessagesReadData>(MESSAGES_READ_SUBSCRIPTION, {
     variables: { pairingId, userId },
     skip: !pairingId || !userId,
   });
-
-// Type exports
-export type GetMessagesData = ReturnType<typeof GET_MESSAGES_QUERY>;
-export type SendMessageData = ReturnType<typeof SEND_MESSAGE_MUTATION>;
-export type MessageSentData = ReturnType<typeof MESSAGE_SENT_SUBSCRIPTION>;
-export type TypingStatusData = ReturnType<typeof TYPING_STATUS_SUBSCRIPTION>;
-export type MessagesReadData = ReturnType<typeof MESSAGES_READ_SUBSCRIPTION>;

@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Temporal } from "temporal-polyfill";
 import "temporal-polyfill/global";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
   DialogContent,
@@ -29,6 +32,37 @@ type Props = {
   endDate?: string; // not used yet
 };
 
+const meetingProposalSchema = z
+  .object({
+    startDate: z.string().min(1, "Start date is required"),
+    startTime: z.string().min(1, "Start time is required"),
+    endDate: z.string().min(1, "End date is required"),
+    endTime: z.string().min(1, "End time is required"),
+    note: z.string().optional(),
+  })
+  .refine(
+    (values) => {
+      try {
+        const tz = Temporal.Now.zonedDateTimeISO().timeZoneId;
+        const startZdt = Temporal.ZonedDateTime.from(
+          `${values.startDate}T${values.startTime}:00[${tz}]`
+        );
+        const endZdt = Temporal.ZonedDateTime.from(
+          `${values.endDate}T${values.endTime}:00[${tz}]`
+        );
+        return Temporal.ZonedDateTime.compare(startZdt, endZdt) === -1;
+      } catch {
+        return true;
+      }
+    },
+    {
+      message: "End time must be after start time",
+      path: ["endTime"],
+    }
+  );
+
+type MeetingProposalFormValues = z.infer<typeof meetingProposalSchema>;
+
 export const MeetingProposalModal: React.FC<Props> = ({
   open,
   onOpenChange,
@@ -42,17 +76,29 @@ export const MeetingProposalModal: React.FC<Props> = ({
   const [proposeTime, { loading: proposing }] = useProposeMeetingTimeMutation();
   const apollo = useApolloClient();
 
-  const [startDate, setStartDate] = useState("");
-  const [startTime, setStartTime] = useState("09:00");
-  const [endDate, setEndDate] = useState("");
-  const [endTime, setEndTime] = useState("10:00");
-  const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const form = useForm<MeetingProposalFormValues>({
+    resolver: zodResolver(meetingProposalSchema),
+    mode: "onChange",
+    defaultValues: {
+      startDate: "",
+      startTime: "09:00",
+      endDate: "",
+      endTime: "10:00",
+      note: "",
+    },
+  });
 
   const handleClose = () => onOpenChange(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    if (!open) {
+      form.reset();
+      setError(null);
+    }
+  }, [open, form]);
+
+  const handleSubmit = form.handleSubmit(async (values) => {
     setError(null);
     if (!currentUserId) {
       setError("Not authenticated");
@@ -62,18 +108,14 @@ export const MeetingProposalModal: React.FC<Props> = ({
       setError("Missing target user");
       return;
     }
-    if (!startDate || !endDate) {
-      setError("Please pick start and end");
-      return;
-    }
 
     try {
       const tz = Temporal.Now.zonedDateTimeISO().timeZoneId;
       const startZdt = Temporal.ZonedDateTime.from(
-        `${startDate}T${startTime}:00[${tz}]`
+        `${values.startDate}T${values.startTime}:00[${tz}]`
       );
       const endZdt = Temporal.ZonedDateTime.from(
-        `${endDate}T${endTime}:00[${tz}]`
+        `${values.endDate}T${values.endTime}:00[${tz}]`
       );
       const startDateTime = startZdt.toInstant().toString();
       const endDateTime = endZdt.toInstant().toString();
@@ -87,7 +129,7 @@ export const MeetingProposalModal: React.FC<Props> = ({
               status: "proposed",
               proposedStartDateTime: startDateTime,
               proposedEndDateTime: endDateTime,
-              note: note || null,
+              note: values.note?.trim() || null,
             },
           },
         });
@@ -101,16 +143,14 @@ export const MeetingProposalModal: React.FC<Props> = ({
               createdByUserId: currentUserId,
               startDateTime,
               endDateTime,
-              note: note || null,
+              note: values.note?.trim() || null,
             },
           },
         });
       }
 
       onOpenChange(false);
-      setStartDate("");
-      setEndDate("");
-      setNote("");
+      form.reset();
 
       if (pairingId) {
         await apollo.query({
@@ -124,7 +164,7 @@ export const MeetingProposalModal: React.FC<Props> = ({
         err instanceof Error ? err.message : "Failed to propose meeting"
       );
     }
-  };
+  });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -132,27 +172,35 @@ export const MeetingProposalModal: React.FC<Props> = ({
         <DialogHeader>
           <DialogTitle>Propose meeting</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+        <form onSubmit={handleSubmit} className="mt-4 space-y-4" noValidate>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="startDate">Start Date</Label>
               <Input
                 id="startDate"
                 type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+                {...form.register("startDate")}
                 required
               />
+              {form.formState.errors.startDate && (
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.startDate.message}
+                </p>
+              )}
             </div>
             <div>
               <Label htmlFor="startTime">Time</Label>
               <Input
                 id="startTime"
                 type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
+                {...form.register("startTime")}
                 required
               />
+              {form.formState.errors.startTime && (
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.startTime.message}
+                </p>
+              )}
             </div>
           </div>
 
@@ -162,20 +210,28 @@ export const MeetingProposalModal: React.FC<Props> = ({
               <Input
                 id="endDate"
                 type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+                {...form.register("endDate")}
                 required
               />
+              {form.formState.errors.endDate && (
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.endDate.message}
+                </p>
+              )}
             </div>
             <div>
               <Label htmlFor="endTime">Time</Label>
               <Input
                 id="endTime"
                 type="time"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
+                {...form.register("endTime")}
                 required
               />
+              {form.formState.errors.endTime && (
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.endTime.message}
+                </p>
+              )}
             </div>
           </div>
 
@@ -185,8 +241,7 @@ export const MeetingProposalModal: React.FC<Props> = ({
               id="note"
               rows={3}
               placeholder="Optional note for your colleague"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
+              {...form.register("note")}
             />
           </div>
 

@@ -1,5 +1,12 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { BarChart3, Calendar, FileText, Users, UserX } from "lucide-react";
+import {
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip as RechartsTooltip,
+} from "recharts";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,12 +38,14 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useStatisticsQuery } from "@/features/statistics/api/useStatisticsQuery";
 
-type FilterType = "period" | "month-year";
-
 export type StatisticsViewProps = {
   organizationId?: string | null;
   organizationSelector?: ReactNode;
 };
+
+type FilterType = "period" | "month-year";
+
+const pieColors = ["#2563eb", "#22c55e", "#eab308", "#ef4444", "#8b5cf6"];
 
 export const StatisticsView = ({
   organizationId,
@@ -73,9 +82,7 @@ export const StatisticsView = ({
 
   const { data, loading, error, refetch } = useStatisticsQuery(filter);
 
-  const handleApplyFilter = () => {
-    refetch();
-  };
+  const handleApplyFilter = () => refetch();
 
   const handleClearFilter = () => {
     setStartDate("");
@@ -90,6 +97,13 @@ export const StatisticsView = ({
   const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 10 }, (_, i) => currentYear - i);
+
+  const pieData =
+    statistics?.pairingsByStatus?.map((item) => ({
+      name: item.status ?? "Unknown",
+      value: item.count,
+    })) ?? [];
+  const pieTotal = pieData.reduce((sum, item) => sum + item.value, 0);
 
   return (
     <div className="container mx-auto max-w-7xl space-y-8 px-4 py-8">
@@ -316,26 +330,102 @@ export const StatisticsView = ({
             </CardHeader>
             <CardContent>
               {statistics.pairingsByStatus.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Count</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {statistics.pairingsByStatus.map((item, index) => (
-                      <TableRow key={index}>
-                        <TableCell>
-                          <Badge variant="outline">{item.status}</Badge>
-                        </TableCell>
-                        <TableCell className="text-right font-medium">
-                          {item.count}
-                        </TableCell>
+                <div className="grid gap-6 lg:grid-cols-2">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Count</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {statistics.pairingsByStatus.map((item, index) => (
+                        <TableRow key={index}>
+                          <TableCell>
+                            <Badge variant="outline">{item.status}</Badge>
+                          </TableCell>
+                          <TableCell className="text-right font-medium">
+                            {item.count}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+
+                  <div className="flex h-full w-full flex-col items-center justify-center space-y-3">
+                    <ResponsiveContainer width="100%" height={320}>
+                      <PieChart>
+                        <Pie
+                          data={pieData}
+                          dataKey="value"
+                          nameKey="name"
+                          innerRadius={60}
+                          outerRadius={110}
+                          paddingAngle={2}
+                          label={({ value, name }) => `${name}: ${value}`}
+                          labelLine={false}
+                        >
+                          {pieData.map((entry, index) => (
+                            <Cell
+                              key={entry.name}
+                              fill={pieColors[index % pieColors.length]}
+                            />
+                          ))}
+                        </Pie>
+                        {pieTotal > 0 && (
+                          <g>
+                            <title>{`Total count: ${pieTotal}`}</title>
+                            <text
+                              x="50%"
+                              y="50%"
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                              className="text-lg font-semibold fill-current"
+                            >
+                              {pieTotal}
+                            </text>
+                          </g>
+                        )}
+                        <RechartsTooltip
+                          contentStyle={{
+                            backgroundColor: "hsl(var(--card))",
+                            borderColor: "hsl(var(--border))",
+                            borderRadius: "8px",
+                          }}
+                          labelStyle={{
+                            color: "hsl(var(--foreground))",
+                            fontWeight: 600,
+                          }}
+                          formatter={(value: number, name: string) => [
+                            value,
+                            name,
+                          ]}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    {pieData.length > 0 && (
+                      <div className="flex flex-wrap justify-center gap-3 text-xs">
+                        {pieData.map((entry, index) => (
+                          <div
+                            key={entry.name}
+                            className="flex items-center gap-2"
+                          >
+                            <span
+                              className="h-3 w-3 rounded-sm"
+                              style={{
+                                backgroundColor:
+                                  pieColors[index % pieColors.length],
+                              }}
+                            />
+                            <span className="text-muted-foreground">
+                              {entry.name}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
               ) : (
                 <p className="py-4 text-center text-sm text-muted-foreground">
                   No pairing data available for the selected period

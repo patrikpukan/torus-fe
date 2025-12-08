@@ -1,0 +1,22 @@
+import { Skeleton } from "@/components/ui/skeleton";
+
+export const HomeSkeleton = () => (
+  <div className="space-y-6">
+    <div className="space-y-2">
+      <Skeleton className="h-8 w-64" />
+      <Skeleton className="h-4 w-48" />
+    </div>
+    <Skeleton className="h-48 w-full" />
+    <div className="grid gap-3 md:grid-cols-2">
+      <Skeleton className="h-24 w-full" />
+      <Skeleton className="h-24 w-full" />
+    </div>
+    <div className="space-y-3">
+      <Skeleton className="h-6 w-36" />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-32 w-full" />
+      </div>
+    </div>
+  </div>
+);

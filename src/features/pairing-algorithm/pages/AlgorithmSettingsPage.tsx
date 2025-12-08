@@ -3,6 +3,8 @@ import { Navigate } from "react-router-dom";
 import { AlgorithmSettingsForm } from "../components/AlgorithmSettingsForm";
 import { useAuth } from "@/hooks/useAuth";
 
+import AdminAlgorithmSettingsPage from "./AdminAlgorithmSettingsPage";
+
 export function AlgorithmSettingsPage() {
   const { appRole, organizationId, loading } = useAuth();
 
@@ -14,11 +16,14 @@ export function AlgorithmSettingsPage() {
     );
   }
 
-  // Check if user is an admin (org_admin or super_admin)
   const isAdminRole = appRole === "org_admin" || appRole === "super_admin";
 
   if (!isAdminRole) {
     return <Navigate to="/home" replace />;
+  }
+
+  if (appRole === "super_admin") {
+    return <AdminAlgorithmSettingsPage />;
   }
 
   if (!organizationId) {

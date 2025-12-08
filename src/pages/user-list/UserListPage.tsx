@@ -1,9 +1,10 @@
 import AdminUserTable from "./components/AdminUserTable";
 import PairedUsersView from "./components/PairedUsersView";
+import AdminUserListPage from "./AdminUserListPage";
 import { useAuth } from "@/hooks/useAuth";
 
 const UserListPage = () => {
-  const { appRole, loading } = useAuth();
+  const { appRole, loading, organizationId } = useAuth();
 
   if (loading && !appRole) {
     return (
@@ -13,9 +14,15 @@ const UserListPage = () => {
     );
   }
 
-  const isAdmin = appRole === "org_admin" || appRole === "super_admin";
+  if (appRole === "super_admin") {
+    return <AdminUserListPage />;
+  }
 
-  return isAdmin ? <AdminUserTable /> : <PairedUsersView />;
+  if (appRole === "org_admin") {
+    return <AdminUserTable organizationId={organizationId ?? undefined} />;
+  }
+
+  return <PairedUsersView />;
 };
 
 export default UserListPage;

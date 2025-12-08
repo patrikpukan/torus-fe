@@ -22,8 +22,8 @@ export type UsersQueryData = {
 };
 
 export const USERS_QUERY = graphql(`
-  query Users {
-    users {
+  query Users($organizationId: ID) {
+    users(organizationId: $organizationId) {
       id
       email
       firstName
@@ -41,7 +41,8 @@ export const USERS_QUERY = graphql(`
   }
 `);
 
-export const useUsersQuery = () =>
+export const useUsersQuery = (organizationId?: string) =>
   useQuery<UsersQueryData>(USERS_QUERY, {
+    variables: organizationId ? { organizationId } : undefined,
     fetchPolicy: "cache-and-network",
   });

@@ -1,8 +1,9 @@
-import { useMemo, useState, type ComponentProps } from "react";
+import { useState, type ComponentProps } from "react";
 
 import { Button } from "@/components/ui/button";
 import { supabaseClient } from "@/lib/supabaseClient";
 import { useToast } from "@/hooks/use-toast";
+import { appUrl } from "@/lib/appUrl";
 
 type ButtonProps = ComponentProps<typeof Button>;
 
@@ -26,13 +27,6 @@ const SendResetPasswordButton = ({
 }: SendResetPasswordButtonProps) => {
   const [isSending, setIsSending] = useState(false);
   const { toast } = useToast();
-
-  const appUrl = useMemo(() => {
-    return (
-      import.meta.env.VITE_APP_URL?.replace(/\/$/, "") ??
-      window.location.origin.replace(/\/$/, "")
-    );
-  }, []);
 
   const handleSendReset = async () => {
     if (!email) {

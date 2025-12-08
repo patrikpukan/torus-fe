@@ -1,20 +1,15 @@
-﻿import { type FormEvent, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Eye } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  REPORT_BY_ID_QUERY,
-  useReportByIdQuery,
-} from "@/features/reports/api/useReportByIdQuery";
+import { REPORT_BY_ID_QUERY, useReportByIdQuery, } from "@/features/reports/api/useReportByIdQuery";
 import { REPORTS_QUERY } from "@/features/reports/api/useReportsQuery";
 import { useResolveReportMutation } from "@/features/reports/api/useResolveReportMutation";
 import { useToast } from "@/hooks/use-toast";
@@ -47,6 +42,12 @@ const formatUserName = (user: {
   return user.email ?? "Unknown user";
 };
 
+const resolutionSchema = z.object({
+  note: z.string().max(2000, "Note is too long"),
+});
+
+type ResolutionFormValues = z.infer<typeof resolutionSchema>;
+
 const ReportDetailPage = () => {
   const params = useParams();
   const encodedId = params.id ?? "";
@@ -57,7 +58,12 @@ const ReportDetailPage = () => {
   const [resolveReportMutation, { loading: resolveLoading }] =
     useResolveReportMutation();
   const [resolveDialogOpen, setResolveDialogOpen] = useState(false);
-  const [resolutionNote, setResolutionNote] = useState("");
+
+  const resolutionForm = useForm<ResolutionFormValues>({
+    resolver: zodResolver(resolutionSchema),
+    mode: "onChange",
+    defaultValues: { note: "" },
+  });
 
   const report = data?.reportById ?? null;
   const status = (report?.status ?? "pending") as "pending" | "resolved";
@@ -103,11 +109,20 @@ const ReportDetailPage = () => {
     [isResolved, reportId, resolveReportMutation, toast]
   );
 
-  const handleResolveSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    await handleResolve({ note: resolutionNote || null, silent: false });
+  const handleResolveSubmit = resolutionForm.handleSubmit(async (values) => {
+    await handleResolve({
+      note: values.note?.trim() || null,
+      silent: false,
+    });
     setResolveDialogOpen(false);
-    setResolutionNote("");
+    resolutionForm.reset();
+  });
+
+  const handleResolveDialogChange = (next: boolean) => {
+    if (!next) {
+      resolutionForm.reset();
+    }
+    setResolveDialogOpen(next);
   };
 
   if (!reportId) {
@@ -354,12 +369,12 @@ const ReportDetailPage = () => {
           </section>
         )}
       </div>
-      <Dialog open={resolveDialogOpen} onOpenChange={setResolveDialogOpen}>
+      <Dialog open={resolveDialogOpen} onOpenChange={handleResolveDialogChange}>
         <DialogContent className="sm:max-w-[480px]">
           <DialogHeader>
             <DialogTitle>Resolve report</DialogTitle>
           </DialogHeader>
-          <form className="space-y-4" onSubmit={handleResolveSubmit}>
+          <form className="space-y-4" onSubmit={handleResolveSubmit} noValidate>
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground">
                 Provide an optional note so other admins understand how this
@@ -367,17 +382,21 @@ const ReportDetailPage = () => {
               </p>
               <Textarea
                 placeholder="Add context for other administrators (optional)"
-                value={resolutionNote}
-                onChange={(event) => setResolutionNote(event.target.value)}
+                {...resolutionForm.register("note")}
                 disabled={resolveLoading}
                 rows={4}
               />
+              {resolutionForm.formState.errors.note && (
+                <p className="text-sm text-destructive">
+                  {resolutionForm.formState.errors.note.message}
+                </p>
+              )}
             </div>
             <div className="flex justify-end gap-2">
               <Button
                 type="button"
                 variant="ghost"
-                onClick={() => setResolveDialogOpen(false)}
+                onClick={() => handleResolveDialogChange(false)}
                 disabled={resolveLoading}
               >
                 Cancel

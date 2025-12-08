@@ -1,12 +1,6 @@
-import {
-  type ChangeEvent,
-  type FormEvent,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import { CircleUser, Pencil, Upload, User } from "lucide-react";
-
 import {
   Field,
   FieldContent,
@@ -54,7 +48,49 @@ export type ProfileFormProps = {
   onEditClick?: () => void;
 };
 
-// Tag selector component for editing tags
+type ProfileFormValues = UserProfile & {
+  preferredActivity?: string | null;
+  profileImageUrl?: string | null;
+  about?: string | null;
+  location?: string | null;
+  position?: string | null;
+};
+
+const normalizeProfile = (profile: UserProfile): ProfileFormValues => ({
+  ...profile,
+  firstName: profile.firstName ?? "",
+  lastName: profile.lastName ?? "",
+  about: profile.about ?? "",
+  location: profile.location ?? "",
+  position: profile.position ?? "",
+  preferredActivity: profile.preferredActivity ?? "",
+  profileImageUrl: profile.profileImageUrl ?? "",
+  organization: profile.organization ?? "",
+  accountStatus: profile.accountStatus ?? "",
+  pairingStatus: profile.pairingStatus ?? "",
+  hobbies: Array.isArray(profile.hobbies) ? profile.hobbies : [],
+  interests: Array.isArray(profile.interests) ? profile.interests : [],
+  departmentId: profile.departmentId ?? null,
+});
+
+const buildProfilePayload = (
+  values: ProfileFormValues,
+  prev: UserProfile
+): UserProfile => ({
+  ...prev,
+  ...values,
+  firstName: values.firstName?.trim() || undefined,
+  lastName: values.lastName?.trim() || undefined,
+  about: values.about?.trim() || undefined,
+  location: values.location?.trim() || undefined,
+  position: values.position?.trim() || undefined,
+  preferredActivity: values.preferredActivity?.trim() || undefined,
+  profileImageUrl: values.profileImageUrl || undefined,
+  hobbies: Array.isArray(values.hobbies) ? values.hobbies : [],
+  interests: Array.isArray(values.interests) ? values.interests : [],
+  departmentId: values.departmentId ?? null,
+});
+
 const TagSelector = ({
   tags,
   category,
@@ -134,7 +170,7 @@ const TagSelector = ({
               ))}
             </TagsGroup>
           ) : (
-            <div className="p-2 text-sm text-muted-foreground text-center">
+            <div className="p-2 text-center text-sm text-muted-foreground">
               No {category.toLowerCase()}s found
             </div>
           )}
@@ -157,12 +193,11 @@ const ProfileForm = ({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Fetch departments for the organization
   const { data: departmentsData, loading: departmentsLoading } =
     useGetDepartmentsByOrganizationQuery(organizationId || "");
 
   const departments = departmentsData?.getDepartmentsByOrganization ?? [];
-  // Fields that are always read-only
+
   const readOnlyFields = useMemo(
     () =>
       new Set<string>([
@@ -173,6 +208,7 @@ const ProfileForm = ({
       ]),
     []
   );
+
   const fields = useMemo(() => {
     const baseFields: Array<{ key: keyof UserProfile; label: string }> = [
       { key: "organization", label: "Organization" },
@@ -182,7 +218,6 @@ const ProfileForm = ({
       { key: "accountStatus", label: "Account status" },
     ];
 
-    // Only show pairing status for regular users (not admins)
     if (appRole !== "org_admin" && appRole !== "super_admin") {
       baseFields.push({ key: "pairingStatus", label: "Pairing status" });
     }
@@ -195,73 +230,54 @@ const ProfileForm = ({
 
     return baseFields;
   }, [appRole]);
-  const handleChange =
-    (key: keyof UserProfile) =>
-    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      if (!onChange) return;
-      onChange({ ...value, [key]: event.target.value } as UserProfile);
-    };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    onSubmit?.(value);
-  };
+  const form = useForm<ProfileFormValues>({
+    mode: "onChange",
+    defaultValues: normalizeProfile(value),
+  });
 
-  const getFieldValue = (key: keyof UserProfile) => {
-    const fieldValue = value[key];
-    if (fieldValue === undefined || fieldValue === null) {
-      return "";
+  useEffect(() => {
+    if (readOnly) {
+      form.reset(normalizeProfile(value));
+      setPreviewUrl(null);
     }
-    if (Array.isArray(fieldValue)) {
-      // Handle TagObject[] arrays (hobbies, interests)
-      if (
-        fieldValue.length > 0 &&
-        typeof fieldValue[0] === "object" &&
-        "name" in fieldValue[0]
-      ) {
-        return fieldValue.map((tag: TagObject) => tag.name).join(", ");
-      }
-      // Handle regular string arrays
-      return fieldValue.join(", ");
-    }
-    return String(fieldValue);
-  };
+  }, [form, readOnly, value]);
+
+  useEffect(() => {
+    if (!onChange || readOnly) return;
+    const subscription = form.watch((nextValues) => {
+      onChange(buildProfilePayload(nextValues as ProfileFormValues, value));
+    });
+    return () => subscription.unsubscribe();
+  }, [form, onChange, readOnly, value]);
 
   const isFieldReadOnly = (key: string | symbol | number): boolean => {
     return readOnly || readOnlyFields.has(String(key));
   };
 
-  const normalizedProfileAvatar = normalizeAssetUrl(value.profileImageUrl);
-  const currentAvatarSrc = previewUrl || normalizedProfileAvatar || "";
+  const currentAvatarSrc =
+    previewUrl || normalizeAssetUrl(form.watch("profileImageUrl") ?? "") || "";
 
   const handlePickFile = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    if (!onChange) return;
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file || !onChange) return;
 
     try {
       setUploading(true);
-      // show immediate local preview
       const objectUrl = URL.createObjectURL(file);
       setPreviewUrl(objectUrl);
-      // Upload to Supabase Storage (bucket: profile-pictures)
-      // The bucket must allow authenticated users to write to their own folder.
-      // Set up Supabase Storage policies:
-      //   1. Go to Storage → Policies → profile-pictures bucket
-      //   2. CREATE NEW POLICY for INSERT (authenticated users upload to their folder)
-      //      - Allowed for: (bucket_id = 'profile-pictures' AND auth.uid()::text = (storage.foldername(name))[1])
-      //   3. CREATE NEW POLICY for SELECT (public read access)
-      //      - Allowed for: (bucket_id = 'profile-pictures')
+
       const userId = user?.id;
       if (!userId) {
         console.error("User not authenticated; cannot upload avatar");
         setPreviewUrl(null);
         return;
       }
+
       const path = `${userId}/${Date.now()}-${file.name}`;
       const { error: uploadError } = await supabaseClient.storage
         .from("profile-pictures")
@@ -269,10 +285,6 @@ const ProfileForm = ({
 
       if (uploadError) {
         console.error("Supabase upload error:", uploadError);
-        console.error(
-          "Hint: Check profile-pictures bucket RLS policies. Ensure authenticated users can INSERT into their own folder."
-        );
-        // Keep local preview visible but do not persist blob URL into value
         return;
       }
 
@@ -280,23 +292,32 @@ const ProfileForm = ({
         .from("profile-pictures")
         .getPublicUrl(path);
       const publicUrl = data.publicUrl;
-      onChange({ ...value, profileImageUrl: publicUrl });
-      // Clear preview since we have a real public URL now
+
+      form.setValue("profileImageUrl", publicUrl, { shouldDirty: true });
+      onChange(buildProfilePayload(form.getValues(), value));
       setPreviewUrl(null);
     } catch (err) {
       console.error("Failed to upload avatar:", err);
       setPreviewUrl(null);
     } finally {
       setUploading(false);
-      // Clear file input so the same file can be re-selected
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
+
+  const hobbies = (form.watch("hobbies") as TagObject[]) ?? [];
+  const interests = (form.watch("interests") as TagObject[]) ?? [];
+
+  const handleSubmit = form.handleSubmit((vals) => {
+    if (!onSubmit) return;
+    onSubmit(buildProfilePayload(vals, value));
+  });
 
   return (
     <form
       onSubmit={onSubmit ? handleSubmit : undefined}
       className="mx-auto flex w-full max-w-4xl flex-col gap-8"
+      noValidate
     >
       <div className="flex flex-col items-center gap-3">
         <h1 className="flex items-center gap-3 text-3xl font-semibold">
@@ -344,7 +365,7 @@ const ProfileForm = ({
                 disabled={uploading}
               >
                 <Upload className="mr-2 h-4 w-4" />
-                {uploading ? "Uploading…" : "Upload new photo"}
+                {uploading ? "Uploading..." : "Upload new photo"}
               </Button>
             </div>
           )}
@@ -356,20 +377,18 @@ const ProfileForm = ({
           const fieldId = `profile-${key}`;
           const isReadonly = isFieldReadOnly(key);
 
-          // Special handling for preferredActivity (Select component)
           if (key === "preferredActivity") {
             return (
               <Field key={key}>
                 <FieldLabel htmlFor={fieldId}>{label}</FieldLabel>
                 <FieldContent className="bg-card">
                   <Select
-                    value={getFieldValue(key) || ""}
+                    value={form.watch("preferredActivity") || ""}
                     onValueChange={(newValue) => {
-                      if (!onChange) return;
-                      onChange({
-                        ...value,
-                        [key]: newValue || undefined,
-                      } as UserProfile);
+                      form.setValue("preferredActivity", newValue, {
+                        shouldDirty: true,
+                      });
+                      onChange?.(buildProfilePayload(form.getValues(), value));
                     }}
                     disabled={isReadonly}
                   >
@@ -401,8 +420,7 @@ const ProfileForm = ({
                       ? "e.g., Prague, Czech Republic"
                       : undefined
                   }
-                  value={getFieldValue(key)}
-                  onChange={handleChange(key)}
+                  {...form.register(key as keyof ProfileFormValues)}
                   readOnly={isReadonly}
                   disabled={isReadonly}
                 />
@@ -420,8 +438,7 @@ const ProfileForm = ({
             <FieldContent className="bg-card">
               <Textarea
                 id="profile-about"
-                value={value.about}
-                onChange={handleChange("about")}
+                {...form.register("about")}
                 readOnly={readOnly}
                 disabled={readOnly}
                 rows={4}
@@ -433,9 +450,9 @@ const ProfileForm = ({
             <FieldContent>
               {readOnly ? (
                 <div className="min-h-10 flex items-center">
-                  {Array.isArray(value.hobbies) && value.hobbies.length > 0 ? (
+                  {hobbies.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
-                      {value.hobbies.map((hobby: TagObject) => (
+                      {hobbies.map((hobby: TagObject) => (
                         <Badge key={hobby.id} variant="secondary">
                           {hobby.name}
                         </Badge>
@@ -449,14 +466,12 @@ const ProfileForm = ({
                 </div>
               ) : (
                 <TagSelector
-                  tags={Array.isArray(value.hobbies) ? value.hobbies : []}
+                  tags={hobbies}
                   category="HOBBY"
-                  onChange={(tags) =>
-                    onChange?.({
-                      ...value,
-                      hobbies: tags,
-                    } as UserProfile)
-                  }
+                  onChange={(tags) => {
+                    form.setValue("hobbies", tags, { shouldDirty: true });
+                    onChange?.(buildProfilePayload(form.getValues(), value));
+                  }}
                 />
               )}
             </FieldContent>
@@ -466,10 +481,9 @@ const ProfileForm = ({
             <FieldContent>
               {readOnly ? (
                 <div className="min-h-10 flex items-center">
-                  {Array.isArray(value.interests) &&
-                  value.interests.length > 0 ? (
+                  {interests.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
-                      {value.interests.map((interest: TagObject) => (
+                      {interests.map((interest: TagObject) => (
                         <Badge key={interest.id} variant="secondary">
                           {interest.name}
                         </Badge>
@@ -483,14 +497,12 @@ const ProfileForm = ({
                 </div>
               ) : (
                 <TagSelector
-                  tags={Array.isArray(value.interests) ? value.interests : []}
+                  tags={interests}
                   category="INTEREST"
-                  onChange={(tags) =>
-                    onChange?.({
-                      ...value,
-                      interests: tags,
-                    } as UserProfile)
-                  }
+                  onChange={(tags) => {
+                    form.setValue("interests", tags, { shouldDirty: true });
+                    onChange?.(buildProfilePayload(form.getValues(), value));
+                  }}
                 />
               )}
             </FieldContent>
@@ -505,13 +517,14 @@ const ProfileForm = ({
             </div>
             <FieldContent className="bg-card">
               <Select
-                value={value.departmentId || "none"}
+                value={form.watch("departmentId") || "none"}
                 onValueChange={(newValue) => {
-                  if (!onChange) return;
-                  onChange({
-                    ...value,
-                    departmentId: newValue === "none" ? null : newValue,
-                  } as UserProfile);
+                  form.setValue(
+                    "departmentId",
+                    newValue === "none" ? null : newValue,
+                    { shouldDirty: true }
+                  );
+                  onChange?.(buildProfilePayload(form.getValues(), value));
                 }}
                 disabled={readOnly || departmentsLoading}
               >

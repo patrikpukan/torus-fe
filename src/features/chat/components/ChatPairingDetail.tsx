@@ -61,6 +61,9 @@ export default function PairingDetail({ contact, onBack }: PairingDetailProps) {
   // Get pairingId from contact or use contact id as fallback
   const pairingId = contact?.pairingId || contact?.id;
 
+  // Get contact identifier for detecting contact changes
+  const contactIdentifier = contact?.pairingId || contact?.id;
+
   // Log pairing ID for debugging
   console.log(
     "ChatPairingDetail - pairingId:",
@@ -69,11 +72,12 @@ export default function PairingDetail({ contact, onBack }: PairingDetailProps) {
     contact?.id
   );
 
-  // Fetch messages
+  // Fetch messages - refetch when switching to chat tab
   const {
     data: messagesData,
     loading: messagesLoading,
     error: messagesError,
+    refetch: refetchMessages,
   } = useGetMessagesQuery(pairingId || "");
 
   // Log query status
@@ -123,15 +127,28 @@ export default function PairingDetail({ contact, onBack }: PairingDetailProps) {
     "data:",
     subscriptionData
   );
+
+  // Update messages when query data arrives
   useEffect(() => {
     if (messagesData?.getMessages) {
       setMessages(messagesData.getMessages);
-      // Mark messages as read when loaded if chat is active
-      if (pairingId && activeTab === "chat") {
-        markMessagesAsRead({ variables: { pairingId } });
-      }
     }
-  }, [messagesData, pairingId, markMessagesAsRead, activeTab]);
+  }, [messagesData]);
+
+  // Refetch messages when switching to chat tab
+  useEffect(() => {
+    if (activeTab === "chat" && pairingId) {
+      refetchMessages().then(() => {
+        // Scroll to bottom after refetch completes
+        setTimeout(() => {
+          if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+          }
+        }, 50);
+      });
+      markMessagesAsRead({ variables: { pairingId } });
+    }
+  }, [activeTab, pairingId, refetchMessages, markMessagesAsRead]);
 
   // Add new message from subscription
   useEffect(() => {
@@ -144,23 +161,12 @@ export default function PairingDetail({ contact, onBack }: PairingDetailProps) {
         return [...prev, subscriptionData.messageSent];
       });
 
-      // Mark as read if it's from the other user and chat is active
-      if (
-        pairingId &&
-        subscriptionData.messageSent.senderId !== user?.id &&
-        activeTab === "chat"
-      ) {
+      // Mark as read if it's from the other user
+      if (pairingId && subscriptionData.messageSent.senderId !== user?.id) {
         markMessagesAsRead({ variables: { pairingId } });
       }
     }
-  }, [subscriptionData, pairingId, user?.id, markMessagesAsRead, activeTab]);
-
-  // Mark as read when switching to chat tab
-  useEffect(() => {
-    if (activeTab === "chat" && pairingId) {
-      markMessagesAsRead({ variables: { pairingId } });
-    }
-  }, [activeTab, pairingId, markMessagesAsRead]);
+  }, [subscriptionData, pairingId, user?.id, markMessagesAsRead]);
 
   // Handle typing status updates
   useEffect(() => {
@@ -169,10 +175,12 @@ export default function PairingDetail({ contact, onBack }: PairingDetailProps) {
     }
   }, [typingData]);
 
-  // Reset active tab when contact changes
+  // Reset active tab only when contact actually changes (different contact ID)
   useEffect(() => {
+    // If switching to a new contact (not the same contact), reset to chat tab
+    // This prevents losing tab state when just updating the same contact
     setActiveTab("chat");
-  }, [contact?.id]);
+  }, [contactIdentifier]);
 
   // Handle read receipts
   useEffect(() => {
@@ -195,7 +203,7 @@ export default function PairingDetail({ contact, onBack }: PairingDetailProps) {
         }
       });
     }
-  }, [messages, otherUserTyping, activeTab]);
+  }, [messages, otherUserTyping]);
 
   // Handle typing input with debounce
   useEffect(() => {
@@ -363,9 +371,10 @@ export default function PairingDetail({ contact, onBack }: PairingDetailProps) {
                       onKeyDown={(e) => {
                         if (
                           e.key === "Enter" &&
-                          e.ctrlKey &&
+                          !e.shiftKey &&
                           messageContent.trim()
                         ) {
+                          e.preventDefault();
                           handleSendMessage();
                         }
                       }}

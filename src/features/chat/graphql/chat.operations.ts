@@ -110,6 +110,7 @@ export const useGetMessagesQuery = (pairingId: string) =>
   useQuery<GetMessagesData>(GET_MESSAGES_QUERY, {
     variables: { pairingId },
     skip: !pairingId,
+    fetchPolicy: "network-only",
   });
 
 export const useSendMessageMutation = () => useMutation(SEND_MESSAGE_MUTATION);

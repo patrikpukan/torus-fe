@@ -1,5 +1,8 @@
-import { useMemo, useState } from "react";
-import type { FormEvent, ReactNode } from "react";
+import type { ReactNode } from "react";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +27,16 @@ import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, startOfDay, startOfToday } from "date-fns";
 
+const banUserSchema = z.object({
+  reason: z
+    .string()
+    .trim()
+    .min(5, "Please explain why you are banning this user."),
+  expiresAt: z.date().optional().nullable(),
+});
+
+type BanUserFormValues = z.infer<typeof banUserSchema>;
+
 type BanUserDialogProps = {
   userId: string;
   userDisplayName?: string;
@@ -38,50 +51,40 @@ export const BanUserDialog = ({
   onCompleted,
 }: BanUserDialogProps) => {
   const [open, setOpen] = useState(false);
-  const [reason, setReason] = useState("");
-  const [expiresAt, setExpiresAt] = useState<Date | null>(null);
-  const today = useMemo(() => startOfToday(), []);
+  const today = startOfToday();
 
   const [banUser, { loading }] = useBanUserMutation();
   const { toast } = useToast();
 
-  const resetForm = () => {
-    setReason("");
-    setExpiresAt(null);
-  };
+  const form = useForm<BanUserFormValues>({
+    resolver: zodResolver(banUserSchema),
+    mode: "onChange",
+    defaultValues: {
+      reason: "",
+      expiresAt: null,
+    },
+  });
 
   const safeSetOpen = (next: boolean) => {
     if (!loading) {
       setOpen(next);
       if (!next) {
-        resetForm();
+        form.reset();
       }
     }
   };
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const trimmedReason = reason.trim();
-
-    if (!trimmedReason) {
-      toast({
-        variant: "destructive",
-        title: "Reason required",
-        description: "Please explain why you are banning this user.",
-      });
-      return;
-    }
-
+  const handleSubmit = form.handleSubmit(async (values) => {
     try {
-      const expiresAtIso = expiresAt
-        ? startOfDay(expiresAt).toISOString()
+      const expiresAtIso = values.expiresAt
+        ? startOfDay(values.expiresAt).toISOString()
         : null;
 
       await banUser({
         variables: {
           input: {
             userId,
-            reason: trimmedReason,
+            reason: values.reason.trim(),
             expiresAt: expiresAtIso,
           },
         },
@@ -109,7 +112,7 @@ export const BanUserDialog = ({
             : "Please try again in a moment.",
       });
     }
-  };
+  });
 
   return (
     <>
@@ -123,18 +126,21 @@ export const BanUserDialog = ({
               a reason and optionally schedule when the ban should expire.
             </DialogDescription>
           </DialogHeader>
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={handleSubmit} noValidate>
             <div className="space-y-2">
               <Label htmlFor="ban-reason">Reason *</Label>
               <Textarea
                 id="ban-reason"
                 placeholder="Explain why you need to ban this user"
-                value={reason}
-                onChange={(event) => setReason(event.target.value)}
+                {...form.register("reason")}
+                aria-invalid={!!form.formState.errors.reason}
                 disabled={loading}
-                minLength={5}
-                required
               />
+              {form.formState.errors.reason && (
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.reason.message}
+                </p>
+              )}
               <p className="text-xs text-muted-foreground">
                 This will be stored for audit purposes and helps other admins
                 understand the context.
@@ -143,31 +149,39 @@ export const BanUserDialog = ({
 
             <div className="space-y-2">
               <Label>Optional expiry</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !expiresAt && "text-muted-foreground"
-                    )}
-                    disabled={loading}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {expiresAt ? format(expiresAt, "PPP") : "Pick a date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={expiresAt ?? undefined}
-                    onSelect={(date) => setExpiresAt(date ?? null)}
-                    disabled={(date) => date < today}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <Controller
+                control={form.control}
+                name="expiresAt"
+                render={({ field }) => (
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                        )}
+                        disabled={loading}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {field.value
+                          ? format(field.value, "PPP")
+                          : "Pick a date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value ?? undefined}
+                        onSelect={(date) => field.onChange(date ?? null)}
+                        disabled={(date) => date < today}
+                        autoFocus={true}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                )}
+              />
               <p className="text-xs text-muted-foreground">
                 Leave empty to ban indefinitely. If set, the ban will lift at
                 the start of the selected day.

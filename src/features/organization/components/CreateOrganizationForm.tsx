@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,149 +24,79 @@ const employeeSizeOptions = [
   { value: "501+", label: "More than 500 employees" },
 ];
 
-type CreateOrganizationFormData = {
-  adminEmail: string;
-  organizationName: string;
-  organizationSize: string;
-  organizationAddress: string;
-};
-
-type FormErrors = Partial<Record<keyof CreateOrganizationFormData, string>>;
-
 const neutralFieldClass =
   "flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-base shadow-sm transition focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm";
+
+const createOrgSchema = z.object({
+  adminEmail: z
+    .string()
+    .min(1, "Please enter an email")
+    .email("Enter a valid email"),
+  organizationName: z
+    .string()
+    .trim()
+    .min(3, "The name must have at least 3 characters"),
+  organizationSize: z.string().min(1, "Select the organization size"),
+  organizationAddress: z
+    .string()
+    .trim()
+    .min(10, "The address must have at least 10 characters"),
+});
+
+type CreateOrganizationFormData = z.infer<typeof createOrgSchema>;
 
 const CreateOrganizationForm = () => {
   const navigate = useNavigate();
   const [registerOrganization, { loading: isSubmitting }] =
     useRegisterOrganization();
 
-  const [formValues, setFormValues] = useState<CreateOrganizationFormData>({
-    adminEmail: "",
-    organizationName: "",
-    organizationSize: "",
-    organizationAddress: "",
-  });
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [touched, setTouched] = useState<
-    Partial<Record<keyof CreateOrganizationFormData, boolean>>
-  >({});
   const [submitError, setSubmitError] = useState<string>("");
   const [submitSuccess, setSubmitSuccess] = useState<string>("");
 
-  const validateField = (
-    field: keyof CreateOrganizationFormData,
-    value: string
-  ): string | undefined => {
-    switch (field) {
-      case "adminEmail":
-        if (!value.trim()) {
-          return "Please enter an email";
-        }
-        if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/.test(value)) {
-          return "Enter a valid email";
-        }
-        return undefined;
-      case "organizationName": {
-        if (!value.trim()) {
-          return "Enter the organization name";
-        }
-        if (value.trim().length < 3) {
-          return "The name must have at least 3 characters";
-        }
-        return undefined;
-      }
-      case "organizationSize":
-        if (!value) {
-          return "Select the organization size";
-        }
-        return undefined;
-      case "organizationAddress":
-        if (!value.trim()) {
-          return "Enter the organization address";
-        }
-        if (value.trim().length < 10) {
-          return "The address must have at least 10 characters";
-        }
-        return undefined;
-      default:
-        return undefined;
-    }
-  };
+  const form = useForm<CreateOrganizationFormData>({
+    resolver: zodResolver(createOrgSchema),
+    mode: "onChange",
+    defaultValues: {
+      adminEmail: "",
+      organizationName: "",
+      organizationSize: "",
+      organizationAddress: "",
+    },
+  });
 
-  const handleFieldBlur = (field: keyof CreateOrganizationFormData) => {
-    setTouched((prev) => ({ ...prev, [field]: true }));
-    const error = validateField(field, formValues[field]);
-    setErrors((prev) => ({ ...prev, [field]: error }));
-  };
-
-  const handleInputChange = (
-    field: keyof CreateOrganizationFormData,
-    value: string
-  ) => {
-    setFormValues((prev) => ({ ...prev, [field]: value }));
-    if (touched[field]) {
-      const error = validateField(field, value);
-      setErrors((prev) => ({ ...prev, [field]: error }));
-    }
-  };
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = form.handleSubmit(async (values) => {
     setSubmitError("");
     setSubmitSuccess("");
-    setTouched({
-      adminEmail: true,
-      organizationName: true,
-      organizationSize: true,
-      organizationAddress: true,
-    });
 
-    const nextErrors = Object.entries(formValues).reduce<FormErrors>(
-      (acc, [key, value]) => {
-        const field = key as keyof CreateOrganizationFormData;
-        const error = validateField(field, value);
-        if (error) {
-          acc[field] = error;
-        }
-        return acc;
-      },
-      {}
-    );
-
-    setErrors(nextErrors);
-
-    if (Object.keys(nextErrors).length === 0) {
-      try {
-        const result = await registerOrganization({
-          variables: {
-            input: {
-              adminEmail: formValues.adminEmail,
-              organizationName: formValues.organizationName,
-              organizationSize: formValues.organizationSize,
-              organizationAddress: formValues.organizationAddress,
-            },
+    try {
+      const result = await registerOrganization({
+        variables: {
+          input: {
+            adminEmail: values.adminEmail.trim(),
+            organizationName: values.organizationName.trim(),
+            organizationSize: values.organizationSize,
+            organizationAddress: values.organizationAddress.trim(),
           },
-        });
+        },
+      });
 
-        if (result.data) {
-          setSubmitSuccess(result.data.registerOrganization.message);
-          // Optionally redirect after a few seconds
-          setTimeout(() => {
-            navigate("/login");
-          }, 3000);
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          setSubmitError(
-            error.message || "Failed to create organization. Please try again."
-          );
-        } else {
-          setSubmitError("An unexpected error occurred. Please try again.");
-        }
+      if (result.data) {
+        setSubmitSuccess(result.data.registerOrganization.message);
+        form.reset();
+        setTimeout(() => {
+          navigate("/login");
+        }, 3000);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        setSubmitError(
+          error.message || "Failed to create organization. Please try again."
+        );
+      } else {
+        setSubmitError("An unexpected error occurred. Please try again.");
       }
     }
-  };
+  });
 
   return (
     <Card className="mx-auto w-full max-w-2xl">
@@ -185,17 +118,13 @@ const CreateOrganizationForm = () => {
               name="adminEmail"
               type="email"
               autoComplete="email"
-              value={formValues.adminEmail}
-              onChange={(event) =>
-                handleInputChange("adminEmail", event.target.value)
-              }
-              onBlur={() => handleFieldBlur("adminEmail")}
-              aria-invalid={Boolean(errors.adminEmail)}
+              {...form.register("adminEmail")}
+              aria-invalid={Boolean(form.formState.errors.adminEmail)}
               aria-describedby="adminEmail-error"
             />
-            {errors.adminEmail && (
+            {form.formState.errors.adminEmail && (
               <p id="adminEmail-error" className="text-sm text-destructive">
-                {errors.adminEmail}
+                {form.formState.errors.adminEmail.message}
               </p>
             )}
           </div>
@@ -207,20 +136,16 @@ const CreateOrganizationForm = () => {
             <Input
               id="organizationName"
               name="organizationName"
-              value={formValues.organizationName}
-              onChange={(event) =>
-                handleInputChange("organizationName", event.target.value)
-              }
-              onBlur={() => handleFieldBlur("organizationName")}
-              aria-invalid={Boolean(errors.organizationName)}
+              {...form.register("organizationName")}
+              aria-invalid={Boolean(form.formState.errors.organizationName)}
               aria-describedby="organizationName-error"
             />
-            {errors.organizationName && (
+            {form.formState.errors.organizationName && (
               <p
                 id="organizationName-error"
                 className="text-sm text-destructive"
               >
-                {errors.organizationName}
+                {form.formState.errors.organizationName.message}
               </p>
             )}
           </div>
@@ -232,17 +157,13 @@ const CreateOrganizationForm = () => {
             <select
               id="organizationSize"
               name="organizationSize"
-              value={formValues.organizationSize}
-              onChange={(event) =>
-                handleInputChange("organizationSize", event.target.value)
-              }
-              onBlur={() => handleFieldBlur("organizationSize")}
+              {...form.register("organizationSize")}
               className={
-                errors.organizationSize
+                form.formState.errors.organizationSize
                   ? `${neutralFieldClass} border-destructive focus-visible:ring-destructive`
                   : neutralFieldClass
               }
-              aria-invalid={Boolean(errors.organizationSize)}
+              aria-invalid={Boolean(form.formState.errors.organizationSize)}
               aria-describedby="organizationSize-error"
             >
               <option value="" disabled>
@@ -254,12 +175,12 @@ const CreateOrganizationForm = () => {
                 </option>
               ))}
             </select>
-            {errors.organizationSize && (
+            {form.formState.errors.organizationSize && (
               <p
                 id="organizationSize-error"
                 className="text-sm text-destructive"
               >
-                {errors.organizationSize}
+                {form.formState.errors.organizationSize.message}
               </p>
             )}
           </div>
@@ -275,25 +196,21 @@ const CreateOrganizationForm = () => {
               id="organizationAddress"
               name="organizationAddress"
               rows={3}
-              value={formValues.organizationAddress}
-              onChange={(event) =>
-                handleInputChange("organizationAddress", event.target.value)
-              }
-              onBlur={() => handleFieldBlur("organizationAddress")}
+              {...form.register("organizationAddress")}
               className={
-                errors.organizationAddress
+                form.formState.errors.organizationAddress
                   ? `${neutralFieldClass} border-destructive focus-visible:ring-destructive`
                   : neutralFieldClass
               }
-              aria-invalid={Boolean(errors.organizationAddress)}
+              aria-invalid={Boolean(form.formState.errors.organizationAddress)}
               aria-describedby="organizationAddress-error"
             />
-            {errors.organizationAddress && (
+            {form.formState.errors.organizationAddress && (
               <p
                 id="organizationAddress-error"
                 className="text-sm text-destructive"
               >
-                {errors.organizationAddress}
+                {form.formState.errors.organizationAddress.message}
               </p>
             )}
           </div>

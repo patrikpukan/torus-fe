@@ -32,6 +32,12 @@ export type OrganizationFormProps = {
   onEditClick?: () => void;
 };
 
+type FieldDef = {
+  key: keyof OrganizationFormData;
+  label: string;
+  type: "text" | "number" | "textarea";
+};
+
 const OrganizationForm = ({
   value,
   onChange,
@@ -43,16 +49,15 @@ const OrganizationForm = ({
   // Fields that are always read-only
   const readOnlyFields = useMemo(() => new Set<string>(["id", "code"]), []);
 
-  const fields = useMemo(
-    () =>
-      [
-        { key: "id", label: "Organization ID", type: "text" },
-        { key: "code", label: "Organization Code", type: "text" },
-        { key: "name", label: "Organization Name", type: "text" },
-        { key: "size", label: "Size (employees)", type: "number" },
-        { key: "address", label: "Address", type: "textarea" },
-        { key: "imageUrl", label: "Image URL", type: "text" },
-      ] as const,
+  const fields: FieldDef[] = useMemo(
+    () => [
+      { key: "id", label: "Organization ID", type: "text" },
+      { key: "code", label: "Organization Code", type: "text" },
+      { key: "name", label: "Organization Name", type: "text" },
+      { key: "size", label: "Size (employees)", type: "number" },
+      { key: "address", label: "Address", type: "textarea" },
+      { key: "imageUrl", label: "Image URL", type: "text" },
+    ],
     []
   );
 
@@ -63,12 +68,9 @@ const OrganizationForm = ({
         code: z.string(),
         name: z.string().min(1, "Organization name is required"),
         size: z
-          .union([
-            z.literal(""),
-            z.number().positive("Size must be positive"),
-            z.null(),
-          ])
-          .transform((val) => (val === "" ? null : val)),
+          .union([z.literal(""), z.number().positive("Size must be positive")])
+          .transform((val) => (val === "" ? null : val))
+          .nullable(),
         address: z.string().trim().optional().nullable(),
         imageUrl: z.string().trim().optional().nullable(),
       }),

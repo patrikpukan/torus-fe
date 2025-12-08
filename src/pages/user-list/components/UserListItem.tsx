@@ -61,8 +61,8 @@ export const getColumns = (
           : `/user-list/${encodeURIComponent(user.id)}`;
 
       return (
-        <Link to={href} className="flex items-center gap-3">
-          <Avatar className="h-9 w-9">
+        <Link to={href} className="flex min-w-0 items-center gap-3">
+          <Avatar className="h-9 w-9 shrink-0">
             <AvatarImage
               alt={user.displayName}
               src={user.profileImageUrl || undefined}
@@ -71,12 +71,12 @@ export const getColumns = (
               {user.displayName?.[0]?.toUpperCase() ?? "U"}
             </AvatarFallback>
           </Avatar>
-          <div className="flex flex-col">
-            <span className="text-sm font-medium leading-tight sm:text-base">
+          <div className="flex min-w-0 flex-col">
+            <span className="break-words text-sm font-medium leading-tight sm:text-base">
               {user.displayName}
             </span>
             {user.email && (
-              <span className="text-xs text-muted-foreground sm:text-sm">
+              <span className="break-words text-xs text-muted-foreground sm:text-sm">
                 {user.email}
               </span>
             )}
@@ -108,7 +108,14 @@ export const getColumns = (
       );
     },
     enableSorting: true,
-    cell: ({ row }) => row.original.email ?? "-",
+    cell: ({ row }) => {
+      const email = row.original.email;
+      return email ? (
+        <span className="break-words text-sm text-foreground">{email}</span>
+      ) : (
+        <span className="text-muted-foreground">-</span>
+      );
+    },
   },
   {
     accessorKey: "role",

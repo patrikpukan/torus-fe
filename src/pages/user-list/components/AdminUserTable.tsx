@@ -10,25 +10,9 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  useUsersQuery,
-  type UsersQueryItem,
-} from "@/features/users/api/useUsersQuery";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
+import { type UsersQueryItem, useUsersQuery, } from "@/features/users/api/useUsersQuery";
 import { useAuth } from "@/hooks/useAuth";
 import { getRoleOptions } from "@/lib/roleUtils";
 

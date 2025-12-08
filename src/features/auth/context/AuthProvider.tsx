@@ -1,19 +1,9 @@
-import {
-  type PropsWithChildren,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { type PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState, } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { useApolloClient } from "@apollo/client/react";
 import { supabaseClient } from "@/lib/supabaseClient.ts";
-import {
-  AuthContext,
-  type UserRoleType,
-} from "@/features/auth/context/AuthContext.ts";
 import type { AuthContextValue } from "@/features/auth/context/AuthContext.ts";
+import { AuthContext, type UserRoleType, } from "@/features/auth/context/AuthContext.ts";
 import { useGetCurrentUserQuery } from "../api/useGetCurrentUserQuery";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMutation } from "@apollo/client/react";
 import {
-  useGetCurrentUserQuery,
   type CurrentUserData,
+  useGetCurrentUserQuery,
 } from "../auth/api/useGetCurrentUserQuery";
 import ProfileForm from "./ProfileForm";
 import SendResetPasswordButton from "../auth/components/SendResetPasswordButton";

@@ -4,8 +4,8 @@ import PairedUserTable, { type PairedUserRow } from "./PairedUserTable";
 import UnpairedUserGrid from "./UnpairedUserGrid";
 import { usePairingsQuery } from "@/features/pairings/api/usePairingsQuery";
 import {
-  useAnonUsersQuery,
   type AnonUsersQueryItem,
+  useAnonUsersQuery,
 } from "@/features/users/api/useAnonUsersQuery";
 import { useGetCurrentUserQuery } from "@/features/auth/api/useGetCurrentUserQuery";
 import { Users } from "lucide-react";

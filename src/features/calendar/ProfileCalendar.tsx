@@ -5,29 +5,25 @@ import "@schedule-x/theme-default/dist/index.css";
 import "temporal-polyfill/global";
 import { Button } from "@/components/ui/button";
 import {
+  type CalendarEventsQueryData,
   useCalendarEvents,
-  type CalendarEventItem,
 } from "./api/useCalendarEvents";
 import {
-  CustomCalendar,
   CreateEventModal,
-  EditEventModal,
+  CustomCalendar,
   DeleteEventModal,
+  EditEventModal,
   GoogleCalendarSyncDialog,
 } from "./components";
 import { CalendarPlus, CalendarSync } from "lucide-react";
 import { useMeetingEvents } from "./api/useMeetingEvents";
 
+type CalendarOccurrence =
+  CalendarEventsQueryData["expandedCalendarOccurrences"][number];
+
 // Convert calendar events from GraphQL to ScheduleX format
 const convertToScheduleXEvents = (
-  calendarOccurrences:
-    | Array<{
-        id: string;
-        occurrenceStart: string;
-        occurrenceEnd: string;
-        originalEvent: CalendarEventItem;
-      }>
-    | undefined
+  calendarOccurrences?: CalendarOccurrence[]
 ): CalendarEvent[] => {
   if (!calendarOccurrences) {
     return [];
@@ -76,17 +72,11 @@ const ProfileCalendar = () => {
   const [editEventModalOpen, setEditEventModalOpen] = useState(false);
   const [deleteEventModalOpen, setDeleteEventModalOpen] = useState(false);
   const [googleSyncDialogOpen, setGoogleSyncDialogOpen] = useState(false);
-  type Occurrence = {
-    id: string;
-    occurrenceStart: string;
-    occurrenceEnd: string;
-    originalEvent: CalendarEventItem;
-  };
 
   const [selectedEventForEdit, setSelectedEventForEdit] =
-    useState<Occurrence | null>(null);
+    useState<CalendarOccurrence | null>(null);
   const [selectedEventForDelete, setSelectedEventForDelete] =
-    useState<Occurrence | null>(null);
+    useState<CalendarOccurrence | null>(null);
 
   // Get date range for current week + extended future (to capture pause events)
   const today = Temporal.Now.plainDateISO();
@@ -137,7 +127,7 @@ const ProfileCalendar = () => {
 
   // Map from unique occurrence ID to the occurrence object for edit/delete operations
   const eventItemsMap = useMemo(() => {
-    const map = new Map<string, Occurrence>();
+    const map = new Map<string, CalendarOccurrence>();
     calendarData?.expandedCalendarOccurrences.forEach((occ) => {
       map.set(occ.id, {
         id: occ.id,

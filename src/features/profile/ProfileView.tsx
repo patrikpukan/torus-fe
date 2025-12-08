@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation } from "@apollo/client/react";
+import { addYears, isAfter, parseISO, subDays } from "date-fns";
 import {
   type CurrentUserData,
   useGetCurrentUserQuery,
@@ -18,6 +19,46 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 
+const mapUserToProfile = (user: CurrentUserData): UserProfile => {
+  const hobbies = Array.isArray(user.hobbies) ? user.hobbies : [];
+  const interests = Array.isArray(user.interests) ? user.interests : [];
+
+  return {
+    email: user.email,
+    firstName: user.firstName || undefined,
+    lastName: user.lastName || undefined,
+    about: user.about || undefined,
+    location: user.location || undefined,
+    position: user.position || undefined,
+    hobbies,
+    interests,
+    preferredActivity: user.preferredActivity || undefined,
+    profileImageUrl: user.profileImageUrl || undefined,
+    pairingStatus: user.profileStatus || undefined,
+    organization: user.organization?.name || undefined,
+    accountStatus:
+      user.isActive === undefined || user.isActive === null
+        ? undefined
+        : user.isActive
+          ? "Active"
+          : "Inactive",
+    departmentId: user.departmentId || null,
+  } satisfies UserProfile;
+};
+
+const createPauseQueryVariables = () => {
+  const now = new Date();
+  const startDate = subDays(now, 7); // look back a week for active pauses
+  const endDate = addYears(now, 10); // generous future window to find pauses
+
+  return {
+    startDate: startDate.toISOString(),
+    endDate: endDate.toISOString(),
+  };
+};
+
+const pauseQueryVariables = createPauseQueryVariables();
+
 const ProfileView = () => {
   const { data, loading, error } = useGetCurrentUserQuery();
   const { appRole } = useAuth();
@@ -32,48 +73,15 @@ const ProfileView = () => {
   // Only show pause activity for regular members (not admins)
   const canBePaired = appRole !== "org_admin" && appRole !== "super_admin";
 
-  // Memoize query variables to prevent unnecessary re-fetches
-  // Using empty dependency array ensures stable variables across renders
-  const pauseQueryVariables = useMemo(() => {
-    const now = new Date();
-    const farFuture = new Date();
-    farFuture.setFullYear(farFuture.getFullYear() + 10);
-    // Query from a week in the past to catch any active pauses
-    const startDate = new Date(now);
-    startDate.setDate(startDate.getDate() - 7);
-
-    return {
-      startDate: startDate.toISOString(),
-      endDate: farFuture.toISOString(),
-    };
-  }, []);
-
   // Create now for comparisons (this can change on each render since it's just for comparison logic)
   const now = new Date();
 
-  const { data: pauseData } = useActivePauseQuery(pauseQueryVariables) as {
-    data?: {
-      expandedCalendarOccurrences?: Array<{
-        id: string;
-        occurrenceStart: string;
-        occurrenceEnd: string;
-        originalEvent: {
-          id: string;
-          type: string;
-          title: string;
-          description?: string;
-          startDateTime: string;
-          endDateTime: string;
-          deletedAt?: string | null;
-        };
-      }>;
-    };
-  };
+  const { data: pauseData } = useActivePauseQuery(pauseQueryVariables);
 
   const activePause = pauseData?.expandedCalendarOccurrences?.find((occ) => {
     // Check if the pause is currently active or upcoming
-    const occurrenceEnd = new Date(occ.occurrenceEnd);
-    const isCurrentOrFuture = occurrenceEnd > now;
+    const occurrenceEnd = parseISO(occ.occurrenceEnd);
+    const isCurrentOrFuture = isAfter(occurrenceEnd, now);
 
     return (
       occ?.originalEvent?.type === "unavailability" &&
@@ -106,41 +114,6 @@ const ProfileView = () => {
         variant: "destructive",
       });
     }
-  };
-
-  const mapUserToProfile = (user: CurrentUserData) => {
-    const hobbies = Array.isArray(user.hobbies)
-      ? user.hobbies
-      : user.hobbies
-        ? []
-        : [];
-    const interests = Array.isArray(user.interests)
-      ? user.interests
-      : user.interests
-        ? []
-        : [];
-
-    return {
-      email: user.email,
-      firstName: user.firstName || undefined,
-      lastName: user.lastName || undefined,
-      about: user.about || undefined,
-      location: user.location || undefined,
-      position: user.position || undefined,
-      hobbies,
-      interests,
-      preferredActivity: user.preferredActivity || undefined,
-      profileImageUrl: user.profileImageUrl || undefined,
-      pairingStatus: user.profileStatus || undefined,
-      organization: user.organization?.name || undefined,
-      accountStatus:
-        user.isActive === undefined || user.isActive === null
-          ? undefined
-          : user.isActive
-            ? "Active"
-            : "Inactive",
-      departmentId: user.departmentId || null,
-    } satisfies UserProfile;
   };
 
   useEffect(() => {

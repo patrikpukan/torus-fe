@@ -28,10 +28,7 @@ const neutralFieldClass =
   "flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-base shadow-sm transition focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm";
 
 const createOrgSchema = z.object({
-  adminEmail: z
-    .string()
-    .min(1, "Please enter an email")
-    .email("Enter a valid email"),
+  adminEmail: z.email("Enter a valid email"),
   organizationName: z
     .string()
     .trim()
@@ -115,7 +112,6 @@ const CreateOrganizationForm = () => {
             </label>
             <Input
               id="adminEmail"
-              name="adminEmail"
               type="email"
               autoComplete="email"
               {...form.register("adminEmail")}
@@ -135,7 +131,6 @@ const CreateOrganizationForm = () => {
             </label>
             <Input
               id="organizationName"
-              name="organizationName"
               {...form.register("organizationName")}
               aria-invalid={Boolean(form.formState.errors.organizationName)}
               aria-describedby="organizationName-error"
@@ -156,7 +151,6 @@ const CreateOrganizationForm = () => {
             </label>
             <select
               id="organizationSize"
-              name="organizationSize"
               {...form.register("organizationSize")}
               className={
                 form.formState.errors.organizationSize
@@ -194,7 +188,6 @@ const CreateOrganizationForm = () => {
             </label>
             <textarea
               id="organizationAddress"
-              name="organizationAddress"
               rows={3}
               {...form.register("organizationAddress")}
               className={

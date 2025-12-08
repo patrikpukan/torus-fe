@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useMutation } from "@apollo/client/react";
 import { useOrganizationByIdQuery } from "@/features/organization/api/useOrganizationByIdQuery";
 import { useMyOrganizationQuery } from "@/features/organization/api/useMyOrganizationQuery";
@@ -11,7 +11,7 @@ import InviteUserModal from "@/features/organization/components/InviteUserModal"
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, UserPlus, Building2, Building } from "lucide-react";
+import { ArrowLeft, Building, Building2, UserPlus } from "lucide-react";
 
 const OrganizationDetailPage = () => {
   const { appRole } = useAuth();
@@ -197,7 +197,7 @@ const OrganizationDetailPage = () => {
               </div>
               <Button
                 onClick={() => navigate("/department-management")}
-                className="gap-2"
+                className="gap-2 self-center"
               >
                 <Building2 className="h-4 w-4" />
                 Manage Departments

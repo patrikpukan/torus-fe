@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -18,7 +18,7 @@ export type OrganizationFormData = {
   id: string;
   name: string;
   code: string;
-  size?: number | null;
+  size: number | null;
   address?: string | null;
   imageUrl?: string | null;
 };
@@ -32,12 +32,6 @@ export type OrganizationFormProps = {
   onEditClick?: () => void;
 };
 
-type FieldDef = {
-  key: keyof OrganizationFormData;
-  label: string;
-  type: "text" | "number" | "textarea";
-};
-
 const OrganizationForm = ({
   value,
   onChange,
@@ -46,40 +40,22 @@ const OrganizationForm = ({
   submitLabel = "Save",
   onEditClick,
 }: OrganizationFormProps) => {
-  // Fields that are always read-only
-  const readOnlyFields = useMemo(() => new Set<string>(["id", "code"]), []);
-
-  const fields: FieldDef[] = useMemo(
-    () => [
-      { key: "id", label: "Organization ID", type: "text" },
-      { key: "code", label: "Organization Code", type: "text" },
-      { key: "name", label: "Organization Name", type: "text" },
-      { key: "size", label: "Size (employees)", type: "number" },
-      { key: "address", label: "Address", type: "textarea" },
-      { key: "imageUrl", label: "Image URL", type: "text" },
-    ],
-    []
-  );
-
   const orgSchema = useMemo(
     () =>
       z.object({
         id: z.string(),
         code: z.string(),
         name: z.string().min(1, "Organization name is required"),
-        size: z
-          .union([z.literal(""), z.number().positive("Size must be positive")])
-          .transform((val) => (val === "" ? null : val))
-          .nullable(),
+        size: z.number().positive("Size must be positive").nullable(),
         address: z.string().trim().optional().nullable(),
         imageUrl: z.string().trim().optional().nullable(),
       }),
     []
   );
 
-  type OrganizationFormValues = z.infer<typeof orgSchema>;
+  type OrgFormValues = z.infer<typeof orgSchema>;
 
-  const form = useForm<OrganizationFormValues>({
+  const form = useForm<OrgFormValues>({
     resolver: zodResolver(orgSchema),
     mode: "onChange",
     defaultValues: {
@@ -89,97 +65,145 @@ const OrganizationForm = ({
   });
 
   useEffect(() => {
-    form.reset(value);
+    form.reset({
+      ...value,
+      size: value.size ?? null,
+    });
   }, [value, form]);
 
   useEffect(() => {
     if (!onChange || readOnly) return;
     const subscription = form.watch((nextValues) => {
-      const normalized: OrganizationFormData = {
+      onChange({
         id: nextValues.id ?? value.id,
-        name: nextValues.name ?? value.name,
         code: nextValues.code ?? value.code,
+        name: nextValues.name ?? value.name,
         size: nextValues.size ?? null,
         address: nextValues.address ?? null,
         imageUrl: nextValues.imageUrl ?? null,
-      };
-      onChange(normalized);
+      });
     });
     return () => subscription.unsubscribe();
   }, [form, onChange, readOnly, value]);
 
-  const isFieldReadOnly = (key: string | symbol | number): boolean => {
-    return readOnly || readOnlyFields.has(String(key));
-  };
+  const isFieldReadOnly = (key: keyof OrgFormValues) =>
+    key === "id" || key === "code" || readOnly;
 
   return (
     <form
-      onSubmit={form.handleSubmit((values) => {
+      onSubmit={form.handleSubmit((values) =>
         onSubmit?.({
           id: values.id ?? value.id,
-          name: values.name ?? value.name,
           code: values.code ?? value.code,
+          name: values.name ?? value.name,
           size: values.size ?? null,
           address: values.address ?? null,
           imageUrl: values.imageUrl ?? null,
-        });
-      })}
+        })
+      )}
       noValidate
     >
       <FieldSet>
         <FieldLegend>Organization Information</FieldLegend>
         <FieldGroup>
-          {fields.map((field) => (
-            <Field key={String(field.key)}>
-              <FieldLabel>{field.label}</FieldLabel>
-              <FieldContent>
-                {field.type === "textarea" ? (
-                  <Textarea
-                    {...form.register(field.key)}
-                    readOnly={isFieldReadOnly(field.key)}
-                    rows={3}
-                  />
-                ) : field.type === "number" ? (
-                  <Controller
-                    control={form.control}
-                    name={field.key}
-                    render={({ field: controllerField }) => (
-                      <Input
-                        type="number"
-                        inputMode="numeric"
-                        value={
-                          controllerField.value === null ||
-                          controllerField.value === undefined
-                            ? ""
-                            : controllerField.value
-                        }
-                        onChange={(event) => {
-                          const next = event.target.value;
-                          controllerField.onChange(
-                            next === "" ? "" : Number(next)
-                          );
-                        }}
-                        readOnly={isFieldReadOnly(field.key)}
-                      />
-                    )}
-                  />
-                ) : (
-                  <Input
-                    type={field.type}
-                    inputMode={field.type === "number" ? "numeric" : undefined}
-                    {...form.register(field.key)}
-                    readOnly={isFieldReadOnly(field.key)}
-                  />
-                )}
-                {form.formState.errors[field.key] && (
-                  <p className="text-sm text-destructive">
-                    {form.formState.errors[field.key]?.message?.toString?.() ??
-                      "Invalid value"}
-                  </p>
-                )}
-              </FieldContent>
-            </Field>
-          ))}
+          <Field>
+            <FieldLabel>Organization ID</FieldLabel>
+            <FieldContent>
+              <Input {...form.register("id")} readOnly disabled aria-readonly />
+            </FieldContent>
+          </Field>
+
+          <Field>
+            <FieldLabel>Organization Code</FieldLabel>
+            <FieldContent>
+              <Input
+                {...form.register("code")}
+                readOnly
+                disabled
+                aria-readonly
+              />
+            </FieldContent>
+          </Field>
+
+          <Field>
+            <FieldLabel>Organization Name</FieldLabel>
+            <FieldContent>
+              <Input
+                {...form.register("name")}
+                readOnly={isFieldReadOnly("name")}
+                aria-invalid={!!form.formState.errors.name}
+              />
+              {form.formState.errors.name && (
+                <p className="text-sm text-destructive">
+                  {form.formState.errors.name.message}
+                </p>
+              )}
+            </FieldContent>
+          </Field>
+
+          <Field>
+            <FieldLabel>Size (employees)</FieldLabel>
+            <FieldContent>
+              <Input
+                type="number"
+                inputMode="numeric"
+                value={form.watch("size") ?? ""}
+                onChange={(event) => {
+                  const next = event.target.value;
+                  const parsed = Number(next);
+                  form.setValue(
+                    "size",
+                    next === "" || Number.isNaN(parsed) ? null : parsed,
+                    {
+                      shouldDirty: true,
+                    }
+                  );
+                }}
+                readOnly={isFieldReadOnly("size")}
+                aria-invalid={!!form.formState.errors.size}
+              />
+              {form.formState.errors.size && (
+                <p className="text-sm text-destructive">
+                  {form.formState.errors.size.message?.toString?.() ??
+                    "Invalid value"}
+                </p>
+              )}
+            </FieldContent>
+          </Field>
+
+          <Field>
+            <FieldLabel>Address</FieldLabel>
+            <FieldContent>
+              <Textarea
+                rows={3}
+                {...form.register("address")}
+                readOnly={isFieldReadOnly("address")}
+                className="text-foreground bg-background"
+              />
+              {form.formState.errors.address && (
+                <p className="text-sm text-destructive">
+                  {form.formState.errors.address.message?.toString?.() ??
+                    "Invalid value"}
+                </p>
+              )}
+            </FieldContent>
+          </Field>
+
+          <Field>
+            <FieldLabel>Image URL</FieldLabel>
+            <FieldContent>
+              <Input
+                {...form.register("imageUrl")}
+                readOnly={isFieldReadOnly("imageUrl")}
+              />
+              {form.formState.errors.imageUrl && (
+                <p className="text-sm text-destructive">
+                  {form.formState.errors.imageUrl.message?.toString?.() ??
+                    "Invalid value"}
+                </p>
+              )}
+            </FieldContent>
+          </Field>
         </FieldGroup>
 
         <div className="mt-6 flex justify-center gap-2">
@@ -189,11 +213,9 @@ const OrganizationForm = ({
             </Button>
           )}
           {!readOnly && (
-            <>
-              <Button type="submit" disabled={!onChange}>
-                {submitLabel}
-              </Button>
-            </>
+            <Button type="submit" disabled={!onChange}>
+              {submitLabel}
+            </Button>
           )}
         </div>
       </FieldSet>

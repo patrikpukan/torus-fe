@@ -1,4 +1,7 @@
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +15,15 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useReportUserMutation } from "../api/useReportUserMutation";
 import { GET_PAIRED_USERS_QUERY } from "../api/useGetPairedUsersQuery";
+
+const reportUserSchema = z.object({
+  reason: z
+    .string()
+    .trim()
+    .min(5, "Please describe why you are reporting this user."),
+});
+
+type ReportUserFormValues = z.infer<typeof reportUserSchema>;
 
 type ReportUserDialogProps = {
   reportedUserId: string;
@@ -27,43 +39,31 @@ const ReportUserDialog = ({
   onReported,
 }: ReportUserDialogProps) => {
   const [open, setOpen] = useState(false);
-  const [reason, setReason] = useState("");
-
   const { toast } = useToast();
   const [reportUser, { loading }] = useReportUserMutation();
 
-  const resetForm = () => {
-    setReason("");
-  };
+  const form = useForm<ReportUserFormValues>({
+    resolver: zodResolver(reportUserSchema),
+    mode: "onChange",
+    defaultValues: { reason: "" },
+  });
 
   const safeSetOpen = (next: boolean) => {
     if (!loading) {
       setOpen(next);
       if (!next) {
-        resetForm();
+        form.reset();
       }
     }
   };
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const trimmedReason = reason.trim();
-
-    if (!trimmedReason) {
-      toast({
-        variant: "destructive",
-        title: "Reason required",
-        description: "Please describe why you are reporting this user.",
-      });
-      return;
-    }
-
+  const handleSubmit = form.handleSubmit(async (values) => {
     try {
       await reportUser({
         variables: {
           input: {
             reportedUserId,
-            reason: trimmedReason,
+            reason: values.reason.trim(),
           },
         },
         refetchQueries: [{ query: GET_PAIRED_USERS_QUERY }],
@@ -86,7 +86,7 @@ const ReportUserDialog = ({
             : "Please try again in a moment.",
       });
     }
-  };
+  });
 
   return (
     <>
@@ -100,18 +100,21 @@ const ReportUserDialog = ({
               Once reported, this user will no longer be matched with you.
             </DialogDescription>
           </DialogHeader>
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={handleSubmit} noValidate>
             <div className="space-y-2">
               <Label htmlFor="report-reason">Reason *</Label>
               <Textarea
                 id="report-reason"
                 placeholder="Describe what happened"
-                value={reason}
-                onChange={(event) => setReason(event.target.value)}
-                required
+                {...form.register("reason")}
+                aria-invalid={!!form.formState.errors.reason}
                 disabled={loading}
-                minLength={5}
               />
+              {form.formState.errors.reason && (
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.reason.message}
+                </p>
+              )}
               <p className="text-xs text-muted-foreground">
                 Be as specific as possible. The team will be notified and may
                 reach out if they need more detail.

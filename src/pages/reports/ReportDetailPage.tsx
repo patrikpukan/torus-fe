@@ -1,4 +1,4 @@
-import { useCallback, useState, type FormEvent } from "react";
+﻿import { useCallback, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Eye } from "lucide-react";
 
@@ -129,7 +129,7 @@ const ReportDetailPage = () => {
   if (loading) {
     return (
       <div className="min-h-[200px]">
-        <p className="text-sm text-muted-foreground">Loading report detail…</p>
+        <p className="text-sm text-muted-foreground">Loading report detail...</p>
       </div>
     );
   }
@@ -195,7 +195,7 @@ const ReportDetailPage = () => {
   const resolveButtonLabel = resolveLoading ? "Resolving..." : "Resolve report";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 md:space-y-8 min-w-0">
       <Button
         asChild
         variant="ghost"
@@ -207,9 +207,9 @@ const ReportDetailPage = () => {
           Back to reports
         </Link>
       </Button>
-      <div className="space-y-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
+      <div className="space-y-8 min-w-0">
+        <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
             <h1 className="text-3xl font-semibold tracking-tight">
               Report detail
             </h1>
@@ -226,15 +226,15 @@ const ReportDetailPage = () => {
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <section className="rounded-lg border border-border/60 bg-card p-5 shadow-sm space-y-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
+          <section className="space-y-4 rounded-lg border border-border/60 bg-card p-5 shadow-sm">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0">
                 <h2 className="text-sm font-semibold text-muted-foreground">
                   Reported user
                 </h2>
                 <p className="mt-1 text-lg font-medium">{reportedName}</p>
                 {report.reportedUser.email && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="break-words text-sm text-muted-foreground">
                     {report.reportedUser.email}
                   </p>
                 )}
@@ -290,15 +290,15 @@ const ReportDetailPage = () => {
             </div>
           </section>
 
-          <section className="rounded-lg border border-border/60 bg-card p-5 shadow-sm space-y-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
+          <section className="space-y-4 rounded-lg border border-border/60 bg-card p-5 shadow-sm">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0">
                 <h2 className="text-sm font-semibold text-muted-foreground">
                   Reported by
                 </h2>
                 <p className="mt-1 text-lg font-medium">{reporterName}</p>
                 {report.reporter.email && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="break-words text-sm text-muted-foreground">
                     {report.reporter.email}
                   </p>
                 )}
@@ -322,7 +322,7 @@ const ReportDetailPage = () => {
           <h2 className="text-sm font-semibold text-muted-foreground">
             Reason
           </h2>
-          <p className="mt-3 whitespace-pre-line text-base text-foreground">
+          <p className="mt-3 whitespace-pre-line break-words text-base text-foreground">
             {report.reason}
           </p>
         </section>
@@ -341,7 +341,7 @@ const ReportDetailPage = () => {
               </p>
             )}
             {report.resolutionNote ? (
-              <p className="mt-3 whitespace-pre-line text-sm text-muted-foreground">
+              <p className="mt-3 whitespace-pre-line break-words text-sm text-muted-foreground">
                 {report.resolutionNote}
               </p>
             ) : (

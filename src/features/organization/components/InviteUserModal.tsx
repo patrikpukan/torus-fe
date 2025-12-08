@@ -15,7 +15,7 @@ import { useInviteUserToOrganizationMutation } from "../api/useInviteUserToOrgan
 import { useToast } from "@/hooks/use-toast";
 
 const inviteUserSchema = z.object({
-  email: z.string().email("Please enter a valid email address."),
+  email: z.email("Please enter a valid email address."),
 });
 
 type InviteUserFormValues = z.infer<typeof inviteUserSchema>;

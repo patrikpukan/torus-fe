@@ -3,23 +3,14 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabaseClient } from "@/lib/supabaseClient";
 import { appUrl } from "@/lib/appUrl";
 
 const resetPasswordSchema = z.object({
-  email: z
-    .string()
-    .min(1, "Please enter your email address.")
-    .email("Enter a valid email address."),
+  email: z.email("Enter a valid email address."),
 });
 
 type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;

@@ -87,18 +87,21 @@ const OrganizationForm = ({
   useEffect(() => {
     if (!onChange || readOnly) return;
     const subscription = form.watch((nextValues) => {
-      onChange({
-        ...nextValues,
+      const normalized: OrganizationFormData = {
+        id: nextValues.id ?? value.id,
+        name: nextValues.name ?? value.name,
+        code: nextValues.code ?? value.code,
         size:
           nextValues.size === undefined
             ? null
             : (nextValues.size as OrganizationFormData["size"]),
-        address: nextValues.address || null,
-        imageUrl: nextValues.imageUrl || null,
-      });
+        address: nextValues.address ?? null,
+        imageUrl: nextValues.imageUrl ?? null,
+      };
+      onChange(normalized);
     });
     return () => subscription.unsubscribe();
-  }, [form, onChange, readOnly]);
+  }, [form, onChange, readOnly, value]);
 
   const isFieldReadOnly = (key: string | symbol | number): boolean => {
     return readOnly || readOnlyFields.has(String(key));
@@ -106,7 +109,16 @@ const OrganizationForm = ({
 
   return (
     <form
-      onSubmit={form.handleSubmit((values) => onSubmit?.(values))}
+      onSubmit={form.handleSubmit((values) =>
+        onSubmit?.({
+          id: values.id ?? value.id,
+          name: values.name ?? value.name,
+          code: values.code ?? value.code,
+          size: values.size ?? null,
+          address: values.address ?? null,
+          imageUrl: values.imageUrl ?? null,
+        })
+      )}
       noValidate
     >
       <FieldSet>

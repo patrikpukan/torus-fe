@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import {
   AlertCircle,
   BarChart3,
-  Handshake,
   Home,
   Info,
   Settings2,
@@ -118,18 +117,19 @@ const MaintainerHomePage = () => {
       icon: <Users className="h-6 w-6" />,
       meta: `New users (30d): ${newUsersCount}`,
     },
-    {
+    /*   {
       title: "Pairings overview",
       description: "Inspect current and historical matches.",
       to: "/pairings",
       icon: <Handshake className="h-6 w-6" />,
       meta: `Active matches: ${matchedPairs}`,
-    },
+    },*/
     {
-      title: "Algorithm settings",
-      description: "Tune pairing preferences & cadence.",
-      to: "/algorithm-settings",
-      icon: <Settings2 className="h-6 w-6" />,
+      title: "Reports",
+      description: "Track escalations and follow-ups.",
+      to: "/reports",
+      icon: <AlertCircle className="h-6 w-6" />,
+      meta: `New reports (30d): ${reportsCount}`,
     },
     {
       title: "Statistics",
@@ -139,11 +139,10 @@ const MaintainerHomePage = () => {
       meta: `Inactive members: ${inactiveUsersCount}`,
     },
     {
-      title: "Reports",
-      description: "Track escalations and follow-ups.",
-      to: "/reports",
-      icon: <AlertCircle className="h-6 w-6" />,
-      meta: `New reports (30d): ${reportsCount}`,
+      title: "Algorithm settings",
+      description: "Tune pairing preferences & cadence.",
+      to: "/algorithm-settings",
+      icon: <Settings2 className="h-6 w-6" />,
     },
   ];
 

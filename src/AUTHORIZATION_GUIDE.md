@@ -10,7 +10,7 @@ Role-based access control is driven by the current user record returned from the
 
 ## Data flow
 
-1. After sign-in, `AuthProvider` runs `getCurrentUser`.
+1. After sign-in, `AuthProvider` runs the `getCurrentUser` query.
 2. `appRole` and `organizationId` are stored in `AuthContext`.
 3. Use `useAuth()` to read `appRole`/`organizationId`.
 4. Use `ProtectedRoute` to gate routes; use conditional rendering for UI elements.

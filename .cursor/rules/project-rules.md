@@ -3,10 +3,9 @@
 ## Stack
 
 - React 19 + Vite + TypeScript. Prefer hooks and Suspense-ready components; keep server-agnostic.
-- Material UI 7 + Emotion; use sx and theme overrides over ad-hoc CSS.
 - React Router 7; nested routes with layout components and Outlet. Prefer NavLink for active styling.
 - TanStack Query 5 for data; colocate query hooks with consuming feature.
-- Schedule-X and Material React Table for calendar/table UIs; adapters live in feature folders.
+- Schedule-X and React Table for calendar/table UIs; adapters live in feature folders.
 - Temporal polyfill for dates/time; avoid Date for new logic.
 
 ## Project Structure

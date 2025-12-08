@@ -6,7 +6,7 @@
 - shadcn with Emotion; rely on the design system components, the sx prop, and theme overrides instead of ad hoc CSS.
 - React Router 7; use nested routes with layout components and `Outlet`, and favor `NavLink` for navigation elements that need active styling.
 - TanStack Query 5 for data fetching, caching, and background refetching; colocate query hooks with the feature that consumes the data.
-- Schedule-X calendar utilities and Material React Table are available for scheduling and tabular displays; keep adapters in feature folders.
+- Schedule-X calendar utilities and React Table are available for scheduling and tabular displays; keep adapters in feature folders.
 - Temporal polyfill is installed; use Temporal APIs for new date and time logic rather than Date.
 
 ## Coding Patterns

@@ -10,9 +10,25 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
-import { type UsersQueryItem, useUsersQuery, } from "@/features/users/api/useUsersQuery";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  type UsersQueryItem,
+  useUsersQuery,
+} from "@/features/users/api/useUsersQuery";
 import { useAuth } from "@/hooks/useAuth";
 import { getRoleOptions } from "@/lib/roleUtils";
 
@@ -21,8 +37,12 @@ import { Users } from "lucide-react";
 
 const EMPTY_USERS: UsersQueryItem[] = [];
 
-const AdminUserTable = () => {
-  const { data, loading, error } = useUsersQuery();
+type AdminUserTableProps = {
+  organizationId?: string | null;
+};
+
+const AdminUserTable = ({ organizationId }: AdminUserTableProps) => {
+  const { data, loading, error } = useUsersQuery(organizationId ?? undefined);
   const { user: currentUser } = useAuth();
   const users = data?.users ?? EMPTY_USERS;
 

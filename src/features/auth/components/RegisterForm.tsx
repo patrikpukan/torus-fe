@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { CheckCircle, XCircle, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabaseClient } from "@/lib/supabaseClient";
 import { useValidateInviteCodeQuery } from "@/features/organization/api/useValidateInviteCodeQuery";
+import { appUrl } from "@/lib/appUrl";
 
 const RegisterForm = () => {
   const [searchParams] = useSearchParams();
@@ -71,14 +72,6 @@ const RegisterForm = () => {
       }
     };
   }, [inviteCode, isInvitePreFilled, urlInviteCode]);
-
-  const appUrl = useMemo(() => {
-    const BASE_URL = (
-      import.meta.env.VITE_APP_URL?.trim() || window.location.origin
-    ).replace(/\/+$/, "");
-
-    return BASE_URL;
-  }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

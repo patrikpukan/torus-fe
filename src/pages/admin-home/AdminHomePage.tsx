@@ -1,40 +1,89 @@
-import { BarChart3, Building2, Home, Settings2, Users } from "lucide-react";
+import { useMemo } from "react";
+import {
+  AlertCircle,
+  BarChart3,
+  Building2,
+  Home,
+  Settings2,
+  Users,
+} from "lucide-react";
 import { Link } from "react-router-dom";
-import { Card, CardDescription, CardHeader, CardTitle, } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
-const quickLinks = [
-  {
-    title: "Organizations",
-    description: "Review all organizations, assets, and owners.",
-    to: "/organization-list",
-    icon: <Building2 className="h-6 w-6" />,
-    cta: "View organizations",
-  },
-  {
-    title: "Users",
-    description: "Browse every user across organizations.",
-    to: "/user-list",
-    icon: <Users className="h-6 w-6" />,
-    cta: "Manage users",
-  },
-  {
-    title: "Algorithm settings",
-    description: "Jump to pairing cadence and preferences per org.",
-    to: "/algorithm-settings",
-    icon: <Settings2 className="h-6 w-6" />,
-    cta: "Tune algorithms",
-  },
-  {
-    title: "Statistics",
-    description: "Inspect performance and health per organization.",
-    to: "/statistics",
-    icon: <BarChart3 className="h-6 w-6" />,
-    cta: "View stats",
-  },
-];
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useStatisticsQuery } from "@/features/statistics/api/useStatisticsQuery";
 
 const AdminHomePage = () => {
+  const thirtyDaysAgo = useMemo(() => {
+    const date = new Date();
+    date.setDate(date.getDate() - 30);
+    return date;
+  }, []);
+
+  const statsFilter = useMemo(
+    () => ({
+      startDate: thirtyDaysAgo.toISOString(),
+      endDate: new Date().toISOString(),
+    }),
+    [thirtyDaysAgo]
+  );
+
+  const { data: statsData, loading: statsLoading } =
+    useStatisticsQuery(statsFilter);
+  const statistics = statsData?.statistics;
+
+  const newUsersCount = statistics?.newUsersCount ?? 0;
+  const reportsCount = statistics?.reportsCount ?? 0;
+  const inactiveUsersCount = statistics?.inactiveUsersCount ?? 0;
+
+  const quickLinks = [
+    {
+      title: "Organizations",
+      description: "Review all organizations, assets, and owners.",
+      to: "/organization-list",
+      icon: <Building2 className="h-6 w-6" />,
+      cta: "View organizations",
+    },
+    {
+      title: "Users",
+      description: "Browse every user across organizations.",
+      to: "/user-list",
+      icon: <Users className="h-6 w-6" />,
+      cta: "Manage users",
+      meta: statsLoading ? "Loading..." : `New users (30d): ${newUsersCount}`,
+    },
+    {
+      title: "Reports",
+      description: "Track escalations across all organizations.",
+      to: "/reports",
+      icon: <AlertCircle className="h-6 w-6" />,
+      cta: "Review reports",
+      meta: statsLoading ? "Loading..." : `New reports (30d): ${reportsCount}`,
+    },
+    {
+      title: "Algorithm settings",
+      description: "Jump to pairing cadence and preferences per org.",
+      to: "/algorithm-settings",
+      icon: <Settings2 className="h-6 w-6" />,
+      cta: "Tune algorithms",
+    },
+    {
+      title: "Statistics",
+      description: "Inspect performance and health per organization.",
+      to: "/statistics",
+      icon: <BarChart3 className="h-6 w-6" />,
+      cta: "View stats",
+      meta: statsLoading
+        ? "Loading..."
+        : `Inactive users: ${inactiveUsersCount}`,
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <header className="space-y-1">
@@ -126,6 +175,11 @@ const AdminHomePage = () => {
                     {link.description}
                   </CardDescription>
                 </div>
+                {link.meta && (
+                  <p className="text-xs font-medium text-muted-foreground">
+                    {link.meta}
+                  </p>
+                )}
                 <Button variant="ghost" className="justify-start px-0">
                   {link.cta}
                 </Button>

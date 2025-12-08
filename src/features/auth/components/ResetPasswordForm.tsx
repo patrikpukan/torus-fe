@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,26 +15,33 @@ import { Label } from "@/components/ui/label";
 import { supabaseClient } from "@/lib/supabaseClient";
 import { appUrl } from "@/lib/appUrl";
 
+const resetPasswordSchema = z.object({
+  email: z
+    .string()
+    .min(1, "Please enter your email address.")
+    .email("Enter a valid email address."),
+});
+
+type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
+
 const ResetPasswordForm = () => {
-  const [email, setEmail] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const form = useForm<ResetPasswordFormValues>({
+    resolver: zodResolver(resetPasswordSchema),
+    mode: "onChange",
+    defaultValues: {
+      email: "",
+    },
+  });
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = form.handleSubmit(async (values) => {
     setError(null);
-
-    if (!email) {
-      setError("Please enter your email address.");
-      return;
-    }
-
-    setIsSubmitting(true);
+    setSuccess(false);
 
     try {
       const { error: resetError } =
-        await supabaseClient.auth.resetPasswordForEmail(email, {
+        await supabaseClient.auth.resetPasswordForEmail(values.email, {
           redirectTo: `${appUrl}/reset-password/confirm`,
         });
 
@@ -47,10 +57,8 @@ const ResetPasswordForm = () => {
           ? resetException.message
           : "Unable to send reset email. Please try again.";
       setError(message);
-    } finally {
-      setIsSubmitting(false);
     }
-  };
+  });
 
   return (
     <Card className="w-full max-w-[420px]">
@@ -69,13 +77,16 @@ const ResetPasswordForm = () => {
             </Label>
             <Input
               id="reset-password-email"
-              name="email"
               type="email"
               autoComplete="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              required
+              {...form.register("email")}
+              aria-invalid={!!form.formState.errors.email}
             />
+            {form.formState.errors.email && (
+              <p className="text-sm text-destructive">
+                {form.formState.errors.email.message}
+              </p>
+            )}
           </div>
 
           {error && (
@@ -93,8 +104,14 @@ const ResetPasswordForm = () => {
         </CardContent>
 
         <CardFooter className="p-6 pt-0">
-          <Button className="w-full" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Sending…" : "Send reset password email"}
+          <Button
+            className="w-full"
+            type="submit"
+            disabled={form.formState.isSubmitting}
+          >
+            {form.formState.isSubmitting
+              ? "Sending..."
+              : "Send reset password email"}
           </Button>
         </CardFooter>
       </form>

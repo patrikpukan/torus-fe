@@ -1,4 +1,4 @@
-﻿import { useCallback, useState, type FormEvent } from "react";
+﻿import { type FormEvent, useCallback, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Eye } from "lucide-react";
 
@@ -129,7 +129,9 @@ const ReportDetailPage = () => {
   if (loading) {
     return (
       <div className="min-h-[200px]">
-        <p className="text-sm text-muted-foreground">Loading report detail...</p>
+        <p className="text-sm text-muted-foreground">
+          Loading report detail...
+        </p>
       </div>
     );
   }

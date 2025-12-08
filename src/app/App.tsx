@@ -23,6 +23,7 @@ import ProfileEditPage from "../pages/profile/ProfileEditPage";
 import ProfilePage from "../pages/profile/ProfilePage";
 import RegisterOrgPage from "../pages/register-org/RegisterOrgPage";
 import RegisterPage from "../pages/register/RegisterPage";
+import AdminHomePage from "../pages/admin-home/AdminHomePage";
 import ConfirmResetPasswordPage from "../pages/reset-password/ConfirmResetPasswordPage";
 import ResetPasswordPage from "../pages/reset-password/ResetPasswordPage";
 import UserDetailPage from "../pages/user-list/UserDetailPage";
@@ -37,6 +38,10 @@ const HomeRoute = () => {
 
   if (appRole === "org_admin") {
     return <MaintainerHomePage />;
+  }
+
+  if (appRole === "super_admin") {
+    return <AdminHomePage />;
   }
 
   return <HomePage />;

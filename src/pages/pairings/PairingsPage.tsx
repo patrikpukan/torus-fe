@@ -10,8 +10,9 @@ const PairingsPage = () => {
           <span>Pairings</span>
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Review all colleagues you are paired with, continue conversations, or
-          revisit their profile and availability without leaving the workspace.
+          Review all Fico's colleagues you are paired with, continue
+          conversations, or revisit their profile and availability without
+          leaving the workspace.
         </p>
       </div>
       <PairingsView />

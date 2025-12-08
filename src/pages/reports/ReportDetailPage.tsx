@@ -7,9 +7,17 @@ import { ArrowLeft, Eye } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { REPORT_BY_ID_QUERY, useReportByIdQuery, } from "@/features/reports/api/useReportByIdQuery";
+import {
+  REPORT_BY_ID_QUERY,
+  useReportByIdQuery,
+} from "@/features/reports/api/useReportByIdQuery";
 import { REPORTS_QUERY } from "@/features/reports/api/useReportsQuery";
 import { useResolveReportMutation } from "@/features/reports/api/useResolveReportMutation";
 import { useToast } from "@/hooks/use-toast";

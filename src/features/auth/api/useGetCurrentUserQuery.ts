@@ -2,51 +2,9 @@ import { type GetCurrentUserQuery } from "@/graphql/generated/schema";
 import { useQuery } from "@apollo/client/react";
 import { graphql } from "gql.tada";
 
-export type TagObject = {
-  id: string;
-  name: string;
-  category: "HOBBY" | "INTEREST";
-};
-
-export type CurrentUserData = {
-  id: string;
-  email: string;
-  organizationId: string;
-  role: "user" | "org_admin" | "super_admin";
-  firstName?: string | null;
-  lastName?: string | null;
-  about?: string | null;
-  location?: string | null;
-  position?: string | null;
-  hobbies?: TagObject[] | null;
-  interests?: TagObject[] | null;
-  profileImageUrl?: string | null;
-  profileStatus?: string | null;
-  isActive?: boolean;
-  preferredActivity?: string | null;
-  suspendedUntil?: string | null;
-  departmentId?: string | null;
-  activeBan?: {
-    id: string;
-    reason: string;
-    createdAt: string;
-    expiresAt?: string | null;
-  } | null;
-  organization?: {
-    id: string;
-    name: string;
-    code: string;
-    imageUrl?: string | null;
-  } | null;
-  department?: {
-    id: string;
-    name: string;
-  } | null;
-};
-
-export type GetCurrentUserResponse = {
-  getCurrentUser: CurrentUserData | null;
-};
+export type CurrentUserData = NonNullable<
+  GetCurrentUserQuery["getCurrentUser"]
+>;
 
 export const GET_CURRENT_USER = graphql(`
   query GetCurrentUser {

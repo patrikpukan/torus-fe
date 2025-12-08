@@ -15,11 +15,11 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { LogIn, LogOut } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
+  matchPath,
   NavLink,
   Outlet,
-  matchPath,
   useLocation,
   useNavigate,
 } from "react-router-dom";
@@ -33,6 +33,8 @@ import { Logo } from "./Logo";
 import { LogoText } from "./LogoText";
 
 import { useAuth } from "@/hooks/useAuth";
+import { formatUserDisplayName } from "@/lib/userDisplay";
+import { normalizeAssetUrl } from "@/lib/assetUrl";
 
 const BaseLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -46,41 +48,11 @@ const BaseLayout = () => {
     return item.roles.includes(appRole || "");
   });
 
-  const userDisplayName = (() => {
-    if (!user) {
-      return "Signed out";
-    }
-
-    const dbUser = currentUserData;
-    if (dbUser?.firstName || dbUser?.lastName) {
-      const parts = [dbUser?.firstName, dbUser?.lastName].filter(
-        (part): part is string =>
-          typeof part === "string" && part.trim().length > 0
-      );
-      if (parts.length > 0) {
-        return parts.join(" ");
-      }
-    }
-
-    const fullName = user.user_metadata?.full_name;
-    if (typeof fullName === "string" && fullName.trim().length > 0) {
-      return fullName;
-    }
-
-    const parts = [
-      user.user_metadata?.first_name,
-      user.user_metadata?.last_name,
-    ].filter(
-      (part): part is string =>
-        typeof part === "string" && part.trim().length > 0
-    );
-
-    if (parts.length > 0) {
-      return parts.join(" ");
-    }
-
-    return user.email ?? "Signed out";
-  })();
+  const userDisplayName = useMemo(
+    () =>
+      formatUserDisplayName({ dbUser: currentUserData, supabaseUser: user }),
+    [currentUserData, user]
+  );
 
   const handleSignOut = useCallback(async () => {
     try {
@@ -100,35 +72,9 @@ const BaseLayout = () => {
     [location.pathname]
   );
 
-  const apiBaseFromGraphQL = (() => {
-    const gql = import.meta.env.VITE_GRAPHQL_API as string | undefined;
-    if (!gql) return undefined;
-    try {
-      const u = new URL(gql);
-      if (u.pathname.endsWith("/graphql")) {
-        u.pathname = u.pathname.replace(/\/graphql$/, "");
-      }
-      return u.toString().replace(/\/$/, "");
-    } catch {
-      return undefined;
-    }
-  })();
-
-  const normalizeUrl = (src?: string | null): string => {
-    if (!src) return "";
-    if (/^blob:/i.test(src)) return ""; // stale local preview; ignore
-    if (/^https?:\/\//i.test(src)) return src;
-    const base =
-      (import.meta.env.VITE_API_BASE as string | undefined) ??
-      apiBaseFromGraphQL;
-    if (!base) return src;
-    if (src.startsWith("/")) return `${base}${src}`;
-    return `${base}/${src}`;
-  };
-
   const dbUser = currentUserData;
   const profileImageUrl =
-    normalizeUrl(dbUser?.profileImageUrl) ||
+    normalizeAssetUrl(dbUser?.profileImageUrl) ||
     (user?.user_metadata?.avatar_url as string | undefined) ||
     "";
   const userRole = dbUser?.role || appRole || "";

@@ -1,4 +1,6 @@
-import { useState, type FormEvent } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Sheet,
   SheetContent,
@@ -11,6 +13,12 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useInviteUserToOrganizationMutation } from "../api/useInviteUserToOrganizationMutation";
 import { useToast } from "@/hooks/use-toast";
+
+const inviteUserSchema = z.object({
+  email: z.string().email("Please enter a valid email address."),
+});
+
+type InviteUserFormValues = z.infer<typeof inviteUserSchema>;
 
 type InviteUserModalProps = {
   open: boolean;
@@ -25,27 +33,20 @@ const InviteUserModal = ({
   organizationId,
   organizationName,
 }: InviteUserModalProps) => {
-  const [email, setEmail] = useState("");
   const [inviteUser, { loading }] = useInviteUserToOrganizationMutation();
   const { toast } = useToast();
+  const form = useForm<InviteUserFormValues>({
+    resolver: zodResolver(inviteUserSchema),
+    mode: "onChange",
+    defaultValues: { email: "" },
+  });
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-
-    if (!email || !email.includes("@")) {
-      toast({
-        title: "Invalid Email",
-        description: "Please enter a valid email address.",
-        variant: "destructive",
-      });
-      return;
-    }
-
+  const handleSubmit = form.handleSubmit(async (values) => {
     try {
       const { data } = await inviteUser({
         variables: {
           input: {
-            email,
+            email: values.email,
             organizationId,
           },
         },
@@ -64,7 +65,7 @@ const InviteUserModal = ({
           title: "Success",
           description: result.inviteUserToOrganization.message,
         });
-        setEmail("");
+        form.reset();
         onOpenChange(false);
       } else {
         toast({
@@ -83,17 +84,19 @@ const InviteUserModal = ({
       });
       console.error("Invite user error:", error);
     }
-  };
+  });
 
-  const handleClose = () => {
+  const handleOpenChange = (next: boolean) => {
     if (!loading) {
-      setEmail("");
-      onOpenChange(false);
+      if (!next) {
+        form.reset();
+      }
+      onOpenChange(next);
     }
   };
 
   return (
-    <Sheet open={open} onOpenChange={handleClose}>
+    <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent>
         <SheetHeader>
           <SheetTitle>Invite User</SheetTitle>
@@ -102,18 +105,22 @@ const InviteUserModal = ({
             will receive an email with instructions to set up their account.
           </SheetDescription>
         </SheetHeader>
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
           <div className="grid gap-2">
             <Label htmlFor="email">Email Address</Label>
             <Input
               id="email"
               type="email"
               placeholder="user@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              {...form.register("email")}
+              aria-invalid={!!form.formState.errors.email}
               disabled={loading}
-              required
             />
+            {form.formState.errors.email && (
+              <p className="text-sm text-destructive">
+                {form.formState.errors.email.message}
+              </p>
+            )}
             <p className="text-sm text-muted-foreground">
               The user will be created with a default 'user' role and will be
               assigned to this organization.
@@ -123,13 +130,18 @@ const InviteUserModal = ({
             <Button
               type="button"
               variant="outline"
-              onClick={handleClose}
+              onClick={() => handleOpenChange(false)}
               disabled={loading}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? "Sending Invitation..." : "Send Invitation"}
+            <Button
+              type="submit"
+              disabled={loading || form.formState.isSubmitting}
+            >
+              {loading || form.formState.isSubmitting
+                ? "Sending Invitation..."
+                : "Send Invitation"}
             </Button>
           </div>
         </form>

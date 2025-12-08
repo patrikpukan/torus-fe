@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -63,13 +63,8 @@ const OrganizationForm = ({
         code: z.string(),
         name: z.string().min(1, "Organization name is required"),
         size: z
-          .preprocess((val) => {
-            if (val === "" || val === null || val === undefined) return null;
-            const num = Number(val);
-            return Number.isNaN(num) ? null : num;
-          }, z.number().nullable())
-          .optional()
-          .nullable(),
+          .union([z.literal(""), z.number().positive("Size must be positive")])
+          .transform((val) => (val === "" ? null : val)),
         address: z.string().trim().optional().nullable(),
         imageUrl: z.string().trim().optional().nullable(),
       }),
@@ -79,7 +74,10 @@ const OrganizationForm = ({
   const form = useForm<OrganizationFormData>({
     resolver: zodResolver(orgSchema),
     mode: "onChange",
-    defaultValues: value,
+    defaultValues: {
+      ...value,
+      size: value.size ?? null,
+    },
   });
 
   useEffect(() => {
@@ -123,6 +121,30 @@ const OrganizationForm = ({
                     {...form.register(field.key)}
                     readOnly={isFieldReadOnly(field.key)}
                     rows={3}
+                  />
+                ) : field.type === "number" ? (
+                  <Controller
+                    control={form.control}
+                    name={field.key}
+                    render={({ field: controllerField }) => (
+                      <Input
+                        type="number"
+                        inputMode="numeric"
+                        value={
+                          controllerField.value === null ||
+                          controllerField.value === undefined
+                            ? ""
+                            : controllerField.value
+                        }
+                        onChange={(event) => {
+                          const next = event.target.value;
+                          controllerField.onChange(
+                            next === "" ? "" : Number(next)
+                          );
+                        }}
+                        readOnly={isFieldReadOnly(field.key)}
+                      />
+                    )}
                   />
                 ) : (
                   <Input

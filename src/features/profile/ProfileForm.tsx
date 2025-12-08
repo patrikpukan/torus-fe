@@ -1,9 +1,9 @@
 import {
+  type ChangeEvent,
+  type FormEvent,
   useMemo,
   useRef,
   useState,
-  type ChangeEvent,
-  type FormEvent,
 } from "react";
 import { CircleUser, Pencil, Upload, User } from "lucide-react";
 
@@ -26,21 +26,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { UserProfile, TagObject } from "@/types/User.ts";
+import type { TagObject, UserProfile } from "@/types/User.ts";
 import { useAuth } from "@/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabaseClient } from "@/lib/supabaseClient";
+import { normalizeAssetUrl } from "@/lib/assetUrl";
 import { useGetDepartmentsByOrganizationQuery } from "@/features/organization/api/useGetDepartmentsByOrganizationQuery";
 import { useQuery as useApolloQuery } from "@apollo/client/react";
 import { GET_ALL_TAGS } from "./api/useTagsQueries";
 import {
   Tags,
-  TagsTrigger,
   TagsContent,
-  TagsInput,
-  TagsList,
   TagsGroup,
+  TagsInput,
   TagsItem,
+  TagsList,
+  TagsTrigger,
   TagsValue,
 } from "@/components/ui/shadcn-io/tags";
 
@@ -230,34 +231,7 @@ const ProfileForm = ({
     return readOnly || readOnlyFields.has(String(key));
   };
 
-  const apiBaseFromGraphQL = (() => {
-    const gql = import.meta.env.VITE_GRAPHQL_API as string | undefined;
-    if (!gql) return undefined;
-    try {
-      const u = new URL(gql);
-      // strip trailing /graphql
-      if (u.pathname.endsWith("/graphql")) {
-        u.pathname = u.pathname.replace(/\/graphql$/, "");
-      }
-      return u.toString().replace(/\/$/, "");
-    } catch {
-      return undefined;
-    }
-  })();
-
-  const normalizeUrl = (src?: string | null): string => {
-    if (!src) return "";
-    if (/^blob:/i.test(src)) return ""; // stale local preview persisted in DB; ignore
-    if (/^https?:\/\//i.test(src)) return src;
-    const base =
-      (import.meta.env.VITE_API_BASE as string | undefined) ??
-      apiBaseFromGraphQL;
-    if (!base) return src; // best effort
-    if (src.startsWith("/")) return `${base}${src}`;
-    return `${base}/${src}`;
-  };
-
-  const normalizedProfileAvatar = normalizeUrl(value.profileImageUrl);
+  const normalizedProfileAvatar = normalizeAssetUrl(value.profileImageUrl);
   const currentAvatarSrc = previewUrl || normalizedProfileAvatar || "";
 
   const handlePickFile = () => {

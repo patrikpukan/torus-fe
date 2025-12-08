@@ -10,9 +10,10 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import type { UserProfile, TagObject } from "@/types/User";
+import type { TagObject, UserProfile } from "@/types/User";
 import { formatDateTime } from "@/features/pairings/components/dateUtils";
 import { getInitials } from "@/features/pairings/utils/displayName";
+import { normalizeAssetUrl } from "@/lib/assetUrl";
 
 export type PairingProfileCardProps = {
   profile: UserProfile;
@@ -71,34 +72,7 @@ export default function PairingProfileCard({
     return String(fieldValue);
   };
 
-  const apiBaseFromGraphQL = (() => {
-    const gql = import.meta.env.VITE_GRAPHQL_API as string | undefined;
-    if (!gql) return undefined;
-    try {
-      const u = new URL(gql);
-      // strip trailing /graphql
-      if (u.pathname.endsWith("/graphql")) {
-        u.pathname = u.pathname.replace(/\/graphql$/, "");
-      }
-      return u.toString().replace(/\/$/, "");
-    } catch {
-      return undefined;
-    }
-  })();
-
-  const normalizeUrl = (src?: string | null): string => {
-    if (!src) return "";
-    if (/^blob:/i.test(src)) return ""; // stale local preview persisted in DB; ignore
-    if (/^https?:\/\//i.test(src)) return src;
-    const base =
-      (import.meta.env.VITE_API_BASE as string | undefined) ??
-      apiBaseFromGraphQL;
-    if (!base) return src; // best effort
-    if (src.startsWith("/")) return `${base}${src}`;
-    return `${base}/${src}`;
-  };
-
-  const currentAvatarSrc = normalizeUrl(profile.profileImageUrl) || "";
+  const currentAvatarSrc = normalizeAssetUrl(profile.profileImageUrl) || "";
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">

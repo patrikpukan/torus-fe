@@ -63,7 +63,11 @@ const OrganizationForm = ({
         code: z.string(),
         name: z.string().min(1, "Organization name is required"),
         size: z
-          .union([z.literal(""), z.number().positive("Size must be positive")])
+          .union([
+            z.literal(""),
+            z.number().positive("Size must be positive"),
+            z.null(),
+          ])
           .transform((val) => (val === "" ? null : val)),
         address: z.string().trim().optional().nullable(),
         imageUrl: z.string().trim().optional().nullable(),
@@ -71,7 +75,9 @@ const OrganizationForm = ({
     []
   );
 
-  const form = useForm<OrganizationFormData>({
+  type OrganizationFormValues = z.infer<typeof orgSchema>;
+
+  const form = useForm<OrganizationFormValues>({
     resolver: zodResolver(orgSchema),
     mode: "onChange",
     defaultValues: {
@@ -91,10 +97,7 @@ const OrganizationForm = ({
         id: nextValues.id ?? value.id,
         name: nextValues.name ?? value.name,
         code: nextValues.code ?? value.code,
-        size:
-          nextValues.size === undefined
-            ? null
-            : (nextValues.size as OrganizationFormData["size"]),
+        size: nextValues.size ?? null,
         address: nextValues.address ?? null,
         imageUrl: nextValues.imageUrl ?? null,
       };
@@ -109,7 +112,7 @@ const OrganizationForm = ({
 
   return (
     <form
-      onSubmit={form.handleSubmit((values) =>
+      onSubmit={form.handleSubmit((values) => {
         onSubmit?.({
           id: values.id ?? value.id,
           name: values.name ?? value.name,
@@ -117,8 +120,8 @@ const OrganizationForm = ({
           size: values.size ?? null,
           address: values.address ?? null,
           imageUrl: values.imageUrl ?? null,
-        })
-      )}
+        });
+      })}
       noValidate
     >
       <FieldSet>

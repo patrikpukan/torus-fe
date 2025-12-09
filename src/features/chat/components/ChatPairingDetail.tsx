@@ -283,10 +283,7 @@ export default function PairingDetail({ contact, onBack }: PairingDetailProps) {
               key={contact?.id}
               defaultValue="chat"
               onValueChange={setActiveTab}
-              className={cn(
-                "flex flex-col",
-                activeTab === "chat" ? "h-full" : ""
-              )}
+              className="flex flex-col h-full"
             >
               <div className="border-b px-6 pt-4">
                 <TabsList className="grid w-full grid-cols-3">
@@ -378,7 +375,7 @@ export default function PairingDetail({ contact, onBack }: PairingDetailProps) {
                           handleSendMessage();
                         }
                       }}
-                      rows={3}
+                      rows={2}
                       disabled={sendingMessage}
                     />
                     <div className="mt-3 flex justify-end">
@@ -396,14 +393,16 @@ export default function PairingDetail({ contact, onBack }: PairingDetailProps) {
 
               <TabsContent
                 value="profile"
-                className="mt-0 flex-1 overflow-y-auto px-6 py-4"
+                className="mt-0 max-h-full flex-1 overflow-y-scroll dis px-12 py-6"
               >
-                <ProfileForm value={contact.profile} readOnly />
+                <div className="relative">
+                  <ProfileForm value={contact.profile} readOnly />
+                </div>
               </TabsContent>
 
               <TabsContent
                 value="calendar"
-                className="mt-0 flex-1 overflow-y-auto px-6 py-4"
+                className="mt-0 flex-1 overflow-y-scroll px-6 py-4"
               >
                 <MeetingBanner
                   pairingId={pairingId}

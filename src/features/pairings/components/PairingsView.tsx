@@ -54,7 +54,7 @@ const PairingsView = () => {
   }
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] gap-6">
+    <div className="flex min-h-[480px] h-[calc(100vh-8rem)] gap-6">
       <aside className="flex basis-2/6 min-w-[240px] flex-col">
         <Card className="flex h-full flex-col">
           <PairingsList

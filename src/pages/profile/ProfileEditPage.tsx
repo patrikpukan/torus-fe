@@ -66,11 +66,18 @@ const ProfileEditPage = () => {
             position: updatedProfile.position || null,
             hobbyIds: hobbyIds,
             interestIds: interestIds,
-            avatarUrl: updatedProfile.profileImageUrl || null,
+            // Send the actual URL string, or null if it doesn't exist
+            // This ensures the backend receives the Supabase URL correctly
+            avatarUrl:
+              updatedProfile.profileImageUrl &&
+              updatedProfile.profileImageUrl.trim()
+                ? updatedProfile.profileImageUrl.trim()
+                : null,
             departmentId: updatedProfile.departmentId || null,
           },
         },
         refetchQueries: ["GetCurrentUser"],
+        awaitRefetchQueries: true, // Wait for refetch to complete
       });
 
       navigate("/profile");

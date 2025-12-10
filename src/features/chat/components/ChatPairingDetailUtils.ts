@@ -10,4 +10,3 @@ export const formatDateTime = (iso?: string) =>
 
 export const formatMessageTime = (iso: string) =>
   new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-

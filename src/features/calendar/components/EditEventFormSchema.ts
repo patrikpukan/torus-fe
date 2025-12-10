@@ -44,4 +44,3 @@ export type Occurrence = {
   occurrenceEnd: string;
   originalEvent: CalendarEventItem;
 };
-

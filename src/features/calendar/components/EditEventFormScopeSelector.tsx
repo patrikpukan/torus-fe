@@ -66,11 +66,10 @@ export const EditEventFormScopeSelector: React.FC<
       {scope === "all" && (
         <p className="mt-2 text-xs text-muted-foreground">
           When updating all events, date and time changes are not applied (only
-          title and type). To change the time of all events, delete and
-          recreate the recurring event.
+          title and type). To change the time of all events, delete and recreate
+          the recurring event.
         </p>
       )}
     </div>
   );
 };
-

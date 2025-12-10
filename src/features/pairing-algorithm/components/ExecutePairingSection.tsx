@@ -75,4 +75,3 @@ export const ExecutePairingSection: React.FC<ExecutePairingSectionProps> = ({
     </div>
   );
 };
-

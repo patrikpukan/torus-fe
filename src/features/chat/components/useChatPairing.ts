@@ -32,7 +32,6 @@ export const useChatPairing = ({ contact, activeTab }: UseChatPairingProps) => {
   const {
     data: messagesData,
     loading: messagesLoading,
-    error: messagesError,
     refetch: refetchMessages,
   } = useGetMessagesQuery(pairingId || "");
 
@@ -47,11 +46,9 @@ export const useChatPairing = ({ contact, activeTab }: UseChatPairingProps) => {
   const [markMessagesAsRead] = useMarkMessagesAsReadMutation();
 
   // Subscribe to new messages
-  const {
-    data: subscriptionData,
-    error: subscriptionError,
-    loading: subscriptionLoading,
-  } = useMessageSentSubscription(pairingId || "");
+  const { data: subscriptionData } = useMessageSentSubscription(
+    pairingId || ""
+  );
 
   // Subscribe to typing status
   const { data: typingData } = useTypingStatusSubscription(
@@ -202,4 +199,3 @@ export const useChatPairing = ({ contact, activeTab }: UseChatPairingProps) => {
     handleSendMessage,
   };
 };
-

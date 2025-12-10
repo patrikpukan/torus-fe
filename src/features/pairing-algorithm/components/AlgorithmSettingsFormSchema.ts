@@ -18,4 +18,3 @@ export const buildDefaultValues = (today: Date): FormValues => ({
 });
 
 export const getToday = () => startOfToday();
-

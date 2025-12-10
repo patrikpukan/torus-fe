@@ -152,4 +152,3 @@ export const useEditEventForm = ({
     isSubmitting: form.formState.isSubmitting,
   };
 };
-

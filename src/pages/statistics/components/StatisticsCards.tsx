@@ -1,11 +1,6 @@
 import { BarChart3, FileText, Users, UserX } from "lucide-react";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 type Statistics = {
   newUsersCount: number;
@@ -82,4 +77,3 @@ export const StatisticsCards = ({ statistics }: StatisticsCardsProps) => {
     </div>
   );
 };
-

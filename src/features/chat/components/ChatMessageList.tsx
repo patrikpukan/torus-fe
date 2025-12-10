@@ -8,7 +8,9 @@ interface ChatMessageListProps {
   messages: Message[];
   loading: boolean;
   currentUserId?: string;
-  scrollRef: React.RefObject<HTMLDivElement | null> | React.RefObject<HTMLDivElement>;
+  scrollRef:
+    | React.RefObject<HTMLDivElement | null>
+    | React.RefObject<HTMLDivElement>;
 }
 
 export const ChatMessageList: React.FC<ChatMessageListProps> = ({
@@ -52,9 +54,7 @@ export const ChatMessageList: React.FC<ChatMessageListProps> = ({
               <div
                 className={cn(
                   "max-w-[70%] rounded-2xl px-4 py-2 text-sm shadow-sm",
-                  isSelf
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted"
+                  isSelf ? "bg-primary text-primary-foreground" : "bg-muted"
                 )}
               >
                 <p>{m.content}</p>
@@ -74,4 +74,3 @@ export const ChatMessageList: React.FC<ChatMessageListProps> = ({
     </div>
   );
 };
-

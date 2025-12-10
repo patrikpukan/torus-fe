@@ -231,4 +231,3 @@ export const PairingsByUser = ({
     </Card>
   );
 };
-

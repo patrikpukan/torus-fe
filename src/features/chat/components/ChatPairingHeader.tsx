@@ -33,4 +33,3 @@ export const ChatPairingHeader: React.FC<ChatPairingHeaderProps> = ({
     </CardHeader>
   );
 };
-

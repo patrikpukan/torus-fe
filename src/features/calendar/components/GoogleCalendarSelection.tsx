@@ -37,8 +37,8 @@ export const GoogleCalendarSelection: React.FC<
 
       {error && (
         <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-          Failed to load calendars. You may need to sign out and sign in again to
-          grant calendar access.
+          Failed to load calendars. You may need to sign out and sign in again
+          to grant calendar access.
         </div>
       )}
 
@@ -52,10 +52,7 @@ export const GoogleCalendarSelection: React.FC<
       {!loading && !error && calendars.length > 0 && (
         <div className="space-y-2 max-h-48 overflow-y-auto border rounded-md p-3">
           {calendars.map((calendar) => (
-            <div
-              key={calendar.id}
-              className="flex items-center space-x-2"
-            >
+            <div key={calendar.id} className="flex items-center space-x-2">
               <input
                 type="checkbox"
                 id={`calendar-${calendar.id}`}
@@ -92,4 +89,3 @@ export const GoogleCalendarSelection: React.FC<
     </div>
   );
 };
-

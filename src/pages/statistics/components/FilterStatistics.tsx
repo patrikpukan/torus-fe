@@ -165,7 +165,11 @@ export const FilterStatistics = ({
             <Button onClick={handleApplyFilter} disabled={!hasFilter}>
               Apply Filter
             </Button>
-            <Button variant="outline" onClick={handleClearFilter} disabled={!hasFilter}>
+            <Button
+              variant="outline"
+              onClick={handleClearFilter}
+              disabled={!hasFilter}
+            >
               Clear Filter
             </Button>
           </div>
@@ -174,4 +178,3 @@ export const FilterStatistics = ({
     </Card>
   );
 };
-

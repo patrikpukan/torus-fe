@@ -106,4 +106,3 @@ export const GoogleCalendarDateRangePicker: React.FC<
     </div>
   );
 };
-

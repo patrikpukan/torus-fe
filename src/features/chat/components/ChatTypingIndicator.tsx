@@ -24,4 +24,3 @@ export const ChatTypingIndicator: React.FC<ChatTypingIndicatorProps> = ({
     </div>
   );
 };
-

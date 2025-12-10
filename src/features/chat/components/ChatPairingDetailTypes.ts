@@ -12,4 +12,3 @@ export type PairingDetailProps = {
   contact: PairingContact | undefined;
   onBack?: () => void; // for mobile
 };
-

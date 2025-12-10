@@ -10,4 +10,3 @@ export const GoogleCalendarSyncWarning: React.FC = () => {
     </div>
   );
 };
-

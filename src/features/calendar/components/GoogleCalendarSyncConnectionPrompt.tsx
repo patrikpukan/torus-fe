@@ -26,9 +26,9 @@ export const GoogleCalendarSyncConnectionPrompt: React.FC<
               : "Grant calendar access to sync your events. You'll need to re-authorize with additional permissions."}
           </p>
           <p className="text-xs text-blue-700 mt-2">
-            <strong>Note:</strong> Since this app is in testing mode, you may need
-            to be added to the tester list. Contact the administrator if you
-            encounter access issues.
+            <strong>Note:</strong> Since this app is in testing mode, you may
+            need to be added to the tester list. Contact the administrator if
+            you encounter access issues.
           </p>
         </div>
       </div>
@@ -41,4 +41,3 @@ export const GoogleCalendarSyncConnectionPrompt: React.FC<
     </div>
   );
 };
-

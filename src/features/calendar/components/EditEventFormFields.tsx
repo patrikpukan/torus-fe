@@ -1,5 +1,5 @@
 import React from "react";
-import { UseFormReturn } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -157,4 +157,3 @@ export const RecurrenceField: React.FC<FormFieldsProps> = ({ form }) => {
     </div>
   );
 };
-

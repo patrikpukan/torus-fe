@@ -10,9 +10,9 @@ import {
 } from "../api/queries";
 import {
   formSchema,
+  type FormValues,
   buildDefaultValues,
   getToday,
-  type FormValues,
 } from "./AlgorithmSettingsFormSchema";
 
 interface UseAlgorithmSettingsFormProps {

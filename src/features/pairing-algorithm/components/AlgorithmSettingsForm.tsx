@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Settings2 } from "lucide-react";
 import {
-  PeriodLengthFields,
+  PeriodLengthField,
   RandomSeedField,
   StartDateField,
 } from "./AlgorithmSettingsFormFields";
@@ -55,12 +55,9 @@ export function AlgorithmSettingsForm({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-12">
           <div className="grid grid-cols-1 gap-16 lg:grid-cols-2">
-            <div>
-              <StartDateField form={form} today={today} />
-            </div>
-
+            <StartDateField form={form} today={today} />
             <div className="space-y-8">
-              <PeriodLengthFields form={form} today={today} />
+              <PeriodLengthField form={form} today={today} />
               <RandomSeedField form={form} today={today} />
             </div>
           </div>

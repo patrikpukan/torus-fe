@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
-import { CircleUser, Pencil, Upload, User } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldContent,
@@ -10,9 +10,6 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -20,14 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { TagObject, UserProfile } from "@/types/User.ts";
-import { useAuth } from "@/hooks/useAuth";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { supabaseClient } from "@/lib/supabaseClient";
-import { normalizeAssetUrl } from "@/lib/assetUrl";
-import { useGetDepartmentsByOrganizationQuery } from "@/features/organization/api/useGetDepartmentsByOrganizationQuery";
-import { useQuery as useApolloQuery } from "@apollo/client/react";
-import { GET_ALL_TAGS } from "./api/useTagsQueries";
 import {
   Tags,
   TagsContent,
@@ -38,6 +27,17 @@ import {
   TagsTrigger,
   TagsValue,
 } from "@/components/ui/shadcn-io/tags";
+import { Textarea } from "@/components/ui/textarea";
+import { useGetDepartmentsByOrganizationQuery } from "@/features/organization/api/useGetDepartmentsByOrganizationQuery";
+import { useAuth } from "@/hooks/useAuth";
+import { normalizeAssetUrl } from "@/lib/assetUrl";
+import { supabaseClient } from "@/lib/supabaseClient";
+import type { TagObject, UserProfile } from "@/types/User.ts";
+import { useQuery as useApolloQuery } from "@apollo/client/react";
+import { CircleUser, Pencil, Upload, User } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { GET_ALL_TAGS } from "./api/useTagsQueries";
 
 export type ProfileFormProps = {
   value: UserProfile;
@@ -85,7 +85,12 @@ const buildProfilePayload = (
   location: values.location?.trim() || undefined,
   position: values.position?.trim() || undefined,
   preferredActivity: values.preferredActivity?.trim() || undefined,
-  profileImageUrl: values.profileImageUrl || undefined,
+  // Preserve profileImageUrl if it exists (even if empty string, let backend handle it)
+  // Only set to undefined if it's explicitly null or empty after trimming
+  profileImageUrl:
+    values.profileImageUrl && values.profileImageUrl.trim()
+      ? values.profileImageUrl.trim()
+      : undefined,
   hobbies: Array.isArray(values.hobbies) ? values.hobbies : [],
   interests: Array.isArray(values.interests) ? values.interests : [],
   departmentId: values.departmentId ?? null,
@@ -192,6 +197,7 @@ const ProfileForm = ({
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const uploadedUrlRef = useRef<string | null>(null);
 
   const { data: departmentsData, loading: departmentsLoading } =
     useGetDepartmentsByOrganizationQuery(organizationId || "");
@@ -240,8 +246,37 @@ const ProfileForm = ({
     if (readOnly) {
       form.reset(normalizeProfile(value));
       setPreviewUrl(null);
+      uploadedUrlRef.current = null;
+    } else {
+      // When editing, update form values if value prop changes externally
+      // (e.g., after successful mutation and refetch)
+      const currentFormValues = form.getValues();
+      const normalizedValue = normalizeProfile(value);
+
+      // Only update if profileImageUrl changed externally (not from our own upload)
+      // This handles the case where the mutation completes and refetches the data
+      if (
+        normalizedValue.profileImageUrl !== currentFormValues.profileImageUrl &&
+        normalizedValue.profileImageUrl !== uploadedUrlRef.current
+      ) {
+        form.setValue(
+          "profileImageUrl",
+          normalizedValue.profileImageUrl || "",
+          {
+            shouldDirty: false,
+          }
+        );
+        // Clear preview if we're getting a new value from the server
+        if (previewUrl) {
+          if (previewUrl.startsWith("blob:")) {
+            URL.revokeObjectURL(previewUrl);
+          }
+          setPreviewUrl(null);
+        }
+        uploadedUrlRef.current = null;
+      }
     }
-  }, [form, readOnly, value]);
+  }, [form, readOnly, value, previewUrl]);
 
   useEffect(() => {
     if (!onChange || readOnly) return;
@@ -255,8 +290,30 @@ const ProfileForm = ({
     return readOnly || readOnlyFields.has(String(key));
   };
 
-  const currentAvatarSrc =
-    previewUrl || normalizeAssetUrl(form.watch("profileImageUrl") ?? "") || "";
+  // Watch the profileImageUrl field and normalize it for display
+  const formImageUrl = form.watch("profileImageUrl") ?? "";
+  const normalizedFormUrl = normalizeAssetUrl(formImageUrl);
+
+  // Clear previewUrl if the form value now matches what we uploaded
+  // This means the value prop has been updated with our new URL
+  useEffect(() => {
+    if (
+      previewUrl &&
+      uploadedUrlRef.current &&
+      normalizedFormUrl === uploadedUrlRef.current
+    ) {
+      // Revoke the object URL to free memory before clearing preview
+      if (previewUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(previewUrl);
+      }
+      setPreviewUrl(null);
+      uploadedUrlRef.current = null;
+    }
+  }, [previewUrl, normalizedFormUrl]);
+
+  // Use the preview URL if available (during/after upload), otherwise use the normalized form URL
+  // This ensures the image displays immediately after upload and correctly fetches on load
+  const currentAvatarSrc = previewUrl || normalizedFormUrl || "";
 
   const handlePickFile = () => {
     fileInputRef.current?.click();
@@ -266,15 +323,19 @@ const ProfileForm = ({
     const file = e.target.files?.[0];
     if (!file || !onChange) return;
 
+    let objectUrl: string | null = null;
     try {
       setUploading(true);
-      const objectUrl = URL.createObjectURL(file);
+      objectUrl = URL.createObjectURL(file);
       setPreviewUrl(objectUrl);
 
       const userId = user?.id;
       if (!userId) {
         console.error("User not authenticated; cannot upload avatar");
+        URL.revokeObjectURL(objectUrl);
         setPreviewUrl(null);
+        setUploading(false);
+        if (fileInputRef.current) fileInputRef.current.value = "";
         return;
       }
 
@@ -285,6 +346,10 @@ const ProfileForm = ({
 
       if (uploadError) {
         console.error("Supabase upload error:", uploadError);
+        URL.revokeObjectURL(objectUrl);
+        setPreviewUrl(null);
+        setUploading(false);
+        if (fileInputRef.current) fileInputRef.current.value = "";
         return;
       }
 
@@ -293,12 +358,45 @@ const ProfileForm = ({
         .getPublicUrl(path);
       const publicUrl = data.publicUrl;
 
+      // Store the uploaded URL so we can clear preview when form value updates
+      uploadedUrlRef.current = normalizeAssetUrl(publicUrl);
+
+      // Update form value first
       form.setValue("profileImageUrl", publicUrl, { shouldDirty: true });
-      onChange(buildProfilePayload(form.getValues(), value));
-      setPreviewUrl(null);
+
+      // Build payload with the new URL
+      const updatedPayload = buildProfilePayload(
+        { ...form.getValues(), profileImageUrl: publicUrl },
+        value
+      );
+
+      // Notify parent of the change
+      onChange(updatedPayload);
+
+      // Automatically save the profile after successful image upload
+      // This ensures the image URL is persisted to the backend immediately
+      if (onSubmit) {
+        try {
+          await onSubmit(updatedPayload);
+        } catch (submitError) {
+          console.error(
+            "Error auto-saving profile after image upload:",
+            submitError
+          );
+          // Don't throw - let the user manually retry if needed
+        }
+      }
+
+      // Don't revoke the object URL yet - keep previewUrl until form value updates
+      // The previewUrl will be cleared by the useEffect when the form value matches
     } catch (err) {
       console.error("Failed to upload avatar:", err);
+      // Clean up object URL on error
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
       setPreviewUrl(null);
+      uploadedUrlRef.current = null;
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -327,6 +425,7 @@ const ProfileForm = ({
         <div className="flex flex-col items-center gap-2">
           <Avatar className="h-24 w-24">
             <AvatarImage
+              key={currentAvatarSrc}
               src={currentAvatarSrc || undefined}
               alt="Profile picture"
             />

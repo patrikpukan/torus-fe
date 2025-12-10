@@ -3,7 +3,13 @@ import { useSearchParams } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useValidateInviteCodeQuery } from "@/features/organization/api/useValidateInviteCodeQuery";
 import { RegisterInviteCodeField } from "@/features/auth/components/register/RegisterInviteCodeField.tsx";

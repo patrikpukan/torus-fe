@@ -1,23 +1,24 @@
-import { useEffect, useState } from "react";
-import { useMutation } from "@apollo/client/react";
-import { addYears, isAfter, parseISO, subDays } from "date-fns";
-import {
-  type CurrentUserData,
-  useGetCurrentUserQuery,
-} from "../auth/api/useGetCurrentUserQuery";
-import ProfileForm from "./ProfileForm";
-import SendResetPasswordButton from "../auth/components/SendResetPasswordButton";
-import { UPDATE_USER_PROFILE } from "./UpdateUserProfileMutation";
-import type { UserProfile } from "@/types/User";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { PauseActivityModal } from "@/features/profile/components/PauseActivityModal";
+import { Button } from "@/components/ui/button";
 import {
   useActivePauseQuery,
   useResumeActivityMutation,
 } from "@/features/calendar/graphql/pause-activity.mutations";
+import { PauseActivityModal } from "@/features/profile/components/PauseActivityModal";
+import type { UpdateUserProfileMutation } from "@/graphql/generated/schema";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import type { UserProfile } from "@/types/User";
+import { useMutation } from "@apollo/client/react";
+import { addYears, isAfter, parseISO, subDays } from "date-fns";
+import { useEffect, useState } from "react";
+import {
+  type CurrentUserData,
+  useGetCurrentUserQuery,
+} from "../auth/api/useGetCurrentUserQuery";
+import SendResetPasswordButton from "../auth/components/SendResetPasswordButton";
+import ProfileForm from "./ProfileForm";
+import { UPDATE_USER_PROFILE } from "./UpdateUserProfileMutation";
 
 const mapUserToProfile = (user: CurrentUserData): UserProfile => {
   const hobbies = Array.isArray(user.hobbies) ? user.hobbies : [];
@@ -161,7 +162,7 @@ const ProfileView = () => {
         ? updatedProfile.interests.map((i) => i.id)
         : [];
 
-      await updateProfile({
+      const result = await updateProfile({
         variables: {
           input: {
             firstName: updatedProfile.firstName || null,
@@ -172,12 +173,27 @@ const ProfileView = () => {
             hobbyIds: hobbyIds,
             interestIds: interestIds,
             preferredActivity: updatedProfile.preferredActivity || null,
-            avatarUrl: updatedProfile.profileImageUrl || null,
+            // Send the actual URL string, or null if it doesn't exist
+            // This ensures the backend receives the Supabase URL correctly
+            avatarUrl:
+              updatedProfile.profileImageUrl &&
+              updatedProfile.profileImageUrl.trim()
+                ? updatedProfile.profileImageUrl.trim()
+                : null,
             departmentId: updatedProfile.departmentId || null,
           },
         },
         refetchQueries: ["GetCurrentUser"],
+        awaitRefetchQueries: true, // Wait for refetch to complete
       });
+
+      // Update local profile state immediately with mutation response
+      // This ensures the image displays correctly even before refetch completes
+      const mutationData = result.data as UpdateUserProfileMutation | undefined;
+      if (mutationData?.updateCurrentUserProfile) {
+        const updatedUser = mutationData.updateCurrentUserProfile;
+        setProfile(mapUserToProfile(updatedUser as CurrentUserData));
+      }
 
       setIsEditing(false);
     } catch (submitError) {

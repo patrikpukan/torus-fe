@@ -1,4 +1,3 @@
-import { useMemo, useState, type ReactNode } from "react";
 import {
   ArrowDown,
   ArrowUp,
@@ -9,12 +8,13 @@ import {
   Users,
   UserX,
 } from "lucide-react";
+import { useMemo, useState, type ReactNode } from "react";
 import {
   Cell,
   Pie,
   PieChart,
-  ResponsiveContainer,
   Tooltip as RechartsTooltip,
+  ResponsiveContainer,
 } from "recharts";
 
 import { Badge } from "@/components/ui/badge";
@@ -54,7 +54,16 @@ export type StatisticsViewProps = {
 
 type FilterType = "period" | "month-year";
 
-const pieColors = ["#2563eb", "#22c55e", "#eab308", "#ef4444", "#8b5cf6"];
+// Cheerful but toned-down color palette
+const pieColors = [
+  "hsl(217, 55%, 65%)", // Happy blue
+  "hsl(142, 50%, 60%)", // Happy green
+  "hsl(38, 60%, 65%)", // Happy amber
+  "hsl(0, 50%, 62%)", // Happy coral
+  "hsl(262, 55%, 65%)", // Happy purple
+  "hsl(199, 55%, 65%)", // Happy cyan
+  "hsl(24, 60%, 65%)", // Happy orange
+];
 
 export const StatisticsView = ({
   organizationId,
@@ -425,76 +434,114 @@ export const StatisticsView = ({
                     </TableBody>
                   </Table>
 
-                  <div className="flex h-full w-full flex-col items-center justify-center space-y-3">
-                    <ResponsiveContainer width="100%" height={320}>
+                  <div className="flex h-full w-full flex-col items-center justify-center gap-8">
+                    <ResponsiveContainer width="100%" height={300}>
                       <PieChart>
                         <Pie
                           data={pieData}
                           dataKey="value"
                           nameKey="name"
-                          innerRadius={60}
-                          outerRadius={110}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={75}
+                          outerRadius={115}
                           paddingAngle={2}
-                          label={({ value, name }) => `${name}: ${value}`}
-                          labelLine={false}
+                          startAngle={90}
+                          endAngle={-270}
+                          animationBegin={0}
+                          animationDuration={600}
+                          animationEasing="ease-out"
                         >
                           {pieData.map((entry, index) => (
                             <Cell
                               key={entry.name}
                               fill={pieColors[index % pieColors.length]}
+                              stroke="hsl(var(--background))"
+                              strokeWidth={3}
                             />
                           ))}
                         </Pie>
                         {pieTotal > 0 && (
                           <g>
-                            <title>{`Total count: ${pieTotal}`}</title>
                             <text
                               x="50%"
-                              y="50%"
+                              y="48%"
                               textAnchor="middle"
                               dominantBaseline="middle"
-                              className="text-lg font-semibold fill-current"
+                              className="text-4xl font-bold fill-foreground"
+                              style={{ fontFamily: "system-ui" }}
                             >
                               {pieTotal}
+                            </text>
+                            <text
+                              x="50%"
+                              y="58%"
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                              className="text-xs font-medium fill-muted-foreground uppercase tracking-wider"
+                            >
+                              Total
                             </text>
                           </g>
                         )}
                         <RechartsTooltip
                           contentStyle={{
-                            backgroundColor: "hsl(var(--card))",
-                            borderColor: "hsl(var(--border))",
-                            borderRadius: "8px",
+                            backgroundColor: "hsl(var(--popover))",
+                            border: "1px solid hsl(var(--border))",
+                            borderRadius: "6px",
+                            boxShadow:
+                              "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+                            padding: "10px 14px",
                           }}
                           labelStyle={{
                             color: "hsl(var(--foreground))",
                             fontWeight: 600,
+                            fontSize: "13px",
+                            marginBottom: "6px",
+                          }}
+                          itemStyle={{
+                            color: "hsl(var(--foreground))",
+                            fontSize: "13px",
+                            padding: "2px 0",
                           }}
                           formatter={(value: number, name: string) => [
-                            value,
+                            `${value} (${((value / pieTotal) * 100).toFixed(1)}%)`,
                             name,
                           ]}
                         />
                       </PieChart>
                     </ResponsiveContainer>
                     {pieData.length > 0 && (
-                      <div className="flex flex-wrap justify-center gap-3 text-xs">
-                        {pieData.map((entry, index) => (
-                          <div
-                            key={entry.name}
-                            className="flex items-center gap-2"
-                          >
-                            <span
-                              className="h-3 w-3 rounded-sm"
-                              style={{
-                                backgroundColor:
-                                  pieColors[index % pieColors.length],
-                              }}
-                            />
-                            <span className="text-muted-foreground">
-                              {entry.name}
-                            </span>
-                          </div>
-                        ))}
+                      <div className="flex flex-wrap justify-center gap-3 w-full">
+                        {pieData.map((entry, index) => {
+                          const percentage =
+                            pieTotal > 0
+                              ? ((entry.value / pieTotal) * 100).toFixed(1)
+                              : "0";
+                          return (
+                            <div
+                              key={entry.name}
+                              className="flex items-center gap-2.5 rounded-md px-3 py-2 bg-muted/50 border border-border/50 hover:bg-muted transition-colors"
+                            >
+                              <div
+                                className="h-3 w-3 rounded-full flex-shrink-0"
+                                style={{
+                                  backgroundColor:
+                                    pieColors[index % pieColors.length],
+                                }}
+                              />
+                              <span className="text-sm font-medium text-foreground">
+                                {entry.name}
+                              </span>
+                              <span className="text-sm font-semibold text-foreground">
+                                {entry.value}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                ({percentage}%)
+                              </span>
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
                   </div>

@@ -6,14 +6,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { EditEventForm } from "./EditEventForm";
-import type { CalendarEventItem } from "../api/useCalendarEvents";
-
-type Occurrence = {
-  id: string;
-  occurrenceStart: string;
-  occurrenceEnd: string;
-  originalEvent: CalendarEventItem;
-};
+import type { Occurrence } from "./EditEventFormSchema";
 
 interface EditEventModalProps {
   open: boolean;

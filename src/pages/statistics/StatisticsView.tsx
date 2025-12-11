@@ -119,7 +119,7 @@ export const StatisticsView = ({
         <>
           <StatisticsCards statistics={statistics} />
           <PairingsByStatus pairingsByStatus={statistics.pairingsByStatus} />
-          <DepartmentDistributionChart organizationId={organizationId} />
+          <DepartmentDistributionChart />
           <PairingsByUser
             pairingsByStatusAndUser={statistics.pairingsByStatusAndUser}
           />

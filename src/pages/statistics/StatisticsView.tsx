@@ -4,6 +4,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useStatisticsQuery } from "@/features/statistics/api/useStatisticsQuery";
+import { DepartmentDistributionChart } from "@/features/statistics/components/DepartmentDistributionChart";
 import { FilterStatistics } from "./components/FilterStatistics";
 import { PairingsByStatus } from "./components/PairingsByStatus";
 import { PairingsByUser } from "./components/PairingsByUser";
@@ -118,6 +119,7 @@ export const StatisticsView = ({
         <>
           <StatisticsCards statistics={statistics} />
           <PairingsByStatus pairingsByStatus={statistics.pairingsByStatus} />
+          <DepartmentDistributionChart organizationId={organizationId} />
           <PairingsByUser
             pairingsByStatusAndUser={statistics.pairingsByStatusAndUser}
           />

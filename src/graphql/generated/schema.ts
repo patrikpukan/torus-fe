@@ -182,6 +182,18 @@ export type Department = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export type DepartmentDistributionItemType = {
+  __typename?: 'DepartmentDistributionItemType';
+  departmentName: Scalars['String']['output'];
+  userCount: Scalars['Int']['output'];
+};
+
+export type DepartmentDistributionResponseType = {
+  __typename?: 'DepartmentDistributionResponseType';
+  departments: Array<DepartmentDistributionItemType>;
+  totalUsers: Scalars['Int']['output'];
+};
+
 export type ExpandedCalendarEventOccurrence = {
   __typename?: 'ExpandedCalendarEventOccurrence';
   id: Scalars['ID']['output'];
@@ -594,6 +606,7 @@ export type Query = {
   anonUsers: Array<User>;
   calendarEventById: Maybe<CalendarEvent>;
   calendarEventsByDateRange: Array<CalendarEvent>;
+  departmentDistribution: DepartmentDistributionResponseType;
   expandedCalendarOccurrences: Array<ExpandedCalendarEventOccurrence>;
   getAlgorithmSettings: AlgorithmSettings;
   getAllTags: Array<Tag>;
@@ -716,6 +729,11 @@ export type QueryStatisticsArgs = {
 
 export type QueryUserByIdArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryUsersArgs = {
+  organizationId: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -1316,6 +1334,11 @@ export type ResolveReportMutationVariables = Exact<{
 
 export type ResolveReportMutation = { __typename?: 'Mutation', resolveReport: { __typename?: 'UserReport', id: string, status: ReportStatusEnum, resolvedBy: { __typename?: 'User', id: string } | null } };
 
+export type DepartmentDistributionQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DepartmentDistributionQuery = { __typename?: 'Query', departmentDistribution: { __typename?: 'DepartmentDistributionResponseType', totalUsers: number, departments: Array<{ __typename?: 'DepartmentDistributionItemType', departmentName: string, userCount: number }> } };
+
 export type StatisticsQueryVariables = Exact<{
   filter: InputMaybe<StatisticsFilterInputType>;
 }>;
@@ -1361,7 +1384,9 @@ export type UserByIdQueryVariables = Exact<{
 
 export type UserByIdQuery = { __typename?: 'Query', userById: { __typename?: 'User', id: string, email: string, firstName: string | null, lastName: string | null, profileStatus: ProfileStatusEnum, role: UserRoleEnum, hobbies: Array<{ __typename?: 'Tag', id: string, name: string, category: TagCategory }> | null, interests: Array<{ __typename?: 'Tag', id: string, name: string, category: TagCategory }> | null, activeBan: { __typename?: 'UserBan', id: string, reason: string, createdAt: string, expiresAt: string | null } | null } | null };
 
-export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
+export type UsersQueryVariables = Exact<{
+  organizationId: InputMaybe<Scalars['ID']['input']>;
+}>;
 
 
 export type UsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, email: string, firstName: string | null, lastName: string | null, profileImageUrl: string | null, profileStatus: ProfileStatusEnum, role: UserRoleEnum, activeBan: { __typename?: 'UserBan', id: string, reason: string, createdAt: string, expiresAt: string | null } | null }> };
@@ -2148,6 +2173,17 @@ export const ResolveReportDocument = gql`
   }
 }
     `;
+export const DepartmentDistributionDocument = gql`
+    query DepartmentDistribution {
+  departmentDistribution {
+    departments {
+      departmentName
+      userCount
+    }
+    totalUsers
+  }
+}
+    `;
 export const StatisticsDocument = gql`
     query Statistics($filter: StatisticsFilterInputType) {
   statistics(filter: $filter) {
@@ -2263,8 +2299,8 @@ export const UserByIdDocument = gql`
 }
     `;
 export const UsersDocument = gql`
-    query Users {
-  users {
+    query Users($organizationId: ID) {
+  users(organizationId: $organizationId) {
     id
     email
     firstName
@@ -2444,6 +2480,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     ResolveReport(variables: ResolveReportMutationVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<ResolveReportMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<ResolveReportMutation>({ document: ResolveReportDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'ResolveReport', 'mutation', variables);
+    },
+    DepartmentDistribution(variables?: DepartmentDistributionQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<DepartmentDistributionQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<DepartmentDistributionQuery>({ document: DepartmentDistributionDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'DepartmentDistribution', 'query', variables);
     },
     Statistics(variables?: StatisticsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<StatisticsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<StatisticsQuery>({ document: StatisticsDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'Statistics', 'query', variables);

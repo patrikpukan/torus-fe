@@ -15,10 +15,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useDepartmentDistributionQuery } from "../api/useDepartmentDistributionQuery";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-type Props = {
-  organizationId?: string | null;
-};
-
 const CustomTooltip = ({
   active,
   payload,
@@ -46,7 +42,7 @@ const CustomTooltip = ({
   return null;
 };
 
-export const DepartmentDistributionChart = (_props: Props) => {
+export const DepartmentDistributionChart = () => {
   const isMobile = useIsMobile();
   const { data, loading, error } = useDepartmentDistributionQuery();
 

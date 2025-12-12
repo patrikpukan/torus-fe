@@ -12,6 +12,8 @@ export type UserDetail = {
   email: string;
   firstName?: string | null;
   lastName?: string | null;
+  location?: string | null;
+  profileImageUrl?: string | null;
   profileStatus?: string | null;
   role?: string | null;
   hobbies?: TagObject[] | null;
@@ -39,6 +41,8 @@ export const USER_BY_ID_QUERY = graphql(`
       email
       firstName
       lastName
+      location
+      profileImageUrl
       hobbies {
         id
         name

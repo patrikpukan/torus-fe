@@ -15,6 +15,7 @@ export const ANON_USERS_QUERY = graphql(`
       email
       firstName
       lastName
+      location
       profileImageUrl
       profileStatus
       role

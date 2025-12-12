@@ -8,6 +8,7 @@ import { getDisplayName } from "@/features/pairings/utils/displayName";
 import ProfileForm from "@/features/profile/ProfileForm";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 import { ChatInput } from "./ChatInput";
 import { ChatMessageList } from "./ChatMessageList";
 import type { PairingDetailProps } from "./ChatPairingDetailTypes";
@@ -16,6 +17,7 @@ import { ChatTypingIndicator } from "./ChatTypingIndicator";
 import { useChatPairing } from "./useChatPairing";
 
 export default function PairingDetail({ contact, onBack }: PairingDetailProps) {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("chat");
   const [proposalOpen, setProposalOpen] = useState(false);
 
@@ -73,7 +75,7 @@ export default function PairingDetail({ contact, onBack }: PairingDetailProps) {
                   <ChatMessageList
                     messages={messages}
                     loading={messagesLoading}
-                    currentUserId={contact?.id}
+                    currentUserId={user?.id}
                     scrollRef={scrollRef}
                   />
                   <ChatTypingIndicator

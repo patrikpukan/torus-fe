@@ -40,9 +40,16 @@ export default function PairingDetail({ contact, onBack }: PairingDetailProps) {
     scrollRef,
     handleInputChange,
     handleSendMessage,
+    sendMessageDirect,
   } = useChatPairing({ contact, activeTab });
 
   const pairingId = contact?.pairingId || contact?.id;
+
+  // Determine conversation state for message suggestions
+  const isConversationEmpty = messages.length === 0;
+  const isReplyToFirstMessage =
+    messages.length === 1 && messages[0]?.senderId !== user?.id;
+  const messageCount = messages.length;
 
   return (
     <Card className="flex flex-col h-full">
@@ -87,6 +94,10 @@ export default function PairingDetail({ contact, onBack }: PairingDetailProps) {
                     onMessageChange={handleInputChange}
                     onSend={handleSendMessage}
                     sending={sendingMessage}
+                    isConversationEmpty={isConversationEmpty}
+                    isReplyToFirstMessage={isReplyToFirstMessage}
+                    onSendSuggestion={sendMessageDirect}
+                    messageCount={messageCount}
                   />
                 </div>
               </TabsContent>

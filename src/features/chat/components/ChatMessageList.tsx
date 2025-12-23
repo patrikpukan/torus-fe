@@ -43,6 +43,7 @@ export const ChatMessageList: React.FC<ChatMessageListProps> = ({
       <div className="flex min-h-full flex-col justify-end gap-3">
         {messages.map((m) => {
           const isSelf = m.senderId === currentUserId;
+
           return (
             <div
               key={m.id}

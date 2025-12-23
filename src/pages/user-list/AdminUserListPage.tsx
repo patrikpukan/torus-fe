@@ -17,20 +17,17 @@ const ALL_ORGANIZATIONS_VALUE = "all";
 
 const AdminUserListPage = () => {
   const { data, loading, error } = useOrganizationsQuery();
-  const organizations = data?.organizations ?? [];
-
   const [selectedOrgId, setSelectedOrgId] = useState<string | null>(null);
 
   const selectValue = selectedOrgId ?? ALL_ORGANIZATIONS_VALUE;
 
-  const orgOptions = useMemo(
-    () =>
-      organizations.map((org) => ({
-        label: org.name || org.code,
-        value: org.id,
-      })),
-    [organizations]
-  );
+  const orgOptions = useMemo(() => {
+    const organizations = data?.organizations ?? [];
+    return organizations.map((org) => ({
+      label: org.name || org.code,
+      value: org.id,
+    }));
+  }, [data?.organizations]);
 
   return (
     <div className="container space-y-6 py-8">

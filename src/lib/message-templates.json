@@ -1,0 +1,91 @@
+{
+  "greetings": ["Hi!", "Hey!", "Hello!", "Hi there!", "Hey there!"],
+  "openings": {
+    "general": [
+      "How's it going?",
+      "What's new with you?",
+      "How have you been?",
+      "Good to connect with you!",
+      "Excited to chat!"
+    ],
+    "work": [
+      "Hope you're having a productive week!",
+      "I'd love to hear about what you're working on.",
+      "Been wondering what projects you have on your plate.",
+      "Curious to learn more about what you do.",
+      "Let's catch up on work stuff!"
+    ],
+    "personal": [
+      "I'd love to get to know you better!",
+      "Would be great to learn more about you.",
+      "Keen to discover some common interests!",
+      "Let's find out what we have in common.",
+      "Excited to learn about you outside of work!"
+    ]
+  },
+  "questions": {
+    "general": [
+      "What's something interesting you've discovered lately?",
+      "What's your go-to way to relax?",
+      "Any hobbies you're passionate about?",
+      "What's been on your mind recently?",
+      "What's something you're proud of?",
+      "What do you enjoy doing in your free time?",
+      "Any upcoming plans you're excited about?",
+      "What's a book or show you'd recommend?"
+    ],
+    "work": [
+      "What's the most interesting project you're working on?",
+      "What aspect of your role do you enjoy the most?",
+      "What skills have you been developing lately?",
+      "What's a challenge you're currently tackling?",
+      "What would be your ideal project to work on?",
+      "How do you approach problem-solving?",
+      "What's your experience with [your area]?",
+      "What's the best career advice you've received?"
+    ],
+    "personal": [
+      "What's your favorite way to spend a weekend?",
+      "Where are you originally from?",
+      "What's a goal you're working towards?",
+      "What do you value most in friendships?",
+      "What's a skill you'd like to learn?",
+      "What's your ideal vacation like?",
+      "What's something that always makes you smile?",
+      "What's a recent win you've had, big or small?"
+    ]
+  },
+  "closers": [
+    "Looking forward to chatting!",
+    "Talk soon!",
+    "Can't wait to hear your thoughts!",
+    "Excited to connect!",
+    "Let me know what you think!",
+    "Hope to hear from you soon!",
+    "Really looking forward to this!",
+    "Would love to hear back!"
+  ],
+  "quickReplies": {
+    "acknowledgments": [
+      "Thanks {{name}}! 👍",
+      "Appreciate it {{name}}, thanks! 👌",
+      "Got it, thanks {{name}}!",
+      "Awesome, thanks! 🙌",
+      "Perfect, thanks {{name}}!",
+      "Thanks so much! 😊",
+      "Love it, thanks! 💯"
+    ],
+    "answers": [
+      "That's a great question!",
+      "Interesting point! 👀",
+      "Good one, let me think about that...",
+      "Never really thought about it that way",
+      "Definitely agree with you! ✅",
+      "100% with you on that 💯",
+      "Couldn't agree more!",
+      "Great insight!",
+      "Totally on board with that",
+      "Love this perspective!"
+    ]
+  }
+}

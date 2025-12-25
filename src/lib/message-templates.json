@@ -67,11 +67,11 @@
   ],
   "quickReplies": {
     "acknowledgments": [
-      "Thanks {{name}}! 👍",
-      "Appreciate it {{name}}, thanks! 👌",
-      "Got it, thanks {{name}}!",
+      "Thanks! 👍",
+      "Appreciate it, thanks! 👌",
+      "Got it, thanks!",
       "Awesome, thanks! 🙌",
-      "Perfect, thanks {{name}}!",
+      "Perfect, thanks!",
       "Thanks so much! 😊",
       "Love it, thanks! 💯"
     ],

@@ -12,6 +12,8 @@ import { useAuth } from "@/hooks/useAuth";
 import BanUserDialog from "@/features/users/components/BanUserDialog";
 import UnbanUserButton from "@/features/users/components/UnbanUserButton";
 import ReportUserDialog from "@/features/users/components/ReportUserDialog";
+import { useGetUserReceivedRatingsQuery } from "@/features/ratings/api/useGetUserReceivedRatingsQuery";
+import { UserRatingsStatistics } from "@/features/ratings/components/UserRatingsStatistics";
 
 const UserDetailPage = () => {
   const { appRole } = useAuth();
@@ -30,10 +32,11 @@ const UserDetailPage = () => {
     error: currentUserError,
   } = useGetCurrentUserQuery();
 
-  const user = data?.userById ?? null;
-  const currentUserId = currentUserData?.getCurrentUser?.id;
-  const isSelf = Boolean(user && currentUserId && user.id === currentUserId);
+  const { data: ratingsData, error: ratingsError } =
+    useGetUserReceivedRatingsQuery(isAdmin ? userId : undefined);
 
+  const user = data?.userById ?? null;
+  const isSelf = currentUserData?.getCurrentUser?.id === user?.id;
   const canReportUser = !isAdmin && !isSelf;
 
   const combinedLoading = loading || (!isAdmin && currentUserLoading);
@@ -135,6 +138,18 @@ const UserDetailPage = () => {
               : " — This ban does not expire"}
           </AlertDescription>
         </Alert>
+      )}
+      {isAdmin && (
+        <>
+          {ratingsError && (
+            <Alert variant="destructive" className="mt-6">
+              <ShieldAlert className="h-4 w-4" />
+              <AlertTitle>Error loading ratings</AlertTitle>
+              <AlertDescription>{ratingsError.message}</AlertDescription>
+            </Alert>
+          )}
+          <UserRatingsStatistics data={ratingsData?.getUserReceivedRatings} />
+        </>
       )}
       {canReportUser && (
         <div className="mt-6 flex justify-end">

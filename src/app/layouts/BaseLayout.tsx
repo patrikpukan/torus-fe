@@ -35,12 +35,15 @@ import { LogoText } from "./LogoText";
 import { useAuth } from "@/hooks/useAuth";
 import { formatUserDisplayName } from "@/lib/userDisplay";
 import { normalizeAssetUrl } from "@/lib/assetUrl";
+import { RatingModal } from "@/features/ratings/components/RatingModal";
+import { useRatingModalTrigger } from "@/features/ratings/hooks/useRatingModalTrigger";
 
 const BaseLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut, appRole, currentUserData } = useAuth();
+  const { meeting, isOpen, onClose, onSuccess } = useRatingModalTrigger();
 
   const filteredNavConfig = navConfig.filter((item) => {
     // Check role restriction
@@ -196,6 +199,12 @@ const BaseLayout = () => {
           </div>
         </footer>
       </SidebarInset>
+      <RatingModal
+        meeting={meeting}
+        open={isOpen}
+        onClose={onClose}
+        onSuccess={onSuccess}
+      />
     </SidebarProvider>
   );
 };

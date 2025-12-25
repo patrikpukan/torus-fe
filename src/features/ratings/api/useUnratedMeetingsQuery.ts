@@ -47,6 +47,6 @@ export const UNRATED_MEETINGS_QUERY = graphql(`
 
 export const useUnratedMeetingsQuery = () =>
   useQuery<UnratedMeetingsQueryData>(UNRATED_MEETINGS_QUERY, {
-    pollInterval: 30000, // Poll every 30 seconds for new unrated meetings
+    pollInterval: 5000, // Poll every 5 seconds to quickly show new unrated meetings
     fetchPolicy: "cache-and-network",
   });

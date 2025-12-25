@@ -37,7 +37,11 @@ export const useCreateRatingMutation = () => {
     CREATE_RATING_MUTATION,
     {
       onCompleted: () => {
-        // Refetch unrated meetings to remove the one just rated
+        // Clear the cache for unrated meetings and refetch to ensure fresh data
+        client.cache.evict({
+          id: client.cache.identify({ __typename: "Query" }),
+          fieldName: "unratedMeetings",
+        });
         client.refetchQueries({
           include: [UNRATED_MEETINGS_QUERY],
         });

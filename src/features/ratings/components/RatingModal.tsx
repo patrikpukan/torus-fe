@@ -104,6 +104,7 @@ export const RatingModal = ({
     new Date(meeting.startDateTime),
     "MMM d, yyyy 'at' h:mm a"
   );
+  const meetingEndTime = format(new Date(meeting.endDateTime), "h:mm a");
 
   return (
     <Dialog open={open} onOpenChange={() => null}>
@@ -131,7 +132,9 @@ export const RatingModal = ({
 
             <div className="space-y-6 py-4">
               <div>
-                <p className="text-sm text-gray-600 mb-3">{meetingDate}</p>
+                <p className="text-sm text-gray-600 mb-3">
+                  {meetingDate} - {meetingEndTime}
+                </p>
               </div>
 
               <form

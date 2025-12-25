@@ -32,7 +32,7 @@ const UserDetailPage = () => {
     error: currentUserError,
   } = useGetCurrentUserQuery();
 
-  const { data: ratingsData } = useGetUserReceivedRatingsQuery(
+  const { data: ratingsData, error: ratingsError } = useGetUserReceivedRatingsQuery(
     isAdmin ? userId : undefined
   );
 
@@ -141,7 +141,16 @@ const UserDetailPage = () => {
         </Alert>
       )}
       {isAdmin && (
-        <UserRatingsStatistics data={ratingsData?.getUserReceivedRatings} />
+        <>
+          {ratingsError && (
+            <Alert variant="destructive" className="mt-6">
+              <ShieldAlert className="h-4 w-4" />
+              <AlertTitle>Error loading ratings</AlertTitle>
+              <AlertDescription>{ratingsError.message}</AlertDescription>
+            </Alert>
+          )}
+          <UserRatingsStatistics data={ratingsData?.getUserReceivedRatings} />
+        </>
       )}
       {canReportUser && (
         <div className="mt-6 flex justify-end">

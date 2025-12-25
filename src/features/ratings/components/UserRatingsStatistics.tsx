@@ -4,29 +4,10 @@ import { Card } from "@/components/ui/card";
 import { ReadOnlyStarRating } from "./ReadOnlyStarRating";
 import type {
   UserReceivedRatingsData,
-  ReceivedRating,
 } from "../api/useGetUserReceivedRatingsQuery";
 
 type UserRatingsStatisticsProps = {
   data: UserReceivedRatingsData["getUserReceivedRatings"] | null | undefined;
-};
-
-const formatUserName = (user: {
-  firstName?: string | null;
-  lastName?: string | null;
-  email?: string;
-}) => {
-  const parts = [user.firstName, user.lastName].filter((v): v is string =>
-    Boolean(v?.trim())
-  );
-  return parts.length ? parts.join(" ") : (user.email ?? "Unknown");
-};
-
-const getMeetingOtherParticipant = (
-  meeting: ReceivedRating["meetingEvent"],
-  targetUserId: string
-) => {
-  return meeting.userAId === targetUserId ? meeting.userB : meeting.userA;
 };
 
 export const UserRatingsStatistics = ({ data }: UserRatingsStatisticsProps) => {
@@ -66,10 +47,6 @@ export const UserRatingsStatistics = ({ data }: UserRatingsStatisticsProps) => {
         <div className="space-y-4">
           <h4 className="font-medium text-sm">Individual Ratings</h4>
           {ratings.map((rating) => {
-            const otherParticipant = getMeetingOtherParticipant(
-              rating.meetingEvent,
-              rating.user.id
-            );
             const isFeedbackExpanded = expandedFeedback === rating.id;
             const feedbackPreview = rating.feedback
               ? rating.feedback.substring(0, 100)
@@ -83,17 +60,14 @@ export const UserRatingsStatistics = ({ data }: UserRatingsStatisticsProps) => {
                 <div className="flex items-start justify-between gap-4 mb-2">
                   <div className="flex-1">
                     <p className="text-sm font-medium">
-                      Rated by {formatUserName(rating.user)}
+                      Rating received
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      During meeting with {formatUserName(otherParticipant)}
+                      {format(new Date(rating.createdAt), "MMM d, yyyy")}
                     </p>
                   </div>
                   <div className="text-right">
                     <ReadOnlyStarRating value={rating.stars} size={14} />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {format(new Date(rating.createdAt), "MMM d, yyyy")}
-                    </p>
                   </div>
                 </div>
 

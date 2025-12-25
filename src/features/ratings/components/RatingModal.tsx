@@ -109,7 +109,7 @@ export const RatingModal = ({
   return (
     <Dialog open={open} onOpenChange={() => null}>
       <DialogContent
-        className="sm:max-w-[480px]"
+        className="sm:max-w-[480px] [&>button]:hidden"
         onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >

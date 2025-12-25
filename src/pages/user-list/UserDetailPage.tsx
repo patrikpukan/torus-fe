@@ -32,9 +32,8 @@ const UserDetailPage = () => {
     error: currentUserError,
   } = useGetCurrentUserQuery();
 
-  const { data: ratingsData, error: ratingsError } = useGetUserReceivedRatingsQuery(
-    isAdmin ? userId : undefined
-  );
+  const { data: ratingsData, error: ratingsError } =
+    useGetUserReceivedRatingsQuery(isAdmin ? userId : undefined);
 
   const user = data?.userById ?? null;
   const isSelf = currentUserData?.getCurrentUser?.id === user?.id;

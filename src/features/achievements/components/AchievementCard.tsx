@@ -1,0 +1,157 @@
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import type { Achievement } from "../graphql/achievement.types";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+
+export type AchievementCardProps = {
+  achievement: Achievement;
+  onClick?: () => void;
+  /**
+   * Whether to show progress indicator for locked achievements
+   * @default true
+   */
+  showProgress?: boolean;
+};
+
+/**
+ * AchievementCard Component
+ *
+ * Displays a single achievement with unlock status, description, and optional progress.
+ * Features:
+ * - Shows achievement image, name, and description
+ * - Visual distinction between locked (grayscale, lower opacity) and unlocked states
+ * - Displays unlock date for unlocked achievements
+ * - Hover animation for interactive feedback
+ * - Supports click handler for detail views
+ *
+ * @example
+ * <AchievementCard
+ *   achievement={achievementData}
+ *   onClick={() => openDetailModal(achievementData)}
+ * />
+ */
+export default function AchievementCard({
+  achievement,
+  onClick,
+  showProgress = true,
+}: AchievementCardProps) {
+  const isLocked = !achievement.isUnlocked;
+  const unlockedDate = achievement.unlockedAt
+    ? format(new Date(achievement.unlockedAt), "MMM d, yyyy")
+    : null;
+
+  const getAchievementTypeColor = (type: string): string => {
+    const colorMap = {
+      milestone:
+        "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+      social:
+        "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+      engagement:
+        "bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200",
+      consistency:
+        "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
+      legendary:
+        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+    };
+    return colorMap[type as keyof typeof colorMap] || "bg-gray-100";
+  };
+
+  return (
+    <Card
+      onClick={onClick}
+      className={cn(
+        "h-full transition-all duration-200",
+        onClick && "cursor-pointer hover:shadow-lg hover:scale-105",
+        isLocked && "opacity-50 grayscale"
+      )}
+    >
+      <CardHeader className="pb-3">
+        <div className="flex items-start gap-4">
+          {/* Achievement Image */}
+          <Avatar className="h-14 w-14 shrink-0">
+            <AvatarImage
+              src={`/achievements/${achievement.imageIdentifier}.svg`}
+              alt={achievement.name}
+              className={cn("object-cover", isLocked && "opacity-75")}
+            />
+            <AvatarFallback className={cn(isLocked && "opacity-75")}>
+              {achievement.name.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+
+          {/* Title and Type Badge */}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-sm line-clamp-2">
+              {achievement.name}
+            </h3>
+            <Badge
+              variant="secondary"
+              className={cn(
+                "mt-1.5 text-xs font-medium",
+                getAchievementTypeColor(achievement.type)
+              )}
+            >
+              {achievement.type}
+            </Badge>
+          </div>
+
+          {/* Status Badge */}
+          <Badge
+            variant={achievement.isUnlocked ? "default" : "outline"}
+            className={cn(
+              "shrink-0 text-xs",
+              achievement.isUnlocked && "bg-green-600 hover:bg-green-700"
+            )}
+          >
+            {achievement.isUnlocked ? "Unlocked" : "Locked"}
+          </Badge>
+        </div>
+      </CardHeader>
+
+      <CardContent className="space-y-3">
+        {/* Description */}
+        <p className="text-sm text-muted-foreground line-clamp-2">
+          {achievement.description}
+        </p>
+
+        {/* Progress or Unlock Date */}
+        {achievement.isUnlocked && unlockedDate ? (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span className="inline-block w-1.5 h-1.5 bg-green-500 rounded-full" />
+            Unlocked on {unlockedDate}
+          </div>
+        ) : showProgress ? (
+          <div className="space-y-1.5">
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-muted-foreground">Progress</span>
+              <span className="font-medium">
+                {achievement.currentProgress}/{achievement.targetProgress}
+              </span>
+            </div>
+            <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-300"
+                style={{
+                  width: `${achievement.percentComplete}%`,
+                }}
+              />
+            </div>
+            <div className="text-xs text-muted-foreground">
+              {achievement.percentComplete}% complete
+            </div>
+          </div>
+        ) : null}
+
+        {/* Points Value */}
+        <div className="flex items-center justify-between pt-2 border-t border-border">
+          <span className="text-xs text-muted-foreground">Points</span>
+          <span className="font-semibold text-sm text-blue-600 dark:text-blue-400">
+            +{achievement.pointValue}
+          </span>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

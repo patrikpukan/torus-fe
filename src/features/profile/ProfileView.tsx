@@ -5,6 +5,7 @@ import {
   useResumeActivityMutation,
 } from "@/features/calendar/graphql/pause-activity.mutations";
 import { PauseActivityModal } from "@/features/profile/components/PauseActivityModal";
+import { ProfileAchievements } from "@/features/achievements";
 import type { UpdateUserProfileMutation } from "@/graphql/generated/schema";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -262,6 +263,11 @@ const ProfileView = () => {
               )}
             </div>
           )}
+
+          {/* Achievements Section */}
+          <div className="border-t pt-6">
+            <ProfileAchievements showProgress={true} />
+          </div>
         </div>
       )}
       <PauseActivityModal

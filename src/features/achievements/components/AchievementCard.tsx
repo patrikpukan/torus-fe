@@ -1,7 +1,11 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import type { Achievement } from "../graphql/achievement.types";
+import {
+  getAchievementIcon,
+  getAchievementTypeColors,
+  getAchievementFilter,
+} from "../lib/achievement-icons";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -20,9 +24,10 @@ export type AchievementCardProps = {
  *
  * Displays a single achievement with unlock status, description, and optional progress.
  * Features:
- * - Shows achievement image, name, and description
+ * - Shows achievement icon from lucide-react
  * - Visual distinction between locked (grayscale, lower opacity) and unlocked states
  * - Displays unlock date for unlocked achievements
+ * - Color-coded by achievement type
  * - Hover animation for interactive feedback
  * - Supports click handler for detail views
  *
@@ -42,21 +47,10 @@ export default function AchievementCard({
     ? format(new Date(achievement.unlockedAt), "MMM d, yyyy")
     : null;
 
-  const getAchievementTypeColor = (type: string): string => {
-    const colorMap = {
-      milestone:
-        "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-      social:
-        "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-      engagement:
-        "bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200",
-      consistency:
-        "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
-      legendary:
-        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
-    };
-    return colorMap[type as keyof typeof colorMap] || "bg-gray-100";
-  };
+  // Get icon component and colors
+  const IconComponent = getAchievementIcon(achievement.imageIdentifier);
+  const typeColors = getAchievementTypeColors(achievement.type);
+  const filterClass = getAchievementFilter(achievement.isUnlocked);
 
   return (
     <Card
@@ -69,17 +63,16 @@ export default function AchievementCard({
     >
       <CardHeader className="pb-3">
         <div className="flex items-start gap-4">
-          {/* Achievement Image */}
-          <Avatar className="h-14 w-14 shrink-0">
-            <AvatarImage
-              src={`/achievements/${achievement.imageIdentifier}.svg`}
-              alt={achievement.name}
-              className={cn("object-cover", isLocked && "opacity-75")}
-            />
-            <AvatarFallback className={cn(isLocked && "opacity-75")}>
-              {achievement.name.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          {/* Achievement Icon */}
+          <div
+            className={cn(
+              "h-14 w-14 shrink-0 rounded-lg flex items-center justify-center transition-all",
+              `${typeColors.bg} ${typeColors.text}`,
+              filterClass
+            )}
+          >
+            <IconComponent size={28} className="drop-shadow-sm" />
+          </div>
 
           {/* Title and Type Badge */}
           <div className="flex-1 min-w-0">
@@ -90,7 +83,7 @@ export default function AchievementCard({
               variant="secondary"
               className={cn(
                 "mt-1.5 text-xs font-medium",
-                getAchievementTypeColor(achievement.type)
+                `${typeColors.bg} ${typeColors.text}`
               )}
             >
               {achievement.type}

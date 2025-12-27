@@ -8,16 +8,15 @@ export type { ProfileAchievementsProps } from "./components/ProfileAchievements"
 export { UserProfileAchievements } from "./components/UserProfileAchievements";
 export type { UserProfileAchievementsProps } from "./components/UserProfileAchievements";
 
-// Hooks
+// Utilities and Icons
 export {
-  useUserAchievements,
-  useUserProfileAchievements,
-  useFilteredAchievements,
-  useAchievementsByType,
-  useAchievementStats,
-} from "./hooks/useAchievements";
+  getAchievementIcon,
+  getAchievementTypeColors,
+  getAchievementFilter,
+  ACHIEVEMENT_ICON_MAP,
+  ACHIEVEMENT_TYPE_COLORS,
+} from "./lib/achievement-icons";
 
-// Types and GraphQL
 export {
   GET_USER_ACHIEVEMENTS,
   GET_USER_PROFILE_ACHIEVEMENTS,

@@ -222,10 +222,6 @@ const ProfileView = () => {
             </div>
           )}
 
-          <div className="flex justify-center">
-            <SendResetPasswordButton email={profile.email} variant="outline" />
-          </div>
-
           {/* Pause Activity Section - Only for regular members */}
           {canBePaired && (
             <div className="mt-6 border-t pt-6">
@@ -267,6 +263,11 @@ const ProfileView = () => {
           {/* Achievements Section */}
           <div className="border-t pt-6">
             <ProfileAchievements showProgress={true} />
+          </div>
+
+          {/* Reset Password Section */}
+          <div className="flex justify-center">
+            <SendResetPasswordButton email={profile.email} variant="outline" />
           </div>
         </div>
       )}

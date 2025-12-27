@@ -181,7 +181,6 @@ const UserDetailPage = () => {
       )}
       {isAdmin && (
         <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <SendResetPasswordButton email={user.email} variant="outline" />
           {isBanned ? (
             <UnbanUserButton userId={user.id} userDisplayName={userDisplayName}>
               {({ openDialog, loading }) => (
@@ -209,6 +208,11 @@ const UserDetailPage = () => {
               )}
             </BanUserDialog>
           )}
+        </div>
+      )}
+      {isAdmin && (
+        <div className="mt-6 flex justify-center">
+          <SendResetPasswordButton email={user.email} variant="outline" />
         </div>
       )}
     </div>

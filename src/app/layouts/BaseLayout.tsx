@@ -60,7 +60,7 @@ const BaseLayout = () => {
   const handleSignOut = useCallback(async () => {
     try {
       await signOut();
-      navigate("/");
+      navigate("/login");
     } catch (error) {
       console.error("Failed to sign out", error);
     }

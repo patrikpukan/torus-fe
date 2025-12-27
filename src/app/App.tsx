@@ -16,6 +16,7 @@ import AuthCallbackPage from "../pages/auth/AuthCallbackPage";
 import HomePage from "../pages/home/HomePage";
 import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/login/LoginPage";
+import ContactPage from "../pages/contact/ContactPage";
 import OrganizationDetailPage from "../pages/organization-list/OrganizationDetailPage";
 import OrganizationListPage from "../pages/organization-list/OrganizationListPage";
 import PairingsRoute from "../pages/pairings/PairingsRoute";
@@ -58,8 +59,9 @@ const App = () => {
             element={<ConfirmResetPasswordPage />}
           />
           <Route path="/access-denied" element={<AccessDeniedPage />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route path="/" element={<BaseLayout />}>
-            <Route index element={<LandingPage />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="register" element={<RegisterPage />} />
             <Route

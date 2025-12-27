@@ -2,6 +2,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import AchievementCard from "./AchievementCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUserProfileAchievements } from "../hooks/useAchievements";
+import { useUserAchievementPoints } from "../hooks/useUserAchievementPoints";
 import { useMemo } from "react";
 import { AlertCircle } from "lucide-react";
 
@@ -21,6 +22,8 @@ export function UserProfileAchievements({
   userId,
 }: UserProfileAchievementsProps) {
   const { achievements, loading, error } = useUserProfileAchievements(userId);
+  const { data: pointsData, isLoading: pointsLoading } =
+    useUserAchievementPoints(userId);
 
   // Filter to show only unlocked achievements and sort by unlock date
   const unlockedAchievements = useMemo(() => {
@@ -82,20 +85,35 @@ export function UserProfileAchievements({
     );
   }
 
+  const earnedPoints = pointsData?.earnedPoints ?? 0;
+  const possiblePoints = pointsData?.possiblePoints ?? 0;
+
   return (
     <div className="mt-6 mb-4">
       <div className="space-y-4">
         <div>
           <h2 className="text-2xl font-semibold mb-4">Achievements</h2>
 
-          {/* Summary of unlocked achievements */}
-          <div className="rounded-lg border border-border bg-card p-3 mb-4">
-            <p className="text-sm text-muted-foreground">
-              Achievements Unlocked
-            </p>
-            <p className="text-xl font-semibold">
-              {unlockedAchievements.length}
-            </p>
+          {/* Summary of unlocked achievements and points */}
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="rounded-lg border border-border bg-card p-3">
+              <p className="text-sm text-muted-foreground">
+                Achievements Unlocked
+              </p>
+              <p className="text-xl font-semibold">
+                {unlockedAchievements.length}
+              </p>
+            </div>
+            <div className="rounded-lg border border-border bg-card p-3">
+              <p className="text-sm text-muted-foreground">Points Earned</p>
+              {pointsLoading ? (
+                <Skeleton className="h-7 w-20 mt-1" />
+              ) : (
+                <p className="text-xl font-semibold">
+                  {earnedPoints} / {possiblePoints}
+                </p>
+              )}
+            </div>
           </div>
         </div>
 

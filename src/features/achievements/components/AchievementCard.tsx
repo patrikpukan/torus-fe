@@ -56,64 +56,59 @@ export default function AchievementCard({
     <Card
       onClick={onClick}
       className={cn(
-        "h-full transition-all duration-200",
+        "h-full transition-all duration-200 flex flex-col",
         onClick && "cursor-pointer hover:shadow-lg hover:scale-105",
         isLocked && "opacity-50 grayscale"
       )}
     >
-      <CardHeader className="pb-3">
-        <div className="flex items-start gap-4">
+      <CardHeader className="pb-2">
+        <div className="flex items-start gap-3">
           {/* Achievement Icon */}
           <div
             className={cn(
-              "h-14 w-14 shrink-0 rounded-lg flex items-center justify-center transition-all",
+              "h-12 w-12 shrink-0 rounded-lg flex items-center justify-center transition-all",
               `${typeColors.bg} ${typeColors.text}`,
               filterClass
             )}
           >
-            <IconComponent size={28} className="drop-shadow-sm" />
+            <IconComponent size={24} className="drop-shadow-sm" />
           </div>
 
-          {/* Title and Type Badge */}
+          {/* Title, Type Badge, and Status */}
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-sm line-clamp-2">
-              {achievement.name}
-            </h3>
+            <h3 className="font-semibold text-sm mb-2">{achievement.name}</h3>
             <Badge
               variant="secondary"
               className={cn(
-                "mt-1.5 text-xs font-medium",
+                "text-xs font-medium",
                 `${typeColors.bg} ${typeColors.text}`
               )}
             >
               {achievement.type}
             </Badge>
           </div>
-
-          {/* Status Badge */}
-          <Badge
-            variant={achievement.isUnlocked ? "default" : "outline"}
-            className={cn(
-              "shrink-0 text-xs",
-              achievement.isUnlocked && "bg-green-600 hover:bg-green-700"
-            )}
-          >
-            {achievement.isUnlocked ? "Unlocked" : "Locked"}
-          </Badge>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-3 flex-1 flex flex-col">
         {/* Description */}
-        <p className="text-sm text-muted-foreground line-clamp-2">
+        <p className="text-sm text-muted-foreground">
           {achievement.description}
         </p>
 
         {/* Progress or Unlock Date */}
         {achievement.isUnlocked && unlockedDate ? (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="inline-block w-1.5 h-1.5 bg-green-500 rounded-full" />
-            Unlocked on {unlockedDate}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="inline-block w-1.5 h-1.5 bg-green-500 rounded-full" />
+              Unlocked on {unlockedDate}
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">Earned:</span>
+              <span className="font-semibold text-sm text-green-600 dark:text-green-400">
+                +{achievement.pointValue} points
+              </span>
+            </div>
           </div>
         ) : showProgress ? (
           <div className="space-y-1.5">
@@ -137,13 +132,17 @@ export default function AchievementCard({
           </div>
         ) : null}
 
-        {/* Points Value */}
-        <div className="flex items-center justify-between pt-2 border-t border-border">
-          <span className="text-xs text-muted-foreground">Points</span>
-          <span className="font-semibold text-sm text-blue-600 dark:text-blue-400">
-            +{achievement.pointValue}
-          </span>
-        </div>
+        {/* Points Value - shown only for locked achievements */}
+        {isLocked && (
+          <div className="flex items-center justify-between pt-2 border-t border-border mt-auto">
+            <span className="text-xs text-muted-foreground">
+              Available Points
+            </span>
+            <span className="font-semibold text-sm text-blue-600 dark:text-blue-400">
+              +{achievement.pointValue}
+            </span>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

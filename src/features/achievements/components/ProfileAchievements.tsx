@@ -2,6 +2,7 @@ import AchievementCard from "./AchievementCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useUserAchievements } from "../hooks/useAchievements";
+import { useUserAchievementPoints } from "../hooks/useUserAchievementPoints";
 import { useMemo } from "react";
 
 export interface ProfileAchievementsProps {
@@ -21,6 +22,8 @@ export function ProfileAchievements({
   showProgress = true,
 }: ProfileAchievementsProps) {
   const { achievements, loading, error } = useUserAchievements();
+  const { data: pointsData, isLoading: pointsLoading } =
+    useUserAchievementPoints();
 
   // Sort achievements: unlocked first (newest), then locked by progress
   const sortedAchievements = useMemo(() => {
@@ -87,14 +90,9 @@ export function ProfileAchievements({
   // Calculate stats
   const unlockedCount = sortedAchievements.filter((a) => a.isUnlocked).length;
   const totalCount = sortedAchievements.length;
-  const completionPercentage = Math.round((unlockedCount / totalCount) * 100);
-  const totalPoints = sortedAchievements.reduce(
-    (sum, a) => sum + (a.pointValue || 0),
-    0
-  );
-  const earnedPoints = sortedAchievements
-    .filter((a) => a.isUnlocked)
-    .reduce((sum, a) => sum + (a.pointValue || 0), 0);
+  const earnedPoints = pointsData?.earnedPoints ?? 0;
+  const possiblePoints = pointsData?.possiblePoints ?? 0;
+  const completionPercentage = pointsData?.completionPercentage ?? 0;
 
   return (
     <div className="mt-6 mb-4">
@@ -112,9 +110,13 @@ export function ProfileAchievements({
             </div>
             <div className="rounded-lg border border-border bg-card p-3">
               <p className="text-sm text-muted-foreground">Points Earned</p>
-              <p className="text-xl font-semibold">
-                {earnedPoints} / {totalPoints}
-              </p>
+              {pointsLoading ? (
+                <Skeleton className="h-7 w-20 mt-1" />
+              ) : (
+                <p className="text-xl font-semibold">
+                  {earnedPoints} / {possiblePoints}
+                </p>
+              )}
             </div>
             <div className="rounded-lg border border-border bg-card p-3">
               <p className="text-sm text-muted-foreground">Completion</p>

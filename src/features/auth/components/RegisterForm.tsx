@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { ArrowLeft } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -35,6 +36,7 @@ const registerSchema = z
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 const RegisterForm = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const urlInviteCode = searchParams.get("invite") || "";
   const invitePrefilled = useMemo(
@@ -193,13 +195,22 @@ const RegisterForm = () => {
           )}
         </CardContent>
 
-        <CardFooter className="p-6 pt-0">
+        <CardFooter className="flex flex-col gap-3 p-6 pt-0">
           <Button
             className="w-full"
             type="submit"
             disabled={registerMutation.isPending || isValidatingInvite}
           >
             {registerMutation.isPending ? "Registering..." : "Register"}
+          </Button>
+          <Button
+            variant="ghost"
+            className="w-full"
+            onClick={() => navigate("/login")}
+            type="button"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Login
           </Button>
         </CardFooter>
       </form>

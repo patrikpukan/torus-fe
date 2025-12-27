@@ -60,7 +60,7 @@ const BaseLayout = () => {
   const handleSignOut = useCallback(async () => {
     try {
       await signOut();
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       console.error("Failed to sign out", error);
     }
@@ -125,14 +125,15 @@ const BaseLayout = () => {
                       <LogOut />
                       <span>Logout</span>
                     </SidebarMenuButton>
-                  ) : (
+                  ) : location.pathname !== "/login" &&
+                    location.pathname !== "/register" ? (
                     <SidebarMenuButton asChild>
                       <NavLink to="/login">
                         <LogIn />
                         <span>Login</span>
                       </NavLink>
                     </SidebarMenuButton>
-                  )}
+                  ) : null}
                 </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>

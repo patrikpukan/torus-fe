@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { gql } from "@apollo/client";
 import { apolloClient } from "@/lib/apolloClient";
 
-interface InviteCode {
+export interface InviteCode {
   id: string;
   code: string;
   createdAt: string;

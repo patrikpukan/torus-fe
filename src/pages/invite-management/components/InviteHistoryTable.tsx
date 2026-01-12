@@ -10,21 +10,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { InviteCode } from "@/features/organization/api/useInviteCodesQuery";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
 import { Check, Copy } from "lucide-react";
 import { useState } from "react";
-
-interface InviteCode {
-  id: string;
-  code: string;
-  createdAt: string;
-  expiresAt: string | null;
-  usedCount: number;
-  maxUses: number | null;
-  isActive: boolean;
-}
 
 interface InviteHistoryTableProps {
   inviteCodes?: InviteCode[];

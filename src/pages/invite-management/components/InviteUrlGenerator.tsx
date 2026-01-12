@@ -90,9 +90,6 @@ export const InviteUrlGenerator = ({
     setUrlGeneratedUrl(null);
     setUrlCopiedCode(false);
     setUrlCopiedUrl(false);
-    setMaxUses(50);
-    setExpirationDays(30);
-    setIsAdvancedOpen(false);
   };
 
   return (

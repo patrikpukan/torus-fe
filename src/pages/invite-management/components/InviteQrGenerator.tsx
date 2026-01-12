@@ -96,9 +96,6 @@ export const InviteQrGenerator = ({
   const handleResetQrInvite = () => {
     setQrGeneratedCode(null);
     setQrGeneratedUrl(null);
-    setMaxUses(50);
-    setExpirationDays(30);
-    setIsAdvancedOpen(false);
   };
 
   return (

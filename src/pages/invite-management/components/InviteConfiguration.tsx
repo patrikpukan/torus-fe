@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ChevronDown } from "lucide-react";
@@ -23,7 +24,8 @@ export const InviteConfiguration = ({
 }: InviteConfigurationProps) => {
   return (
     <div className="w-full max-w-md space-y-4">
-      <button
+      <Button
+        variant="ghost"
         onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
         className="flex items-center gap-2 w-full justify-center text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
@@ -33,7 +35,7 @@ export const InviteConfiguration = ({
           }`}
         />
         <span>Advanced Options</span>
-      </button>
+      </Button>
 
       {isAdvancedOpen && (
         <div className="space-y-4 p-4 border rounded-lg bg-muted/50">

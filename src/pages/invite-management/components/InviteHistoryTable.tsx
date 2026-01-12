@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { InviteCode } from "@/features/organization/api/useInviteCodesQuery";
+import type { InviteCode } from "@/features/organization/api/useInviteCodesQuery";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";

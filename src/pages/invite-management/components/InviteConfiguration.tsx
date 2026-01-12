@@ -27,7 +27,7 @@ export const InviteConfiguration = ({
       <Button
         variant="ghost"
         onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
-        className="flex items-center gap-2 w-full justify-center text-sm text-muted-foreground hover:text-foreground transition-colors"
+        className="w-full text-muted-foreground"
       >
         <ChevronDown
           className={`h-4 w-4 transition-transform ${

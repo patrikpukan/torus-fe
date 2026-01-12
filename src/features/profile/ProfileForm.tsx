@@ -17,27 +17,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Tags,
-  TagsContent,
-  TagsGroup,
-  TagsInput,
-  TagsItem,
-  TagsList,
-  TagsTrigger,
-  TagsValue,
-} from "@/components/ui/shadcn-io/tags";
 import { Textarea } from "@/components/ui/textarea";
 import { useGetDepartmentsByOrganizationQuery } from "@/features/organization/api/useGetDepartmentsByOrganizationQuery";
 import { useAuth } from "@/hooks/useAuth";
 import { normalizeAssetUrl } from "@/lib/assetUrl";
 import { supabaseClient } from "@/lib/supabaseClient";
 import type { TagObject, UserProfile } from "@/types/User.ts";
-import { useQuery as useApolloQuery } from "@apollo/client/react";
 import { CircleUser, Pencil, Upload, User } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { GET_ALL_TAGS } from "./api/useTagsQueries";
+import { TagSelector } from "./components/TagSelector";
+import {
+  buildProfilePayload,
+  normalizeProfile,
+  type ProfileFormValues,
+} from "./utils/profileFormUtils";
 
 export type ProfileFormProps = {
   value: UserProfile;
@@ -46,143 +40,6 @@ export type ProfileFormProps = {
   onSubmit?: (profile: UserProfile) => void;
   submitLabel?: string;
   onEditClick?: () => void;
-};
-
-type ProfileFormValues = UserProfile & {
-  preferredActivity?: string | null;
-  profileImageUrl?: string | null;
-  about?: string | null;
-  location?: string | null;
-  position?: string | null;
-};
-
-const normalizeProfile = (profile: UserProfile): ProfileFormValues => ({
-  ...profile,
-  firstName: profile.firstName ?? "",
-  lastName: profile.lastName ?? "",
-  about: profile.about ?? "",
-  location: profile.location ?? "",
-  position: profile.position ?? "",
-  preferredActivity: profile.preferredActivity ?? "",
-  profileImageUrl: profile.profileImageUrl ?? "",
-  organization: profile.organization ?? "",
-  accountStatus: profile.accountStatus ?? "",
-  pairingStatus: profile.pairingStatus ?? "",
-  hobbies: Array.isArray(profile.hobbies) ? profile.hobbies : [],
-  interests: Array.isArray(profile.interests) ? profile.interests : [],
-  departmentId: profile.departmentId ?? null,
-});
-
-const buildProfilePayload = (
-  values: ProfileFormValues,
-  prev: UserProfile
-): UserProfile => ({
-  ...prev,
-  ...values,
-  firstName: values.firstName?.trim() || undefined,
-  lastName: values.lastName?.trim() || undefined,
-  about: values.about?.trim() || undefined,
-  location: values.location?.trim() || undefined,
-  position: values.position?.trim() || undefined,
-  preferredActivity: values.preferredActivity?.trim() || undefined,
-  // Preserve profileImageUrl if it exists (even if empty string, let backend handle it)
-  // Only set to undefined if it's explicitly null or empty after trimming
-  profileImageUrl:
-    values.profileImageUrl && values.profileImageUrl.trim()
-      ? values.profileImageUrl.trim()
-      : undefined,
-  hobbies: Array.isArray(values.hobbies) ? values.hobbies : [],
-  interests: Array.isArray(values.interests) ? values.interests : [],
-  departmentId: values.departmentId ?? null,
-});
-
-const TagSelector = ({
-  tags,
-  category,
-  onChange,
-}: {
-  tags: TagObject[];
-  category: "HOBBY" | "INTEREST";
-  onChange: (tags: TagObject[]) => void;
-}) => {
-  const { data: tagsData, loading } = useApolloQuery(GET_ALL_TAGS);
-  const [searchValue, setSearchValue] = useState("");
-
-  const availableTags =
-    (tagsData as { getAllTags?: TagObject[] })?.getAllTags?.filter(
-      (tag: TagObject) => tag.category === category
-    ) || [];
-
-  const selectedIds = new Set(tags.map((t) => t.id));
-
-  const handleToggleTag = (tag: TagObject) => {
-    if (selectedIds.has(tag.id)) {
-      onChange(tags.filter((t) => t.id !== tag.id));
-    } else {
-      onChange([...tags, tag]);
-    }
-  };
-
-  const filteredTags = availableTags.filter((tag: TagObject) =>
-    tag.name.toLowerCase().includes(searchValue.toLowerCase())
-  );
-
-  if (loading) {
-    return <div className="text-sm text-muted-foreground">Loading tags...</div>;
-  }
-
-  return (
-    <Tags>
-      <TagsTrigger className="h-auto min-h-10 justify-start">
-        {tags.length > 0 ? (
-          tags.map((tag) => (
-            <TagsValue
-              key={tag.id}
-              variant="secondary"
-              onRemove={() => onChange(tags.filter((t) => t.id !== tag.id))}
-            >
-              {tag.name}
-            </TagsValue>
-          ))
-        ) : (
-          <span className="text-muted-foreground">Select a tag...</span>
-        )}
-      </TagsTrigger>
-      <TagsContent>
-        <TagsInput
-          placeholder={`Search ${category.toLowerCase()}s...`}
-          value={searchValue}
-          onValueChange={setSearchValue}
-        />
-        <TagsList>
-          {filteredTags.length > 0 ? (
-            <TagsGroup>
-              {filteredTags.map((tag: TagObject) => (
-                <TagsItem
-                  key={tag.id}
-                  value={tag.id}
-                  onSelect={() => handleToggleTag(tag)}
-                  className="justify-start"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.has(tag.id)}
-                    onChange={() => handleToggleTag(tag)}
-                    className="mr-2"
-                  />
-                  {tag.name}
-                </TagsItem>
-              ))}
-            </TagsGroup>
-          ) : (
-            <div className="p-2 text-center text-sm text-muted-foreground">
-              No {category.toLowerCase()}s found
-            </div>
-          )}
-        </TagsList>
-      </TagsContent>
-    </Tags>
-  );
 };
 
 const ProfileForm = ({

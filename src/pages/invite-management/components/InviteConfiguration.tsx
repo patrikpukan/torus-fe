@@ -27,7 +27,7 @@ export const InviteConfiguration = ({
       <Button
         variant="ghost"
         onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
-        className="w-full justify-center"
+        className="w-full justify-center text-muted-foreground"
       >
         <ChevronDown
           className={`h-4 w-4 transition-transform ${

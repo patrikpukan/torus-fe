@@ -200,7 +200,7 @@ type Query {
   organizationById(id: ID!): OrganizationType
   organizations: [OrganizationType!]!
   reportById(id: ID!): UserReport
-  reports: [UserReport!]!
+    reports(organizationId: ID): [UserReport!]!
   statistics(filter: StatisticsFilterInputType): StatisticsResponseType!
   userById(id: ID!): User
   users: [User!]!

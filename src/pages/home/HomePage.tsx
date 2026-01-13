@@ -1,6 +1,7 @@
 import { Handshake, Home, User } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
@@ -8,14 +9,24 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import useHomeData from "@/features/home/useHomeData";
+import { useFindIdealColleague } from "@/features/home/api/idealColleague";
 import { formatDate } from "@/features/pairings/components/dateUtils.ts";
 import { HomeSkeleton } from "./components/HomeSkeleton";
 import { PairingActiveState } from "./components/PairingActiveState";
 import { PairingEmptyState } from "./components/PairingEmptyState";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import { GET_CURRENT_USER } from "@/features/auth/api/useGetCurrentUserQuery";
+import { PAIRINGS_QUERY } from "@/features/pairings/api/pairingsQuery";
+import { ACTIVE_PAIRING_PERIOD_QUERY } from "@/features/pairings/api/useActivePairingPeriodQuery";
 
 const HomePage = () => {
   const { firstName, currentPairing, stats, isLoading, isEmpty } =
     useHomeData();
+  const { currentUserData } = useAuth();
+  const { toast } = useToast();
+  const [findIdealColleague, { loading: findingMatch }] =
+    useFindIdealColleague();
 
   if (isLoading) {
     return <HomeSkeleton />;
@@ -29,6 +40,45 @@ const HomePage = () => {
   const welcomeMessage = firstName
     ? `Welcome back, ${firstName}!`
     : "Welcome back!";
+
+  const remainingUses = currentUserData?.idealColleagueUsesRemaining ?? 0;
+
+  const handleFindIdealColleague = async () => {
+    try {
+      const { data } = await findIdealColleague({
+        refetchQueries: [
+          { query: GET_CURRENT_USER },
+          { query: PAIRINGS_QUERY },
+          { query: ACTIVE_PAIRING_PERIOD_QUERY },
+        ],
+      });
+      const pairingId = data?.findIdealColleague;
+
+      if (pairingId) {
+        toast({
+          title: "Ideal colleague found",
+          description: "We created a new pairing for you.",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Unable to find a match",
+          description: "Please try again later.",
+        });
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to find an ideal colleague.";
+
+      toast({
+        variant: "destructive",
+        title: "Request failed",
+        description: message,
+      });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -77,7 +127,7 @@ const HomePage = () => {
 
       <section className="space-y-3">
         <h2 className="text-lg font-semibold tracking-tight">Quick Actions</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Link
             to="/profile"
             className="block transition hover:scale-[1.01] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2"
@@ -117,6 +167,26 @@ const HomePage = () => {
               </div>
             </Card>
           </Link>
+
+          <Card className="flex h-full flex-col justify-between gap-4 bg-card p-6">
+            <div className="space-y-1">
+              <CardTitle className="text-base font-semibold">
+                Najít ideálního kolegu
+              </CardTitle>
+              <CardDescription>
+                We will match you with someone who shares the most interests.
+              </CardDescription>
+              <p className="text-xs text-muted-foreground">
+                Remaining uses: {remainingUses}
+              </p>
+            </div>
+            <Button
+              onClick={handleFindIdealColleague}
+              disabled={findingMatch || remainingUses <= 0}
+            >
+              {findingMatch ? "Hledám..." : "Najít ideálního kolegu"}
+            </Button>
+          </Card>
         </div>
       </section>
     </div>

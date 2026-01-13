@@ -1,4 +1,5 @@
 import { Handshake, Home, User } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import useHomeData from "@/features/home/useHomeData";
 import { useFindIdealColleague } from "@/features/home/api/idealColleague";
 import { formatDate } from "@/features/pairings/components/dateUtils.ts";
@@ -27,6 +36,7 @@ const HomePage = () => {
   const { toast } = useToast();
   const [findIdealColleague, { loading: findingMatch }] =
     useFindIdealColleague();
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   if (isLoading) {
     return <HomeSkeleton />;
@@ -59,6 +69,7 @@ const HomePage = () => {
           title: "Ideal colleague found",
           description: "We created a new pairing for you.",
         });
+        setConfirmOpen(false);
       } else {
         toast({
           variant: "destructive",
@@ -181,11 +192,43 @@ const HomePage = () => {
               </p>
             </div>
             <Button
-              onClick={handleFindIdealColleague}
-              disabled={findingMatch || remainingUses <= 0}
+              onClick={() => setConfirmOpen(true)}
+              disabled={findingMatch || remainingUses < 1}
             >
               {findingMatch ? "Hledám..." : "Najít ideálního kolegu"}
             </Button>
+            <Dialog
+              open={confirmOpen}
+              onOpenChange={(open) => !findingMatch && setConfirmOpen(open)}
+            >
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Find an ideal colleague?</DialogTitle>
+                  <DialogDescription>
+                    This action has limited usage and will create a new pairing.
+                  </DialogDescription>
+                </DialogHeader>
+                <p className="text-sm text-muted-foreground">
+                  You have {remainingUses} use{remainingUses === 1 ? "" : "s"}{" "}
+                  remaining.
+                </p>
+                <DialogFooter className="gap-2">
+                  <Button
+                    variant="ghost"
+                    onClick={() => setConfirmOpen(false)}
+                    disabled={findingMatch}
+                  >
+                    No
+                  </Button>
+                  <Button
+                    onClick={handleFindIdealColleague}
+                    disabled={findingMatch || remainingUses < 1}
+                  >
+                    {findingMatch ? "Finding..." : "Yes, continue"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </Card>
         </div>
       </section>

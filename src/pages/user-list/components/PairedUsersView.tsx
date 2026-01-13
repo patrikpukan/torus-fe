@@ -53,7 +53,7 @@ const PairedUsersView = () => {
       ) {
         latestByUser.set(contact.id, {
           id: contact.id,
-          displayName: `${contact.firstName} ${contact.lastName}`,
+          displayName: `${contact.firstName ?? ""} ${contact.lastName ?? ""}`,
           email: contact.email ?? "",
           pairedAt,
           profileImageUrl: contact.profileImageUrl ?? undefined,

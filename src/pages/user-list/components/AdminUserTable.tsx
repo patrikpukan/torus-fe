@@ -57,12 +57,7 @@ const AdminUserTable = ({ organizationId }: AdminUserTableProps) => {
     () =>
       users.map((user) => ({
         ...user,
-        displayName: [user.firstName, user.lastName]
-          .filter(
-            (part): part is string =>
-              typeof part === "string" && part.trim().length > 0
-          )
-          .join(" "),
+        displayName: `${user.firstName ?? ""} ${user.lastName ?? ""}`,
       })),
     [users]
   );

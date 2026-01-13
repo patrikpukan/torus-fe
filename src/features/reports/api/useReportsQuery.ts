@@ -23,8 +23,8 @@ export type ReportsQueryData = {
 };
 
 export const REPORTS_QUERY = graphql(`
-  query Reports {
-    reports {
+  query Reports($organizationId: ID) {
+    reports(organizationId: $organizationId) {
       id
       createdAt
       reason
@@ -46,7 +46,8 @@ export const REPORTS_QUERY = graphql(`
   }
 `);
 
-export const useReportsQuery = () =>
+export const useReportsQuery = (organizationId?: string | null) =>
   useQuery<ReportsQueryData>(REPORTS_QUERY, {
+    variables: { organizationId: organizationId ?? null },
     fetchPolicy: "cache-and-network",
   });

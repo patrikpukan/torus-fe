@@ -182,7 +182,7 @@ const HomePage = () => {
           <Card className="flex h-full flex-col justify-between gap-4 bg-card p-6">
             <div className="space-y-1">
               <CardTitle className="text-base font-semibold">
-                Najít ideálního kolegu
+                Find an ideal colleague
               </CardTitle>
               <CardDescription>
                 We will match you with someone who shares the most interests.
@@ -195,7 +195,7 @@ const HomePage = () => {
               onClick={() => setConfirmOpen(true)}
               disabled={findingMatch || remainingUses < 1}
             >
-              {findingMatch ? "Hledám..." : "Najít ideálního kolegu"}
+              {findingMatch ? "Searching..." : "Find an ideal colleague"}
             </Button>
             <Dialog
               open={confirmOpen}

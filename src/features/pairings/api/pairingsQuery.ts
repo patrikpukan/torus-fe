@@ -28,6 +28,30 @@ export type PairingQueryItem = {
     lastName?: string | null;
     profileImageUrl?: string | null;
     profileStatus: string;
+    about?: string | null;
+    location?: string | null;
+    position?: string | null;
+    preferredActivity?: string | null;
+    hobbies?: Array<{
+      id: string;
+      name: string;
+      category: "HOBBY" | "INTEREST";
+    }> | null;
+    interests?: Array<{
+      id: string;
+      name: string;
+      category: "HOBBY" | "INTEREST";
+    }> | null;
+    organization?: {
+      id: string;
+      name: string;
+    } | null;
+    departmentId?: string | null;
+    department?: {
+      id: string;
+      name: string;
+    } | null;
+    organizationId?: string | null;
   };
   userB: {
     id: string;
@@ -36,6 +60,30 @@ export type PairingQueryItem = {
     lastName?: string | null;
     profileImageUrl?: string | null;
     profileStatus: string;
+    about?: string | null;
+    location?: string | null;
+    position?: string | null;
+    preferredActivity?: string | null;
+    hobbies?: Array<{
+      id: string;
+      name: string;
+      category: "HOBBY" | "INTEREST";
+    }> | null;
+    interests?: Array<{
+      id: string;
+      name: string;
+      category: "HOBBY" | "INTEREST";
+    }> | null;
+    organization?: {
+      id: string;
+      name: string;
+    } | null;
+    departmentId?: string | null;
+    department?: {
+      id: string;
+      name: string;
+    } | null;
+    organizationId?: string | null;
   };
 };
 
@@ -63,6 +111,30 @@ export const PAIRINGS_QUERY = graphql(`
         lastName
         profileImageUrl
         profileStatus
+        about
+        location
+        position
+        preferredActivity
+        departmentId
+        department {
+          id
+          name
+        }
+        organization {
+          id
+          name
+        }
+        organizationId
+        hobbies {
+          id
+          name
+          category
+        }
+        interests {
+          id
+          name
+          category
+        }
       }
       userB {
         id
@@ -71,6 +143,30 @@ export const PAIRINGS_QUERY = graphql(`
         lastName
         profileImageUrl
         profileStatus
+        about
+        location
+        position
+        preferredActivity
+        departmentId
+        department {
+          id
+          name
+        }
+        organization {
+          id
+          name
+        }
+        organizationId
+        hobbies {
+          id
+          name
+          category
+        }
+        interests {
+          id
+          name
+          category
+        }
       }
     }
   }

@@ -1,38 +1,24 @@
+import type {
+  GetUserAchievementsQuery,
+  GetUserProfileAchievementsQuery,
+} from "@/graphql/generated/schema";
 import { graphql } from "gql.tada";
 
 /**
  * Achievement data type with user-specific unlock status
+ * Extracted from GetUserAchievementsQuery result
  */
-export type Achievement = {
-  achievementId: string;
-  name: string;
-  description: string;
-  imageIdentifier: string;
-  type: "milestone" | "social" | "engagement" | "consistency" | "legendary";
-  pointValue: number;
-  isUnlocked: boolean;
-  unlockedAt?: string;
-  currentProgress: number;
-  targetProgress: number;
-  percentComplete: number;
-};
+export type Achievement = NonNullable<
+  GetUserAchievementsQuery["achievements"][number]
+>;
 
 /**
  * User achievement with full details
+ * Extracted from GetUserProfileAchievementsQuery result
  */
-export type UserAchievement = {
-  id: string;
-  achievement: {
-    id: string;
-    name: string;
-    description: string;
-    imageIdentifier: string;
-    type: string;
-    pointValue: number;
-  };
-  unlockedAt?: string;
-  currentProgress: number;
-};
+export type UserAchievement = NonNullable<
+  GetUserProfileAchievementsQuery["userAchievements"][number]
+>;
 
 /**
  * User achievement mapped to display format (for profile view)
@@ -86,11 +72,8 @@ export const GET_USER_PROFILE_ACHIEVEMENTS = graphql(`
 
 /**
  * Response types for queries
+ * Using generated types from schema
  */
-export type GetUserAchievementsData = {
-  achievements: Achievement[];
-};
+export type GetUserAchievementsData = GetUserAchievementsQuery;
 
-export type GetUserProfileAchievementsData = {
-  userAchievements: UserAchievement[];
-};
+export type GetUserProfileAchievementsData = GetUserProfileAchievementsQuery;

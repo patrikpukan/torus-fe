@@ -26,15 +26,20 @@ input BanUserInput {
 type CurrentUser {
   about: String
   activeBan: UserBan
+    department: Department
+    departmentId: String
   email: String!
   firstName: String
-  hobbies: String
+    hobbies: [Tag!]
   id: ID!
-  interests: String
+    idealColleagueUsesRemaining: Int!
+    interests: [Tag!]
   isActive: Boolean!
   lastName: String
-  organization: Organization!
+    location: String
+    organization: SimpleOrganizationType!
   organizationId: ID!
+    position: String
   preferredActivity: String
   profileImageUrl: String
   profileStatus: ProfileStatusEnum!
@@ -47,6 +52,16 @@ type CurrentUser {
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
+
+type Department {
+    createdAt: DateTime!
+    description: String
+    employeeCount: Float!
+    id: ID!
+    name: String!
+    organizationId: ID!
+    updatedAt: DateTime!
+}
 
 input InviteUserInputType {
   email: String!
@@ -64,6 +79,7 @@ type Mutation {
   unbanUser(userId: ID!): User!
   deleteUser(id: ID!): User!
   executePairingAlgorithm(organizationId: String!): PairingExecutionResult!
+    findIdealColleague: ID!
   inviteUserToOrganization(input: InviteUserInputType!): InviteUserResponseType!
   reportUser(input: ReportUserInput!): UserReport!
   registerOrganization(
@@ -88,6 +104,13 @@ type Organization {
   name: String!
 }
 
+type SimpleOrganizationType {
+    code: String!
+    id: ID!
+    imageUrl: String
+    name: String!
+}
+
 type OrganizationType {
   address: String
   code: String!
@@ -108,6 +131,7 @@ type PairingExecutionResult {
 
 type PairingHistory {
   createdAt: DateTime!
+    derivedStatus: PairingStatusEnum!
   id: ID!
   status: PairingStatusEnum!
   userA: User!
@@ -124,7 +148,9 @@ enum PairingStatusEnum {
   matched
   met
   not_met
+    not_planned
   planned
+    unspecified
 }
 
 enum PairingPeriodStatusEnum {
@@ -236,10 +262,13 @@ input UpdateAlgorithmSettingsInput {
 input UpdateCurrentUserProfileInputType {
   about: String
   avatarUrl: String
+    departmentId: String
   firstName: String
-  hobbies: String
-  interests: String
+    hobbyIds: [String!]
+    interestIds: [String!]
   lastName: String
+    location: String
+    position: String
   preferredActivity: String
 }
 
@@ -269,17 +298,37 @@ The `Upload` scalar type represents a file upload.
 """
 scalar Upload
 
+type Tag {
+    category: TagCategory!
+    createdAt: DateTime!
+    id: ID!
+    name: String!
+    updatedAt: DateTime!
+}
+
+enum TagCategory {
+    HOBBY
+    INTEREST
+}
+
 type User {
   about: String
   activeBan: UserBan
+    createdAt: DateTime!
+    department: Department
+    departmentId: String
   email: String!
   firstName: String
-  hobbies: String
+    hobbies: [Tag!]
   id: ID!
-  interests: String
+    idealColleagueUsesRemaining: Int!
+    interests: [Tag!]
   isActive: Boolean!
   lastName: String
+    location: String
+    organization: SimpleOrganizationType
   organizationId: ID!
+    position: String
   preferredActivity: String
   profileImageUrl: String
   profileStatus: ProfileStatusEnum!
@@ -287,7 +336,6 @@ type User {
   supabaseUserId: String
   suspendedUntil: DateTime
   updatedAt: DateTime!
-  createdAt: DateTime!
 }
 
 type UserBan {

@@ -45,6 +45,7 @@ const mapUserToProfile = (user: CurrentUserData): UserProfile => {
           ? "Active"
           : "Inactive",
     departmentId: user.departmentId || null,
+    departmentName: user.department?.name || undefined,
   } satisfies UserProfile;
 };
 

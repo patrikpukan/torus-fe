@@ -10,7 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
  * Sorts by latest pairing date.
  */
 export const usePairingsQuery = () => {
-  const { user } = useAuth();
+  const { user, currentUserData } = useAuth();
   const { data, loading, error } = useQuery<PairingsQueryData>(PAIRINGS_QUERY, {
     fetchPolicy: "cache-and-network",
     skip: !user, // Don't fetch if user not authenticated
@@ -26,20 +26,33 @@ export const usePairingsQuery = () => {
       const contactUser = isUserA ? pairing.userB : pairing.userA;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const effectiveStatus = (pairing as any).derivedStatus || pairing.status;
+      const organizationName =
+        contactUser.organization?.name ||
+        currentUserData?.organization?.name ||
+        "";
+      const departmentId =
+        contactUser.department?.id ?? contactUser.departmentId ?? null;
 
       return {
         id: contactUser.id,
         profile: {
-          organization: "", // Will be filled from other sources if needed
+          organization: organizationName,
           email: contactUser.email,
           firstName: contactUser.firstName || "",
           lastName: contactUser.lastName || "",
           accountStatus: contactUser.profileStatus,
           pairingStatus: effectiveStatus,
-          about: "",
-          hobbies: null,
-          interests: null,
+          about: contactUser.about || "",
+          location: contactUser.location || "",
+          position: contactUser.position || "",
+          preferredActivity: contactUser.preferredActivity || "",
+          hobbies: contactUser.hobbies ?? null,
+          interests: contactUser.interests ?? null,
           profileImageUrl: contactUser.profileImageUrl || "",
+          departmentId: departmentId,
+          departmentName: contactUser.department?.name || undefined,
+          organizationId:
+            contactUser.organization?.id ?? contactUser.organizationId ?? "",
         },
         pairedAt: pairing.createdAt,
         lastMessageAt: pairing.createdAt, // Will be updated when messages are implemented
@@ -53,7 +66,7 @@ export const usePairingsQuery = () => {
         isCurrentlyMatched: boolean;
       };
     });
-  }, [data?.getPairingHistory, user]);
+  }, [data?.getPairingHistory, user, currentUserData]);
 
   return {
     pairingContacts,

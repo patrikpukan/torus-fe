@@ -21,4 +21,5 @@ export type UserProfile = {
   isActive?: boolean;
   organizationId?: string;
   departmentId?: string | null;
+  departmentName?: string;
 };

@@ -472,32 +472,40 @@ const ProfileForm = ({
               </p>
             </div>
             <FieldContent className="bg-card">
-              <Select
-                value={form.watch("departmentId") || "none"}
-                onValueChange={(newValue) => {
-                  form.setValue(
-                    "departmentId",
-                    newValue === "none" ? null : newValue,
-                    { shouldDirty: true }
-                  );
-                  onChange?.(buildProfilePayload(form.getValues(), value));
-                }}
-                disabled={readOnly || departmentsLoading}
-              >
-                <SelectTrigger id="profile-department">
-                  <SelectValue placeholder="Select a department" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none" className="text-muted-foreground">
-                    No Department
-                  </SelectItem>
-                  {departments.map((dept) => (
-                    <SelectItem key={dept?.id} value={dept?.id || ""}>
-                      {dept?.name}
+              {readOnly ? (
+                <Input
+                  id="profile-department"
+                  value={value.departmentName}
+                  readOnly
+                />
+              ) : (
+                <Select
+                  value={form.watch("departmentId") || "none"}
+                  onValueChange={(newValue) => {
+                    form.setValue(
+                      "departmentId",
+                      newValue === "none" ? null : newValue,
+                      { shouldDirty: true }
+                    );
+                    onChange?.(buildProfilePayload(form.getValues(), value));
+                  }}
+                  disabled={departmentsLoading}
+                >
+                  <SelectTrigger id="profile-department">
+                    <SelectValue placeholder="Select a department" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none" className="text-muted-foreground">
+                      No Department
                     </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                    {departments.map((dept) => (
+                      <SelectItem key={dept?.id} value={dept?.id || ""}>
+                        {dept?.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </FieldContent>
           </Field>
         </FieldGroup>

@@ -111,9 +111,24 @@ const UserDetailPage = () => {
     email: user.email,
     firstName: user.firstName ?? undefined,
     lastName: user.lastName ?? undefined,
+    about: user.about ?? undefined,
     location: user.location ?? undefined,
+    position: user.position ?? undefined,
+    preferredActivity: user.preferredActivity ?? undefined,
     profileImageUrl: user.profileImageUrl ?? undefined,
     pairingStatus: user.profileStatus ?? undefined,
+    accountStatus:
+      user.isActive === undefined || user.isActive === null
+        ? undefined
+        : user.isActive
+          ? "Active"
+          : "Inactive",
+    organization: user.organization?.name ?? undefined,
+    organizationId: user.organization?.id ?? user.organizationId ?? undefined,
+    departmentId: user.departmentId ?? null,
+    departmentName: user.department?.name ?? undefined,
+    hobbies: user.hobbies ?? [],
+    interests: user.interests ?? [],
   };
 
   const activeBan = user.activeBan ?? null;

@@ -147,6 +147,7 @@ export type CurrentUser = {
   id: Scalars['ID']['output'];
   interests: Maybe<Array<Tag>>;
   isActive: Scalars['Boolean']['output'];
+  idealColleagueUsesRemaining: Scalars['Int']['output'];
   lastName: Maybe<Scalars['String']['output']>;
   location: Maybe<Scalars['String']['output']>;
   organization: SimpleOrganizationType;
@@ -322,6 +323,7 @@ export type Mutation = {
   deleteDepartment: Scalars['Boolean']['output'];
   deleteUser: User;
   executePairingAlgorithm: PairingExecutionResult;
+  findIdealColleague: Scalars['ID']['output'];
   importGoogleCalendarEvents: GoogleCalendarImportResult;
   inviteUserToOrganization: InviteUserResponseType;
   /** Mark all messages in a pairing as read */
@@ -934,6 +936,7 @@ export type User = {
   id: Scalars['ID']['output'];
   interests: Maybe<Array<Tag>>;
   isActive: Scalars['Boolean']['output'];
+  idealColleagueUsesRemaining: Scalars['Int']['output'];
   lastName: Maybe<Scalars['String']['output']>;
   location: Maybe<Scalars['String']['output']>;
   organizationId: Scalars['ID']['output'];
@@ -983,7 +986,7 @@ export type UserRoleEnum =
 export type GetCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCurrentUserQuery = { __typename?: 'Query', getCurrentUser: { __typename?: 'CurrentUser', id: string, email: string, organizationId: string, role: UserRoleEnum, firstName: string | null, lastName: string | null, about: string | null, location: string | null, position: string | null, profileImageUrl: string | null, profileStatus: ProfileStatusEnum, isActive: boolean, preferredActivity: string | null, suspendedUntil: string | null, departmentId: string | null, hobbies: Array<{ __typename?: 'Tag', id: string, name: string, category: TagCategory }> | null, interests: Array<{ __typename?: 'Tag', id: string, name: string, category: TagCategory }> | null, activeBan: { __typename?: 'UserBan', id: string, reason: string, createdAt: string, expiresAt: string | null } | null, organization: { __typename?: 'SimpleOrganizationType', id: string, name: string, code: string, imageUrl: string | null }, department: { __typename?: 'Department', id: string, name: string } | null } | null };
+export type GetCurrentUserQuery = { __typename?: 'Query', getCurrentUser: { __typename?: 'CurrentUser', id: string, email: string, organizationId: string, role: UserRoleEnum, firstName: string | null, lastName: string | null, about: string | null, location: string | null, position: string | null, profileImageUrl: string | null, profileStatus: ProfileStatusEnum, isActive: boolean, idealColleagueUsesRemaining: number, preferredActivity: string | null, suspendedUntil: string | null, departmentId: string | null, hobbies: Array<{ __typename?: 'Tag', id: string, name: string, category: TagCategory }> | null, interests: Array<{ __typename?: 'Tag', id: string, name: string, category: TagCategory }> | null, activeBan: { __typename?: 'UserBan', id: string, reason: string, createdAt: string, expiresAt: string | null } | null, organization: { __typename?: 'SimpleOrganizationType', id: string, name: string, code: string, imageUrl: string | null }, department: { __typename?: 'Department', id: string, name: string } | null } | null };
 
 export type GetCalendarEventsQueryVariables = Exact<{
   startDate: Scalars['DateTime']['input'];
@@ -1417,6 +1420,7 @@ export const GetCurrentUserDocument = gql`
     profileImageUrl
     profileStatus
     isActive
+    idealColleagueUsesRemaining
     preferredActivity
     suspendedUntil
     departmentId

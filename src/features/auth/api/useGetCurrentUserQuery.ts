@@ -31,6 +31,7 @@ export const GET_CURRENT_USER = graphql(`
       profileImageUrl
       profileStatus
       isActive
+      idealColleagueUsesRemaining
       preferredActivity
       suspendedUntil
       departmentId

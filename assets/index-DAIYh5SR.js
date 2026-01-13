@@ -2472,7 +2472,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       }
     }
   }
-`),Dct=()=>on(Lde,{pollInterval:5e3,fetchPolicy:"cache-and-network"}),Pct=ze(`
+`),Dct=()=>on(Lde,{pollInterval:3e4,fetchPolicy:"cache-and-network"}),Pct=ze(`
   mutation CreateRating($input: CreateRatingInputType!) {
     createRating(input: $input) {
       id

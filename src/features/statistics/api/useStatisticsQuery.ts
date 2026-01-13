@@ -34,7 +34,7 @@ export const STATISTICS_QUERY = graphql(`
 
 export const useStatisticsQuery = (filter?: StatisticsFilter) => {
   return useQuery<StatisticsQueryData>(STATISTICS_QUERY, {
-    variables: filter ? { filter } : undefined,
+    variables: { filter: filter ?? null },
     fetchPolicy: "cache-and-network",
   });
 };

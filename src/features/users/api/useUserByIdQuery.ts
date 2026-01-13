@@ -12,10 +12,24 @@ export type UserDetail = {
   email: string;
   firstName?: string | null;
   lastName?: string | null;
+  about?: string | null;
   location?: string | null;
+  position?: string | null;
+  preferredActivity?: string | null;
   profileImageUrl?: string | null;
   profileStatus?: string | null;
   role?: string | null;
+  isActive?: boolean | null;
+  organizationId?: string | null;
+  organization?: {
+    id: string;
+    name: string;
+  } | null;
+  departmentId?: string | null;
+  department?: {
+    id: string;
+    name: string;
+  } | null;
   hobbies?: TagObject[] | null;
   interests?: TagObject[] | null;
   activeBan?: {
@@ -41,8 +55,22 @@ export const USER_BY_ID_QUERY = graphql(`
       email
       firstName
       lastName
+      about
       location
+      position
+      preferredActivity
       profileImageUrl
+      isActive
+      organizationId
+      organization {
+        id
+        name
+      }
+      departmentId
+      department {
+        id
+        name
+      }
       hobbies {
         id
         name

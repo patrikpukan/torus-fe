@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import ProfileForm from "@/features/profile/ProfileForm";
 import SendResetPasswordButton from "@/features/auth/components/SendResetPasswordButton";
-import { UserProfileAchievements } from "@/features/achievements";
 import { useUserByIdQuery } from "@/features/users/api/useUserByIdQuery";
 import { useGetCurrentUserQuery } from "@/features/auth/api/useGetCurrentUserQuery";
 import type { UserProfile } from "@/types/User";
@@ -126,9 +125,6 @@ const UserDetailPage = () => {
   return (
     <div className="mx-auto max-w-3xl py-8">
       <ProfileForm value={profile} />
-
-      {/* Achievements Section */}
-      <UserProfileAchievements userId={user.id} />
 
       {activeBan && (
         <Alert variant="destructive" className="mt-6">

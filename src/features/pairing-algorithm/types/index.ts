@@ -4,6 +4,7 @@
 export interface AlgorithmSettings {
   id: string;
   organizationId: string;
+  startDate?: string | null;
   periodLengthDays: number;
   randomSeed: number;
   createdAt: string;
@@ -16,6 +17,7 @@ export interface AlgorithmSettingsResponse extends AlgorithmSettings {
 
 export interface UpdateAlgorithmSettingsInput {
   organizationId: string;
+  startDate?: string | null;
   periodLengthDays?: number;
   randomSeed?: number;
 }

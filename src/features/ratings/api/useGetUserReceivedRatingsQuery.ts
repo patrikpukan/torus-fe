@@ -7,6 +7,12 @@ export type ReceivedRating = {
   feedback?: string | null;
   createdAt: string;
   userId: string;
+  user?: {
+    id: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    profileImageUrl?: string | null;
+  } | null;
   meetingEvent: {
     id: string;
     startDateTime: string;
@@ -36,6 +42,13 @@ export const GET_USER_RECEIVED_RATINGS_QUERY = graphql(`
         stars
         feedback
         createdAt
+        userId
+        user {
+          id
+          firstName
+          lastName
+          profileImageUrl
+        }
         meetingEvent {
           id
           startDateTime
@@ -43,7 +56,6 @@ export const GET_USER_RECEIVED_RATINGS_QUERY = graphql(`
           userAId
           userBId
         }
-        userId
       }
     }
   }

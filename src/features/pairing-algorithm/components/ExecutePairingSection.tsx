@@ -69,6 +69,14 @@ export const ExecutePairingSection: React.FC<ExecutePairingSectionProps> = ({
                     )}
                 </div>
               )}
+            {!executionResult.success && (
+              <div className="mt-2 text-xs opacity-90">
+                {executionResult.unpairedUsers !== undefined &&
+                  executionResult.unpairedUsers > 0 && (
+                    <div>Unpaired users: {executionResult.unpairedUsers}</div>
+                  )}
+              </div>
+            )}
           </AlertDescription>
         </Alert>
       )}

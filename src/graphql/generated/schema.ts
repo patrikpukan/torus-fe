@@ -87,6 +87,7 @@ export type AlgorithmSettings = {
   organizationId: Scalars['String']['output'];
   periodLengthDays: Scalars['Int']['output'];
   randomSeed: Scalars['Int']['output'];
+  startDate: Maybe<Scalars['DateTime']['output']>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -97,6 +98,7 @@ export type AlgorithmSettingsResponse = {
   organizationId: Scalars['String']['output'];
   periodLengthDays: Scalars['Int']['output'];
   randomSeed: Scalars['Int']['output'];
+  startDate: Maybe<Scalars['DateTime']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   warning: Maybe<Scalars['String']['output']>;
 };
@@ -871,7 +873,16 @@ export type RatingType = {
   meetingEventId: Scalars['ID']['output'];
   stars: Scalars['Int']['output'];
   updatedAt: Scalars['DateTime']['output'];
+  user: Maybe<RatingUserType>;
   userId: Scalars['ID']['output'];
+};
+
+export type RatingUserType = {
+  __typename?: 'RatingUserType';
+  firstName: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  lastName: Maybe<Scalars['String']['output']>;
+  profileImageUrl: Maybe<Scalars['String']['output']>;
 };
 
 export type RegisterOrganizationInputType = {
@@ -1005,6 +1016,7 @@ export type UpdateAlgorithmSettingsInput = {
   organizationId: Scalars['String']['input'];
   periodLengthDays?: InputMaybe<Scalars['Int']['input']>;
   randomSeed?: InputMaybe<Scalars['Int']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export type UpdateCalendarEventInput = {
@@ -1466,14 +1478,14 @@ export type GetAlgorithmSettingsQueryVariables = Exact<{
 }>;
 
 
-export type GetAlgorithmSettingsQuery = { __typename?: 'Query', getAlgorithmSettings: { __typename?: 'AlgorithmSettings', id: string, organizationId: string, periodLengthDays: number, randomSeed: number, createdAt: string, updatedAt: string } };
+export type GetAlgorithmSettingsQuery = { __typename?: 'Query', getAlgorithmSettings: { __typename?: 'AlgorithmSettings', id: string, organizationId: string, startDate: string | null, periodLengthDays: number, randomSeed: number, createdAt: string, updatedAt: string } };
 
 export type UpdateAlgorithmSettingsMutationVariables = Exact<{
   input: UpdateAlgorithmSettingsInput;
 }>;
 
 
-export type UpdateAlgorithmSettingsMutation = { __typename?: 'Mutation', updateAlgorithmSettings: { __typename?: 'AlgorithmSettingsResponse', id: string, organizationId: string, periodLengthDays: number, randomSeed: number, warning: string | null, updatedAt: string } };
+export type UpdateAlgorithmSettingsMutation = { __typename?: 'Mutation', updateAlgorithmSettings: { __typename?: 'AlgorithmSettingsResponse', id: string, organizationId: string, startDate: string | null, periodLengthDays: number, randomSeed: number, warning: string | null, updatedAt: string } };
 
 export type ExecutePairingAlgorithmMutationVariables = Exact<{
   organizationId: Scalars['String']['input'];
@@ -1523,7 +1535,7 @@ export type GetUserReceivedRatingsQueryVariables = Exact<{
 }>;
 
 
-export type GetUserReceivedRatingsQuery = { __typename?: 'Query', getUserReceivedRatings: { __typename?: 'UserReceivedRatingsType', userId: string, averageRating: number | null, totalRatings: number, ratings: Array<{ __typename?: 'RatingType', id: string, stars: number, feedback: string | null, createdAt: string, userId: string, meetingEvent: { __typename?: 'MeetingEvent', id: string, startDateTime: string, endDateTime: string, userAId: string, userBId: string } }> } | null };
+export type GetUserReceivedRatingsQuery = { __typename?: 'Query', getUserReceivedRatings: { __typename?: 'UserReceivedRatingsType', userId: string, averageRating: number | null, totalRatings: number, ratings: Array<{ __typename?: 'RatingType', id: string, stars: number, feedback: string | null, createdAt: string, userId: string, user: { __typename?: 'RatingUserType', id: string, firstName: string | null, lastName: string | null, profileImageUrl: string | null } | null, meetingEvent: { __typename?: 'MeetingEvent', id: string, startDateTime: string, endDateTime: string, userAId: string, userBId: string } }> } | null };
 
 export type UnratedMeetingsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2257,6 +2269,7 @@ export const GetAlgorithmSettingsDocument = gql`
   getAlgorithmSettings(organizationId: $organizationId) {
     id
     organizationId
+    startDate
     periodLengthDays
     randomSeed
     createdAt
@@ -2269,6 +2282,7 @@ export const UpdateAlgorithmSettingsDocument = gql`
   updateAlgorithmSettings(input: $input) {
     id
     organizationId
+    startDate
     periodLengthDays
     randomSeed
     warning
@@ -2444,6 +2458,13 @@ export const GetUserReceivedRatingsDocument = gql`
       stars
       feedback
       createdAt
+      userId
+      user {
+        id
+        firstName
+        lastName
+        profileImageUrl
+      }
       meetingEvent {
         id
         startDateTime
@@ -2451,7 +2472,6 @@ export const GetUserReceivedRatingsDocument = gql`
         userAId
         userBId
       }
-      userId
     }
   }
 }

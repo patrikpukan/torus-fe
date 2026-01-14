@@ -37,6 +37,7 @@ export const GET_ALGORITHM_SETTINGS = graphql(`
     getAlgorithmSettings(organizationId: $organizationId) {
       id
       organizationId
+      startDate
       periodLengthDays
       randomSeed
       createdAt
@@ -50,6 +51,7 @@ export const UPDATE_ALGORITHM_SETTINGS = graphql(`
     updateAlgorithmSettings(input: $input) {
       id
       organizationId
+      startDate
       periodLengthDays
       randomSeed
       warning

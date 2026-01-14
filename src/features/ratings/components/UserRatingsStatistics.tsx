@@ -51,6 +51,11 @@ export const UserRatingsStatistics = ({ data }: UserRatingsStatisticsProps) => {
                   const feedbackPreview = rating.feedback
                     ? rating.feedback.substring(0, 100)
                     : null;
+                  const raterName = rating.user
+                    ? [rating.user.firstName, rating.user.lastName]
+                        .filter(Boolean)
+                        .join(" ")
+                    : "Anonymous";
 
                   return (
                     <div
@@ -59,6 +64,9 @@ export const UserRatingsStatistics = ({ data }: UserRatingsStatisticsProps) => {
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div>
+                          <p className="text-sm font-medium text-foreground">
+                            {raterName}
+                          </p>
                           <p className="text-xs font-medium text-muted-foreground">
                             {format(new Date(rating.createdAt), "MMM d, yyyy")}
                           </p>

@@ -48,7 +48,7 @@ export const useAlgorithmSettingsForm = ({
   React.useEffect(() => {
     if (settings) {
       form.reset({
-        startDate: today,
+        startDate: settings.startDate ? new Date(settings.startDate) : today,
         periodLengthDays: settings.periodLengthDays,
         unit: "days",
         randomSeed: settings.randomSeed,
@@ -60,7 +60,7 @@ export const useAlgorithmSettingsForm = ({
   const handleCancel = React.useCallback(() => {
     if (settings) {
       form.reset({
-        startDate: today,
+        startDate: settings.startDate ? new Date(settings.startDate) : today,
         periodLengthDays: settings.periodLengthDays,
         unit: "days",
         randomSeed: settings.randomSeed,
@@ -77,6 +77,7 @@ export const useAlgorithmSettingsForm = ({
         variables: {
           input: {
             organizationId,
+            startDate: values.startDate.toISOString(),
             periodLengthDays: values.periodLengthDays,
             randomSeed: values.randomSeed,
           },
@@ -95,9 +96,8 @@ export const useAlgorithmSettingsForm = ({
 
       toast({
         title: "Settings saved",
-        description: responseData?.warning
-          ? "Settings saved with warnings"
-          : "Algorithm settings updated successfully",
+        description:
+          responseData?.warning || "Algorithm settings updated successfully",
       });
     } catch (error) {
       toast({
@@ -150,13 +150,34 @@ export const useAlgorithmSettingsForm = ({
         }
       }
     } catch (error) {
+      const errorMessage = extractErrorMessage(error);
+
+      setExecutionResult({
+        success: false,
+        message: errorMessage,
+      });
+
       toast({
         title: "Execution Error",
-        description: "Failed to execute pairing algorithm",
+        description: errorMessage,
         variant: "destructive",
       });
       console.error(error);
     }
+  };
+
+  const extractErrorMessage = (error: unknown): string => {
+    if (error instanceof Error) {
+      // Check for GraphQL errors
+      const graphqlError = error as unknown as {
+        graphQLErrors?: Array<{ message: string }>;
+      };
+      if (graphqlError.graphQLErrors && graphqlError.graphQLErrors.length > 0) {
+        return graphqlError.graphQLErrors[0].message || error.message;
+      }
+      return error.message;
+    }
+    return "Failed to execute pairing algorithm";
   };
 
   return {

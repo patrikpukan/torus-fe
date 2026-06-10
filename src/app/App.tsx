@@ -1,14 +1,12 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/features/auth/context/AuthProvider";
-import { AlgorithmSettingsPage } from "@/features/pairing-algorithm/pages/AlgorithmSettingsPage";
 import { useAuth } from "@/hooks/useAuth";
-import InviteManagementPage from "@/pages/invite-management/InviteManagementPage";
 import MaintainerHomePage from "@/pages/maintainer-home/MaintainerHomePage";
 import ReportsPage from "@/pages/reports/ReportsPage";
 import ReportDetailPage from "@/pages/reports/ReportDetailPage";
-import StatisticsPage from "@/pages/statistics/StatisticsPage";
 import DepartmentManagementPage from "@/pages/department-management/DepartmentManagementPage";
 import { ProtectedRoute } from "../components/ProtectedRoute";
 import AccessDeniedPage from "../pages/AccessDeniedPage";
@@ -19,9 +17,6 @@ import LoginPage from "../pages/login/LoginPage";
 import ContactPage from "../pages/contact/ContactPage";
 import OrganizationDetailPage from "../pages/organization-list/OrganizationDetailPage";
 import OrganizationListPage from "../pages/organization-list/OrganizationListPage";
-import PairingsRoute from "../pages/pairings/PairingsRoute";
-import ProfileEditPage from "../pages/profile/ProfileEditPage";
-import ProfilePage from "../pages/profile/ProfilePage";
 import RegisterOrgPage from "../pages/register-org/RegisterOrgPage";
 import RegisterPage from "../pages/register/RegisterPage";
 import AdminHomePage from "../pages/admin-home/AdminHomePage";
@@ -30,6 +25,21 @@ import ResetPasswordPage from "../pages/reset-password/ResetPasswordPage";
 import UserDetailPage from "../pages/user-list/UserDetailPage";
 import UserListPage from "../pages/user-list/UserListPage";
 import BaseLayout from "./layouts/BaseLayout";
+
+// Lazy-load the heaviest routes (calendar + QR libraries) so they don't bloat
+// the initial bundle; they load on demand when the route is visited.
+const PairingsRoute = lazy(() => import("../pages/pairings/PairingsRoute"));
+const ProfilePage = lazy(() => import("../pages/profile/ProfilePage"));
+const ProfileEditPage = lazy(() => import("../pages/profile/ProfileEditPage"));
+const StatisticsPage = lazy(() => import("@/pages/statistics/StatisticsPage"));
+const InviteManagementPage = lazy(
+  () => import("@/pages/invite-management/InviteManagementPage")
+);
+const AlgorithmSettingsPage = lazy(() =>
+  import("@/features/pairing-algorithm/pages/AlgorithmSettingsPage").then(
+    (m) => ({ default: m.AlgorithmSettingsPage })
+  )
+);
 
 const AUTHENTICATED_ROLES = ["user", "org_admin", "super_admin"] as const;
 const ADMIN_ROLES = ["org_admin", "super_admin"] as const;
@@ -52,7 +62,14 @@ const App = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Routes>
+        <Suspense
+          fallback={
+            <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
+              Loading…
+            </div>
+          }
+        >
+          <Routes>
           <Route path="/auth/callback" element={<AuthCallbackPage />} />
           <Route
             path="/reset-password/confirm"
@@ -210,7 +227,8 @@ const App = () => {
               }
             />
           </Route>
-        </Routes>
+          </Routes>
+        </Suspense>
         <Toaster />
       </AuthProvider>
     </BrowserRouter>

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useMemo } from "react";
 
 import { useAuth } from "@/hooks/useAuth";
@@ -48,6 +47,7 @@ const useHomeData = (): UseHomeDataResult => {
   const { data: activePeriodData } = useActivePairingPeriodQuery();
   const activePeriodStart =
     activePeriodData?.activePairingPeriod?.startDate ?? null;
+  const firstName = authCtx.user?.user_metadata?.first_name ?? "";
 
   return useMemo(() => {
     // Get the latest pairing (most recent)
@@ -60,13 +60,13 @@ const useHomeData = (): UseHomeDataResult => {
     );
 
     return {
-      firstName: authCtx.user?.user_metadata?.first_name,
+      firstName,
       currentPairing,
       stats,
       isLoading: loading,
       isEmpty: !currentPairing,
     };
-  }, [pairingContacts, loading, activePeriodStart]);
+  }, [pairingContacts, loading, activePeriodStart, firstName]);
 };
 
 export default useHomeData;

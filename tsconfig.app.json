@@ -2,7 +2,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@brand/*": ["./brands/torus/*"]
     },
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ES2022",
@@ -35,5 +36,5 @@
       }
     ]
   },
-  "include": ["src", "src/graphql-env.d.ts"]
+  "include": ["src", "src/graphql-env.d.ts", "brands"]
 }

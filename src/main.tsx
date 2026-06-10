@@ -5,6 +5,9 @@ import { ApolloProvider } from "@apollo/client/react";
 import App from "./app/App.tsx";
 import "./index.css";
 import { apolloClient } from "./lib/apolloClient";
+import { applyBrandTheme } from "./branding/applyBrandTheme";
+
+applyBrandTheme();
 
 const queryClient = new QueryClient();
 

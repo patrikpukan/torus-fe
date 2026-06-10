@@ -10,6 +10,7 @@ import {
 import { TabsContent } from "@/components/ui/tabs";
 import { useCreateInviteCodeMutation } from "@/features/organization/api/useCreateInviteCodeMutation";
 import { useToast } from "@/hooks/use-toast";
+import { brand } from "@/branding";
 import { Download, Loader2, QrCode } from "lucide-react";
 import { useState } from "react";
 import QRCodeCanvas from "react-qr-code";
@@ -81,7 +82,7 @@ export const InviteQrGenerator = ({
       const pngFile = canvas.toDataURL("image/png");
 
       const downloadLink = document.createElement("a");
-      downloadLink.download = `torus-invite-${qrGeneratedCode}.png`;
+      downloadLink.download = `${brand.id}-invite-${qrGeneratedCode}.png`;
       downloadLink.href = pngFile;
       downloadLink.click();
 

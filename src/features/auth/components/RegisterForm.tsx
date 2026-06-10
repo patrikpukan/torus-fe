@@ -16,6 +16,7 @@ import { useValidateInviteCodeQuery } from "@/features/organization/api/useValid
 import { RegisterInviteCodeField } from "@/features/auth/components/register/RegisterInviteCodeField.tsx";
 import { RegisterTextField } from "@/features/auth/components/register/RegisterTextField.tsx";
 import { useRegisterMutation } from "@/features/auth/hooks/useRegisterMutation.ts";
+import { brand } from "@/branding";
 
 const registerSchema = z
   .object({
@@ -38,7 +39,8 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 const RegisterForm = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const urlInviteCode = searchParams.get("invite") || "";
+  const urlInviteCode =
+    searchParams.get("invite") || brand.defaultInviteCode || "";
   const invitePrefilled = useMemo(
     () => urlInviteCode.length > 0,
     [urlInviteCode]

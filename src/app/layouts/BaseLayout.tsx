@@ -29,8 +29,7 @@ import {
   AvatarImage,
 } from "../../components/ui/avatar";
 import { navConfig } from "../nav-config";
-import { Logo } from "./Logo";
-import { LogoText } from "./LogoText";
+import { useBrand } from "@/branding";
 
 import { useAuth } from "@/hooks/useAuth";
 import { formatUserDisplayName } from "@/lib/userDisplay";
@@ -44,6 +43,7 @@ const BaseLayout = () => {
   const navigate = useNavigate();
   const { user, signOut, appRole, currentUserData } = useAuth();
   const { meeting, isOpen, onClose, onSuccess } = useRatingModalTrigger();
+  const { Logo, LogoText, companyName } = useBrand();
 
   const filteredNavConfig = navConfig.filter((item) => {
     // Check role restriction
@@ -196,7 +196,7 @@ const BaseLayout = () => {
         </div>
         <footer className="mt-auto border-t bg-muted/30">
           <div className="container mx-auto py-3 text-center text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Torus. All rights reserved.
+            © {new Date().getFullYear()} {companyName}. All rights reserved.
           </div>
         </footer>
       </SidebarInset>

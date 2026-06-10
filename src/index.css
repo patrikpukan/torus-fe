@@ -53,6 +53,11 @@ h3 {
     /* Success color */
     --success: 156 62% 36%;
     --success-foreground: 0 0% 100%;
+    /* Brand gradient stops (overridable per brand at runtime) */
+    --gradient-from: 244 64% 55%;
+    --gradient-to: 258 70% 62%;
+    --text-gradient-from: 244 64% 55%;
+    --text-gradient-to: 14 88% 58%;
   }
   .dark {
     /* Deep ink-violet night; luminous violet primary, ember coral accent */
@@ -88,6 +93,11 @@ h3 {
     /* Success color */
     --success: 152 55% 45%;
     --success-foreground: 237 40% 10%;
+    /* Brand gradient stops (dark) */
+    --gradient-from: 250 85% 70%;
+    --gradient-to: 244 64% 55%;
+    --text-gradient-from: 250 85% 72%;
+    --text-gradient-to: 16 95% 70%;
   }
 }
 
@@ -116,8 +126,8 @@ h3 {
   .gradient-primary {
     background: linear-gradient(
       135deg,
-      hsl(244 64% 55%) 0%,
-      hsl(258 70% 62%) 100%
+      hsl(var(--gradient-from)) 0%,
+      hsl(var(--gradient-to)) 100%
     );
   }
 
@@ -139,7 +149,11 @@ h3 {
 
   /* Headline moments: indigo -> coral */
   .text-gradient {
-    background: linear-gradient(90deg, hsl(244 64% 55%), hsl(14 88% 58%));
+    background: linear-gradient(
+      90deg,
+      hsl(var(--text-gradient-from)),
+      hsl(var(--text-gradient-to))
+    );
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -150,23 +164,15 @@ h3 {
     background:
       radial-gradient(
         60rem 40rem at 8% -10%,
-        hsl(244 64% 55% / 0.07),
+        hsl(var(--text-gradient-from) / 0.07),
         transparent 60%
       ),
       radial-gradient(
         50rem 35rem at 105% 110%,
-        hsl(14 88% 58% / 0.06),
+        hsl(var(--text-gradient-to) / 0.06),
         transparent 60%
       ),
       hsl(var(--background));
-  }
-
-  .dark .gradient-primary {
-    background: linear-gradient(
-      135deg,
-      hsl(250 85% 70%) 0%,
-      hsl(244 64% 55%) 100%
-    );
   }
 
   .dark .gradient-hero {
@@ -185,25 +191,4 @@ h3 {
     );
   }
 
-  .dark .text-gradient {
-    background: linear-gradient(90deg, hsl(250 85% 72%), hsl(16 95% 70%));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-
-  .dark .bg-atmosphere {
-    background:
-      radial-gradient(
-        60rem 40rem at 8% -10%,
-        hsl(250 85% 70% / 0.08),
-        transparent 60%
-      ),
-      radial-gradient(
-        50rem 35rem at 105% 110%,
-        hsl(16 95% 70% / 0.05),
-        transparent 60%
-      ),
-      hsl(var(--background));
-  }
 }

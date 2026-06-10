@@ -1,10 +1,13 @@
 import { Card } from "@/components/ui/card";
+import { useBrand } from "@/branding";
 
 export const HowItWorksSection = () => {
+  const { landing } = useBrand();
+
   return (
     <div className="mb-12 space-y-8 sm:mb-16 md:mb-20">
       <h2 className="text-center text-3xl font-bold sm:text-4xl">
-        How Torus Works
+        {landing.howItWorksHeading}
       </h2>
       <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-3">
         <Card className="p-6">

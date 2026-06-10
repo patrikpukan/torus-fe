@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "regenerate": "npx graphql-codegen -c graphql.config.ts"
+    "regenerate": "npx graphql-codegen -c graphql.config.ts",
+    "deploy:brand": "node scripts/deploy-brand.mjs"
   },
   "dependencies": {
     "@apollo/client": "^4.0.7",

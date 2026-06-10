@@ -6,17 +6,22 @@ import App from "./app/App.tsx";
 import "./index.css";
 import { apolloClient } from "./lib/apolloClient";
 import { applyBrandTheme } from "./branding/applyBrandTheme";
+import { validateEnv } from "./lib/validateEnv";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
+validateEnv();
 applyBrandTheme();
 
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <ApolloProvider client={apolloClient}>
-        <App />
-      </ApolloProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <ApolloProvider client={apolloClient}>
+          <App />
+        </ApolloProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   </StrictMode>
 );

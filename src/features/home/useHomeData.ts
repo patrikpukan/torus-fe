@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useMemo } from "react";
 
-import { useAuth } from "@/features/auth/context/UseAuth.tsx";
+import { useAuth } from "@/hooks/useAuth";
 import { usePairingsQuery } from "@/features/pairings/api/usePairingsQuery";
 import { useActivePairingPeriodQuery } from "@/features/pairings/api/useActivePairingPeriodQuery";
 import type { PairingContact } from "@/mocks/mockPairings";

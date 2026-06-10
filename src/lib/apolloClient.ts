@@ -8,14 +8,23 @@ import { createClient } from "graphql-ws";
 import { Observable } from "rxjs";
 import { supabaseClient } from "./supabaseClient";
 
-const graphqlEndpoint =
-  import.meta.env.VITE_GRAPHQL_API ?? "http://localhost:4000/graphql";
+const isDev = import.meta.env.DEV;
+
+const graphqlEndpoint = import.meta.env.VITE_GRAPHQL_API;
+if (!graphqlEndpoint) {
+  // Fail loud rather than silently pointing at localhost in a deployed build.
+  throw new Error(
+    "VITE_GRAPHQL_API is not set. Configure it at build time before deploying."
+  );
+}
 const wsEndpoint = (
   import.meta.env.VITE_GRAPHQL_WS_API ?? graphqlEndpoint
 ).replace(/^http/, "ws");
 
-console.log("[Apollo] GraphQL Endpoint:", graphqlEndpoint);
-console.log("[Apollo] WebSocket Endpoint:", wsEndpoint);
+if (isDev) {
+  console.log("[Apollo] GraphQL Endpoint:", graphqlEndpoint);
+  console.log("[Apollo] WebSocket Endpoint:", wsEndpoint);
+}
 
 const httpLink = new HttpLink({
   uri: graphqlEndpoint,
@@ -30,10 +39,6 @@ const wsLink = new GraphQLWsLink(
       const {
         data: { session },
       } = await supabaseClient.auth.getSession();
-      console.log(
-        "[Apollo/WS] Getting connection params, token exists:",
-        !!session?.access_token
-      );
       return {
         authorization: session?.access_token
           ? `Bearer ${session.access_token}`
@@ -42,13 +47,13 @@ const wsLink = new GraphQLWsLink(
     },
     shouldRetry: () => true,
     retryAttempts: 5,
-    on: {
-      connected: () => console.log("[Apollo/WS] ✅ WebSocket CONNECTED"),
-      connecting: () => console.log("[Apollo/WS] 🔄 WebSocket CONNECTING..."),
-      closed: () => console.log("[Apollo/WS] ❌ WebSocket CLOSED"),
-      error: (error) => console.error("[Apollo/WS] ❌ WebSocket ERROR:", error),
-      message: (message) => console.log("[Apollo/WS] 📨 Message:", message),
-    },
+    on: isDev
+      ? {
+          connected: () => console.log("[Apollo/WS] connected"),
+          closed: () => console.log("[Apollo/WS] closed"),
+          error: (error) => console.error("[Apollo/WS] error:", error),
+        }
+      : {},
   })
 );
 
@@ -68,41 +73,58 @@ const authLink = new SetContextLink(async (prevContext) => {
   };
 });
 
-// Error link to handle 401 errors by refreshing the session
+// Redirect to login once when the session can't be recovered.
+let redirectingToLogin = false;
+const goToLogin = () => {
+  if (redirectingToLogin) return;
+  redirectingToLogin = true;
+  void supabaseClient.auth.signOut().finally(() => {
+    if (window.location.pathname !== "/login") {
+      window.location.assign("/login");
+    }
+  });
+};
+
+// On UNAUTHENTICATED, refresh the session and retry the operation EXACTLY once.
+// A per-operation flag prevents an infinite refresh→retry→401 loop; a failed
+// refresh sends the user to login instead of silently forwarding a dead request.
 const errorLink = onError((errorResponse: any) => {
   const { graphQLErrors, operation, forward } = errorResponse;
+  if (!graphQLErrors) return;
 
-  if (graphQLErrors) {
-    for (const err of graphQLErrors) {
-      if (
-        err.extensions?.code === "UNAUTHENTICATED" ||
-        err.message?.includes("Authentication required")
-      ) {
-        // Token might be expired, try to refresh
-        return new Observable((observer) => {
-          supabaseClient.auth
-            .refreshSession()
-            .then(({ data }) => {
-              // Retry the request with the new token
-              const token = data.session?.access_token;
-              if (token) {
-                operation.setContext(({ headers }: any) => ({
-                  headers: {
-                    ...headers,
-                    Authorization: `Bearer ${token}`,
-                  },
-                }));
-              }
-              forward(operation).subscribe(observer);
-            })
-            .catch(() => {
-              // Refresh failed, let the error through
-              forward(operation).subscribe(observer);
-            });
-        });
-      }
-    }
+  const isAuthError = graphQLErrors.some(
+    (err: any) =>
+      err.extensions?.code === "UNAUTHENTICATED" ||
+      err.message?.includes("Authentication required")
+  );
+  if (!isAuthError) return;
+
+  if (operation.getContext().__authRetried) {
+    goToLogin();
+    return;
   }
+
+  return new Observable((observer) => {
+    supabaseClient.auth
+      .refreshSession()
+      .then(({ data }) => {
+        const token = data.session?.access_token;
+        if (!token) {
+          goToLogin();
+          observer.error(new Error("Session expired"));
+          return;
+        }
+        operation.setContext(({ headers }: any) => ({
+          __authRetried: true,
+          headers: { ...headers, Authorization: `Bearer ${token}` },
+        }));
+        forward(operation).subscribe(observer);
+      })
+      .catch(() => {
+        goToLogin();
+        observer.error(new Error("Session refresh failed"));
+      });
+  });
 });
 
 // Split link: use WebSocket for subscriptions, HTTP for queries and mutations

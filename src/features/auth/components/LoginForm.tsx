@@ -21,7 +21,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import { useAuth } from "@/features/auth/context/UseAuth.tsx";
+import { useAuth } from "@/hooks/useAuth";
 
 const loginSchema = z.object({
   email: z.email("Please enter a valid email address"),

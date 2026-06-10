@@ -12,6 +12,9 @@
 import { execSync } from "node:child_process";
 import { readFileSync, existsSync } from "node:fs";
 
+// Prefer a globally installed netlify binary; fall back to npx.
+const NETLIFY = process.env.NETLIFY_BIN ?? "netlify";
+
 const [brandId, flag] = process.argv.slice(2);
 
 if (!brandId || !existsSync(`brands/${brandId}/meta.json`)) {
@@ -25,7 +28,7 @@ const run = (cmd, env = {}) =>
   execSync(cmd, { stdio: "inherit", env: { ...process.env, ...env } });
 
 if (flag === "--create") {
-  run(`npx netlify-cli sites:create --name torus-${brandId}`);
+  run(`${NETLIFY} sites:create --name torus-${brandId}`);
   console.log(
     `\nNext: paste the new Project ID into brands/${brandId}/meta.json (netlifySiteId),\n` +
       `add the site URL to CORS_ORIGINS on the Render backend service,\n` +
@@ -43,5 +46,5 @@ if (!meta.netlifySiteId) {
 
 run("npm run build", { VITE_BRAND: brandId });
 run(
-  `npx netlify-cli deploy --prod --dir dist --site ${meta.netlifySiteId} --message "brand:${brandId}"`
+  `${NETLIFY} deploy --prod --dir dist --site ${meta.netlifySiteId} --message "brand:${brandId}"`
 );

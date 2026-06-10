@@ -5,9 +5,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Roboto", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["Albert Sans", "ui-sans-serif", "system-ui", "sans-serif"],
         heading: [
-          "Roboto Condensed",
+          "Bricolage Grotesque",
+          "Albert Sans",
           "ui-sans-serif",
           "system-ui",
           "sans-serif",
@@ -27,6 +28,8 @@ export default {
         "accent-foreground": "hsl(var(--accent-foreground))",
         destructive: "hsl(var(--destructive))",
         "destructive-foreground": "hsl(var(--destructive-foreground))",
+        success: "hsl(var(--success))",
+        "success-foreground": "hsl(var(--success-foreground))",
         card: "hsl(var(--card))",
         "card-foreground": "hsl(var(--card-foreground))",
         muted: "hsl(var(--muted))",

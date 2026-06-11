@@ -78,9 +78,11 @@ const App = () => {
           <Route path="/access-denied" element={<AccessDeniedPage />} />
           <Route path="/" element={<LandingPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          {/* Auth screens render full-screen (own AuthLayout), no app chrome */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/" element={<BaseLayout />}>
-            <Route path="login" element={<LoginPage />} />
-            <Route path="register" element={<RegisterPage />} />
             <Route
               path="register-org"
               element={
@@ -89,7 +91,6 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
-            <Route path="reset-password" element={<ResetPasswordPage />} />
             <Route
               path="home"
               element={

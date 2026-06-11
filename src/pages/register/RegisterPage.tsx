@@ -1,11 +1,10 @@
 import RegisterForm from "../../features/auth/components/RegisterForm";
+import { AuthLayout } from "../../features/auth/components/AuthLayout";
 
 const RegisterPage = () => (
-  <div className="flex min-h-[60vh] items-center justify-center px-4">
-    <div className="w-full max-w-xl">
-      <RegisterForm />
-    </div>
-  </div>
+  <AuthLayout>
+    <RegisterForm />
+  </AuthLayout>
 );
 
 export default RegisterPage;

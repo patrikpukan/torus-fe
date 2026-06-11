@@ -1,9 +1,10 @@
 import LoginForm from "../../features/auth/components/LoginForm";
+import { AuthLayout } from "../../features/auth/components/AuthLayout";
 
 const LoginPage = () => (
-  <div className="flex min-h-screen items-center justify-center">
+  <AuthLayout>
     <LoginForm />
-  </div>
+  </AuthLayout>
 );
 
 export default LoginPage;

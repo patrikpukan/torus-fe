@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -84,9 +85,12 @@ const LoginForm = () => {
   };
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="text-center">
-        <CardTitle className="text-2xl">Log in</CardTitle>
+    <Card className="w-full border-0 shadow-elevated-lg">
+      <CardHeader className="space-y-1">
+        <CardTitle className="font-heading text-2xl font-bold">
+          Welcome back
+        </CardTitle>
+        <CardDescription>Sign in to continue to your account.</CardDescription>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} noValidate>
@@ -147,14 +151,21 @@ const LoginForm = () => {
               </Link>
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col space-y-2">
+          <CardFooter className="flex flex-col space-y-3">
             <Button
               type="submit"
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+              className="w-full"
               disabled={form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting ? "Logging in..." : "Log in"}
+              {form.formState.isSubmitting ? "Logging in…" : "Log in"}
             </Button>
+
+            <div className="flex w-full items-center gap-3 py-1">
+              <span className="h-px flex-1 bg-border" />
+              <span className="text-xs text-muted-foreground">or</span>
+              <span className="h-px flex-1 bg-border" />
+            </div>
+
             <Button
               type="button"
               variant="outline"
@@ -162,11 +173,18 @@ const LoginForm = () => {
               onClick={handleGoogleSignIn}
               disabled={isGoogleLoading || form.formState.isSubmitting}
             >
-              {isGoogleLoading ? "Signing in..." : "Log in with Google Account"}
+              {isGoogleLoading ? "Signing in…" : "Continue with Google"}
             </Button>
-            <Button asChild variant="outline" className="w-full">
-              <Link to="/register">Register via invite code</Link>
-            </Button>
+
+            <p className="pt-1 text-center text-sm text-muted-foreground">
+              Have an invite?{" "}
+              <Link
+                to="/register"
+                className="font-medium text-primary hover:underline"
+              >
+                Register here
+              </Link>
+            </p>
           </CardFooter>
         </form>
       </Form>

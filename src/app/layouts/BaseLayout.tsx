@@ -82,6 +82,8 @@ const BaseLayout = () => {
     "";
   const userRole = dbUser?.role || appRole || "";
   const userOrganization = dbUser?.organization?.name || "";
+  const currentSection =
+    filteredNavConfig.find((item) => isNavItemActive(item.path))?.label ?? "";
 
   return (
     <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
@@ -185,14 +187,21 @@ const BaseLayout = () => {
         <SidebarRail />
       </Sidebar>
       <SidebarInset>
-        <div className="sticky top-0 ml-[0.5rem] z-10 flex h-12 items-center gap-2 border-b px-3 bg-muted/40">
+        <div className="sticky top-0 z-10 flex h-14 items-center gap-3 border-b border-border/60 bg-background/80 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <SidebarTrigger />
-          <div className="ml-auto" />
+          {currentSection && (
+            <span className="font-heading text-sm font-semibold tracking-tight">
+              {currentSection}
+            </span>
+          )}
+          {userOrganization && (
+            <span className="ml-auto hidden text-xs text-muted-foreground sm:inline">
+              {userOrganization}
+            </span>
+          )}
         </div>
-        <div className="container mx-auto flex-1 p-4">
-          <div className="rounded-xl bg-muted/35 text-card-foreground border border-border shadow-sm p-6 min-h-[80vh]">
-            <Outlet />
-          </div>
+        <div className="container mx-auto flex-1 p-4 md:p-6">
+          <Outlet />
         </div>
         <footer className="mt-auto border-t bg-muted/30">
           <div className="container mx-auto py-3 text-center text-sm text-muted-foreground">

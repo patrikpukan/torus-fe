@@ -1,6 +1,9 @@
 import AchievementCard from "./AchievementCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Trophy } from "lucide-react";
 import { useUserAchievements } from "../hooks/useAchievements";
 import { useUserAchievementPoints } from "../hooks/useUserAchievementPoints";
 import { useMemo } from "react";
@@ -74,15 +77,14 @@ export function ProfileAchievements({
   if (achievements.length === 0) {
     return (
       <div className="mt-6">
-        <h2 className="text-2xl font-semibold mb-4">Achievements</h2>
-        <div className="rounded-lg border border-border bg-card p-8 text-center">
-          <div className="mb-2">🎯</div>
-          <p className="font-medium">No achievements yet</p>
-          <p className="text-sm text-muted-foreground mt-2">
-            Complete meetings and engage with your organization to unlock
-            achievements
-          </p>
-        </div>
+        <h2 className="font-heading text-2xl font-bold mb-4">Achievements</h2>
+        <Card className="border-0">
+          <EmptyState
+            icon={Trophy}
+            title="No achievements yet"
+            description="Complete meetings and engage with your organization to unlock achievements."
+          />
+        </Card>
       </div>
     );
   }

@@ -4,7 +4,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useUserProfileAchievements } from "../hooks/useAchievements";
 import { useUserAchievementPoints } from "../hooks/useUserAchievementPoints";
 import { useMemo } from "react";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Trophy } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export interface UserProfileAchievementsProps {
   /**
@@ -73,14 +75,14 @@ export function UserProfileAchievements({
   if (unlockedAchievements.length === 0) {
     return (
       <div className="mt-6">
-        <h2 className="text-2xl font-semibold mb-4">Achievements</h2>
-        <div className="rounded-lg border border-border bg-card p-8 text-center">
-          <div className="mb-2">🎯</div>
-          <p className="font-medium">No achievements unlocked yet</p>
-          <p className="text-sm text-muted-foreground mt-2">
-            This user hasn't unlocked any achievements yet
-          </p>
-        </div>
+        <h2 className="font-heading text-2xl font-bold mb-4">Achievements</h2>
+        <Card className="border-0">
+          <EmptyState
+            icon={Trophy}
+            title="No achievements unlocked yet"
+            description="This user hasn't unlocked any achievements yet."
+          />
+        </Card>
       </div>
     );
   }

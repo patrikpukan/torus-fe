@@ -1,6 +1,8 @@
 import OrganizationListItem from "@/features/organization/components/OrganizationListItem";
 import { useOrganizationsQuery } from "@/features/organization/api/useOrganizationsQuery";
 import { Building2 } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 
 const OrganizationListPage = () => {
   const { data, loading, error } = useOrganizationsQuery();
@@ -27,9 +29,13 @@ const OrganizationListPage = () => {
         )}
 
         {!loading && !error && organizations.length === 0 && (
-          <div className="rounded border border-muted-foreground/20 bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
-            No organizations found.
-          </div>
+          <Card className="border-0">
+            <EmptyState
+              icon={Building2}
+              title="No organizations yet"
+              description="Organizations you create will appear here."
+            />
+          </Card>
         )}
 
         <div className="space-y-2">

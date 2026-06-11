@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { MessageSquare } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReadOnlyUserCalendar from "@/features/calendar/ReadOnlyUserCalendar";
 import MeetingBanner from "@/features/meetings/MeetingBanner";
@@ -140,8 +142,12 @@ export default function PairingDetail({ contact, onBack }: PairingDetailProps) {
           </CardContent>
         </>
       ) : (
-        <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
-          Select a contact to display details.
+        <div className="flex flex-1 items-center justify-center">
+          <EmptyState
+            icon={MessageSquare}
+            title="No conversation selected"
+            description="Choose a colleague to open the conversation and see their details."
+          />
         </div>
       )}
     </Card>

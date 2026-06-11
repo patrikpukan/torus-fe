@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Users } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import ReadOnlyUserCalendar from "@/features/calendar/ReadOnlyUserCalendar";
@@ -170,8 +172,12 @@ export default function PairingDetail({
           </CardContent>
         </>
       ) : (
-        <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
-          Select a contact to display details.
+        <div className="flex flex-1 items-center justify-center">
+          <EmptyState
+            icon={Users}
+            title="No conversation selected"
+            description="Pick a colleague from the list to see their profile, availability, and chat."
+          />
         </div>
       )}
     </Card>

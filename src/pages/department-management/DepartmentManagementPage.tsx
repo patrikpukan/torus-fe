@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { EmptyState } from "@/components/ui/empty-state";
 import { brand } from "@/branding";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -227,13 +228,17 @@ export default function DepartmentManagementPage() {
       {/* Main Content */}
       <Card className="overflow-hidden">
         {departments.length === 0 ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-center">
-              <p className="text-muted-foreground">
-                No departments yet. Create your first department to get started.
-              </p>
-            </div>
-          </div>
+          <EmptyState
+            icon={Building2}
+            title="No departments yet"
+            description="Create your first department to organize members and improve pairing across teams."
+            action={
+              <Button onClick={() => setCreateDialogOpen(true)} className="gap-2">
+                <Plus className="h-4 w-4" />
+                Add Department
+              </Button>
+            }
+          />
         ) : (
           <div className="overflow-x-auto">
             <Table>

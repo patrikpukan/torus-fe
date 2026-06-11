@@ -1,4 +1,4 @@
-import { Handshake, Home, User } from "lucide-react";
+import { Handshake, Sparkles, User } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
-  CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import {
@@ -29,6 +28,12 @@ import { GET_CURRENT_USER } from "@/features/auth/api/useGetCurrentUserQuery";
 import { PAIRINGS_QUERY } from "@/features/pairings/api/pairingsQuery";
 import { ACTIVE_PAIRING_PERIOD_QUERY } from "@/features/pairings/api/useActivePairingPeriodQuery";
 
+const todayLabel = new Date().toLocaleDateString(undefined, {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+});
+
 const HomePage = () => {
   const { firstName, currentPairing, stats, isLoading, isEmpty } =
     useHomeData();
@@ -48,10 +53,11 @@ const HomePage = () => {
     : null;
 
   const welcomeMessage = firstName
-    ? `Welcome back, ${firstName}!`
-    : "Welcome back!";
+    ? `Good to see you, ${firstName}`
+    : "Good to see you";
 
   const remainingUses = currentUserData?.idealColleagueUsesRemaining ?? 0;
+  const hasActivePairing = !isEmpty && !!currentPairing;
 
   const handleFindIdealColleague = async () => {
     try {
@@ -92,146 +98,183 @@ const HomePage = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-3 text-3xl font-semibold tracking-tight text-foreground">
-          <Home aria-hidden className="h-8 w-8 text-primary" />
-          <span>{welcomeMessage}</span>
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          See what&#39;s happening with your colleagues.
-        </p>
+    <div className="space-y-8 px-1 pb-10">
+      <header className="flex flex-wrap items-end justify-between gap-3">
+        <div className="space-y-1">
+          <p className="text-sm text-muted-foreground">{todayLabel}</p>
+          <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground">
+            {welcomeMessage}
+          </h1>
+        </div>
+        <span
+          className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium ${
+            hasActivePairing
+              ? "bg-success/10 text-success"
+              : "bg-muted text-muted-foreground"
+          }`}
+        >
+          <span
+            className={`h-1.5 w-1.5 rounded-full ${
+              hasActivePairing ? "bg-success" : "bg-muted-foreground/60"
+            }`}
+          />
+          {hasActivePairing ? "Active pairing" : "No active pairing"}
+        </span>
       </header>
 
-      <section>
-        <Card className="flex flex-col gap-6 bg-card p-6 md:flex-row md:items-center md:justify-between">
-          {isEmpty || !currentPairing ? (
-            <PairingEmptyState />
-          ) : (
-            <PairingActiveState pairing={currentPairing} pairName={pairName} />
-          )}
-        </Card>
-      </section>
+      {/* Command-center layout: primary column + persistent right rail */}
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_clamp(290px,30%,360px)]">
+        {/* Main column */}
+        <div className="space-y-6">
+          <Card className="overflow-hidden border-0 shadow-elevated-lg">
+            <div className="h-1.5 w-full gradient-primary" />
+            <div className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between">
+              {hasActivePairing ? (
+                <PairingActiveState
+                  pairing={currentPairing}
+                  pairName={pairName}
+                />
+              ) : (
+                <PairingEmptyState />
+              )}
+            </div>
+          </Card>
 
-      <section className="grid gap-3 md:grid-cols-2">
-        <Card className="bg-card">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-base font-medium">
-              A new pairing has been running since
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Link
+              to="/profile"
+              className="group rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              aria-label="Go to your profile"
+            >
+              <Card className="flex h-full items-center gap-4 border-0 p-5 shadow-elevated transition group-hover:shadow-elevated-lg">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <User className="h-6 w-6" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-semibold">
+                    Profile
+                  </CardTitle>
+                  <CardDescription className="text-sm">
+                    Review your details and availability.
+                  </CardDescription>
+                </div>
+              </Card>
+            </Link>
+
+            <Link
+              to="/pairings"
+              className="group rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              aria-label="Browse pairings"
+            >
+              <Card className="flex h-full items-center gap-4 border-0 p-5 shadow-elevated transition group-hover:shadow-elevated-lg">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+                  <Handshake className="h-6 w-6" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-semibold">
+                    Pairings
+                  </CardTitle>
+                  <CardDescription className="text-sm">
+                    Catch up with colleagues and start sessions.
+                  </CardDescription>
+                </div>
+              </Card>
+            </Link>
+          </div>
+        </div>
+
+        {/* Right rail */}
+        <aside className="space-y-4">
+          <Card className="border-0 p-5 shadow-elevated">
+            <CardTitle className="mb-4 text-sm font-medium text-muted-foreground">
+              Your year so far
             </CardTitle>
-            <CardDescription className="text-lg font-semibold text-foreground">
-              {activeSince || "—"}
-            </CardDescription>
-          </CardHeader>
-        </Card>
-        <Card className="bg-card">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-base font-medium">
-              This year you&apos;ve been paired {stats.pairingsThisYear} times
-            </CardTitle>
-            <CardDescription className="text-sm text-muted-foreground">
-              {stats.successfulPairingsThisYear} of them were successful.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </section>
+            <div className="space-y-4">
+              <div className="flex items-baseline justify-between">
+                <span className="text-sm text-muted-foreground">Pairings</span>
+                <span className="text-2xl font-bold tabular-nums">
+                  {stats.pairingsThisYear}
+                </span>
+              </div>
+              <div className="flex items-baseline justify-between border-t border-border/60 pt-3">
+                <span className="text-sm text-muted-foreground">Met up</span>
+                <span className="text-2xl font-bold tabular-nums">
+                  {stats.successfulPairingsThisYear}
+                  <span className="text-sm font-normal text-muted-foreground">
+                    {" "}
+                    / {stats.pairingsThisYear}
+                  </span>
+                </span>
+              </div>
+              <div className="flex items-baseline justify-between border-t border-border/60 pt-3">
+                <span className="text-sm text-muted-foreground">
+                  Active since
+                </span>
+                <span className="text-base font-semibold">
+                  {activeSince || "—"}
+                </span>
+              </div>
+            </div>
+          </Card>
 
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold tracking-tight">Quick Actions</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Link
-            to="/profile"
-            className="block transition hover:scale-[1.01] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2"
-            aria-label="Go to your profile"
-          >
-            <Card className="flex h-full items-center gap-4 bg-card p-6 transition hover:bg-muted/40">
-              <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-muted text-2xl text-muted-foreground">
-                <User />
+          <Card className="border-0 p-5 shadow-elevated">
+            <div className="mb-3 flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <Sparkles className="h-5 w-5" />
               </div>
-              <div>
-                <CardTitle className="text-base font-semibold">
-                  Profile
-                </CardTitle>
-                <CardDescription>
-                  Review your details and availability.
-                </CardDescription>
-              </div>
-            </Card>
-          </Link>
-
-          <Link
-            to="/pairings"
-            className="block transition hover:scale-[1.01] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2"
-            aria-label="Browse pairings"
-          >
-            <Card className="flex h-full items-center gap-4 bg-card p-6 transition hover:bg-muted/40">
-              <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-muted text-2xl text-muted-foreground">
-                <Handshake />
-              </div>
-              <div>
-                <CardTitle className="text-base font-semibold">
-                  Pairings
-                </CardTitle>
-                <CardDescription>
-                  Catch up with colleagues and start sessions.
-                </CardDescription>
-              </div>
-            </Card>
-          </Link>
-
-          <Card className="flex h-full flex-col justify-between gap-4 bg-card p-6">
-            <div className="space-y-1">
               <CardTitle className="text-base font-semibold">
                 Find an ideal colleague
               </CardTitle>
-              <CardDescription>
-                We will match you with someone who shares the most interests.
-              </CardDescription>
-              <p className="text-xs text-muted-foreground">
-                Remaining uses: {remainingUses}
-              </p>
             </div>
+            <CardDescription className="mb-4 text-sm">
+              We&apos;ll match you with someone who shares the most interests.
+            </CardDescription>
             <Button
+              className="w-full"
               onClick={() => setConfirmOpen(true)}
               disabled={findingMatch || remainingUses < 1}
             >
-              {findingMatch ? "Searching..." : "Find an ideal colleague"}
+              {findingMatch ? "Searching…" : "Find a match"}
             </Button>
-            <Dialog
-              open={confirmOpen}
-              onOpenChange={(open) => !findingMatch && setConfirmOpen(open)}
-            >
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Find an ideal colleague?</DialogTitle>
-                  <DialogDescription>
-                    This action has limited usage and will create a new pairing.
-                  </DialogDescription>
-                </DialogHeader>
-                <p className="text-sm text-muted-foreground">
-                  You have {remainingUses} use{remainingUses === 1 ? "" : "s"}{" "}
-                  remaining.
-                </p>
-                <DialogFooter className="gap-2">
-                  <Button
-                    variant="ghost"
-                    onClick={() => setConfirmOpen(false)}
-                    disabled={findingMatch}
-                  >
-                    No
-                  </Button>
-                  <Button
-                    onClick={handleFindIdealColleague}
-                    disabled={findingMatch || remainingUses < 1}
-                  >
-                    {findingMatch ? "Finding..." : "Yes, continue"}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+            <p className="mt-2 text-center text-xs text-muted-foreground">
+              {remainingUses} use{remainingUses === 1 ? "" : "s"} remaining
+            </p>
           </Card>
-        </div>
-      </section>
+        </aside>
+      </div>
+
+      <Dialog
+        open={confirmOpen}
+        onOpenChange={(open) => !findingMatch && setConfirmOpen(open)}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Find an ideal colleague?</DialogTitle>
+            <DialogDescription>
+              This action has limited usage and will create a new pairing.
+            </DialogDescription>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            You have {remainingUses} use{remainingUses === 1 ? "" : "s"}{" "}
+            remaining.
+          </p>
+          <DialogFooter className="gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => setConfirmOpen(false)}
+              disabled={findingMatch}
+            >
+              No
+            </Button>
+            <Button
+              onClick={handleFindIdealColleague}
+              disabled={findingMatch || remainingUses < 1}
+            >
+              {findingMatch ? "Finding…" : "Yes, continue"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

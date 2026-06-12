@@ -34,6 +34,7 @@ import { getRoleOptions } from "@/lib/roleUtils";
 
 import { getColumns, type UserTableRow } from "./UserListItem";
 import { Users } from "lucide-react";
+import { PageHeader } from "@/components/ui/page-header";
 
 const EMPTY_USERS: UsersQueryItem[] = [];
 
@@ -112,12 +113,7 @@ const AdminUserTable = ({ organizationId }: AdminUserTableProps) => {
   return (
     <div className="container py-8 min-w-0">
       <div className="space-y-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="flex items-center gap-3 font-heading text-3xl font-bold tracking-tight">
-            <Users aria-hidden className="h-8 w-8 text-primary" />
-            <span>Users</span>
-          </h1>
-        </div>
+        <PageHeader icon={Users} title="Users" />
 
         <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_repeat(2,minmax(0,220px))]">
           <div className="flex flex-col gap-2">

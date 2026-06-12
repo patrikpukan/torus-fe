@@ -23,6 +23,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { EmptyState } from "@/components/ui/empty-state";
+import { PageHeader } from "@/components/ui/page-header";
 import { brand } from "@/branding";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -209,21 +210,17 @@ export default function DepartmentManagementPage() {
   return (
     <div className="space-y-6 px-4 py-8">
       {/* Header Section */}
-      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-        <div>
-          <h1 className="flex items-center gap-3 text-3xl font-bold">
-            <Building2 aria-hidden className="h-8 w-8 text-primary" />
-            <span>Department Management</span>
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Manage departments within your organization
-          </p>
-        </div>
-        <Button onClick={() => setCreateDialogOpen(true)} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Add Department
-        </Button>
-      </div>
+      <PageHeader
+        icon={Building2}
+        title="Department Management"
+        description="Manage departments within your organization"
+        actions={
+          <Button onClick={() => setCreateDialogOpen(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
+            Add Department
+          </Button>
+        }
+      />
 
       {/* Main Content */}
       <Card className="overflow-hidden">
@@ -233,7 +230,10 @@ export default function DepartmentManagementPage() {
             title="No departments yet"
             description="Create your first department to organize members and improve pairing across teams."
             action={
-              <Button onClick={() => setCreateDialogOpen(true)} className="gap-2">
+              <Button
+                onClick={() => setCreateDialogOpen(true)}
+                className="gap-2"
+              >
                 <Plus className="h-4 w-4" />
                 Add Department
               </Button>

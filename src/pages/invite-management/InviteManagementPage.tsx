@@ -1,4 +1,5 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { PageHeader } from "@/components/ui/page-header";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useInviteCodesQuery } from "@/features/organization/api/useInviteCodesQuery";
 import { useAuth } from "@/hooks/useAuth";
@@ -43,15 +44,11 @@ const InviteManagementPage = () => {
   return (
     <div className="container mx-auto max-w-6xl px-4 py-8 space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="flex items-center gap-3 text-3xl font-bold">
-          <Mail className="h-8 w-8 text-primary" />
-          <span>Create Invitations</span>
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          Generate invitation links or QR codes for new users
-        </p>
-      </div>
+      <PageHeader
+        icon={Mail}
+        title="Create Invitations"
+        description="Generate invitation links or QR codes for new users"
+      />
 
       {/* Tabs Section */}
       <Tabs defaultValue="url" className="w-full">

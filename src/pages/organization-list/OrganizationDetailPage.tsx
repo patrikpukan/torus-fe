@@ -11,6 +11,7 @@ import InviteUserModal from "@/features/organization/components/InviteUserModal"
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
 import { ArrowLeft, Building, Building2, UserPlus } from "lucide-react";
 
 const OrganizationDetailPage = () => {
@@ -155,10 +156,11 @@ const OrganizationDetailPage = () => {
         </Button>
       </div>
 
-      <h1 className="flex items-center gap-3 mb-4 font-heading text-3xl font-bold">
-        <Building aria-hidden className="h-8 w-8 text-primary" />
-        <span>{isMyOrg ? "My Organization" : "Organization Details"}</span>
-      </h1>
+      <PageHeader
+        icon={Building}
+        title={isMyOrg ? "My Organization" : "Organization Details"}
+        className="mb-4"
+      />
 
       <OrganizationForm
         value={currentFormData}

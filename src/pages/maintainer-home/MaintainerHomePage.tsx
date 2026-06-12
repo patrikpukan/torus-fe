@@ -17,6 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
@@ -152,17 +153,15 @@ const MaintainerHomePage = () => {
 
   return (
     <div className="space-y-6">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-3 font-heading text-3xl font-bold tracking-tight text-foreground">
-          <Home aria-hidden className="h-8 w-8 text-primary" />
-          {maintainer?.firstName
+      <PageHeader
+        icon={Home}
+        title={
+          maintainer?.firstName
             ? `Welcome back, ${maintainer.firstName}`
-            : "Maintainer overview"}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Stay on top of your organization, pairings and reported activity.
-        </p>
-      </header>
+            : "Maintainer overview"
+        }
+        description="Stay on top of your organization, pairings and reported activity."
+      />
 
       <section>
         <Card className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between bg-card">

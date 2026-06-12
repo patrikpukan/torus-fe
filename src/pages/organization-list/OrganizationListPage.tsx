@@ -3,6 +3,7 @@ import { useOrganizationsQuery } from "@/features/organization/api/useOrganizati
 import { Building2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { PageHeader } from "@/components/ui/page-header";
 
 const OrganizationListPage = () => {
   const { data, loading, error } = useOrganizationsQuery();
@@ -11,10 +12,7 @@ const OrganizationListPage = () => {
   return (
     <div className="container py-4">
       <div className="space-y-3">
-        <h1 className="flex items-center gap-3 font-heading text-3xl font-bold tracking-tight">
-          <Building2 aria-hidden className="h-8 w-8 text-primary" />
-          <span>Organizations</span>
-        </h1>
+        <PageHeader icon={Building2} title="Organizations" />
 
         {loading && (
           <div className="rounded border border-muted-foreground/20 bg-muted/50 px-4 py-3 text-sm text-muted-foreground">

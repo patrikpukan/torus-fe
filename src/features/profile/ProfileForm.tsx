@@ -10,6 +10,7 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { PageHeader } from "@/components/ui/page-header";
 import {
   Select,
   SelectContent,
@@ -275,10 +276,7 @@ const ProfileForm = ({
       noValidate
     >
       <div className="flex flex-col items-center gap-3">
-        <h1 className="flex items-center gap-3 font-heading text-3xl font-bold">
-          <User aria-hidden className="h-8 w-8 text-primary" />
-          <span>Profile</span>
-        </h1>
+        <PageHeader icon={User} title="Profile" />
         <div className="flex flex-col items-center gap-2">
           <Avatar className="h-24 w-24">
             <AvatarImage

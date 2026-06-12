@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { PageHeader } from "@/components/ui/page-header";
 import { useOrganizationsQuery } from "@/features/organization/api/useOrganizationsQuery";
 
 import AdminUserTable from "./components/AdminUserTable";
@@ -31,15 +32,11 @@ const AdminUserListPage = () => {
 
   return (
     <div className="container space-y-6 py-8">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-3 font-heading text-3xl font-bold tracking-tight">
-          <Building2 aria-hidden className="h-8 w-8 text-primary" />
-          <span>User directory</span>
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Browse users across all organizations or focus on a single one.
-        </p>
-      </header>
+      <PageHeader
+        icon={Building2}
+        title="User directory"
+        description="Browse users across all organizations or focus on a single one."
+      />
 
       <div className="max-w-xl space-y-2">
         <Label className="text-sm font-medium text-muted-foreground">

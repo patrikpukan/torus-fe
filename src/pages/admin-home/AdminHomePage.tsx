@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
 import { useStatisticsQuery } from "@/features/statistics/api/useStatisticsQuery";
 
 const AdminHomePage = () => {
@@ -86,15 +87,11 @@ const AdminHomePage = () => {
 
   return (
     <div className="space-y-6">
-      <header className="space-y-1">
-        <h1 className="flex items-center gap-3 font-heading text-3xl font-bold tracking-tight text-foreground">
-          <Home aria-hidden className="h-8 w-8 text-primary" />
-          <span>Admin overview</span>
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Get a snapshot of all organizations, users, and pairing controls.
-        </p>
-      </header>
+      <PageHeader
+        icon={Home}
+        title="Admin overview"
+        description="Get a snapshot of all organizations, users, and pairing controls."
+      />
 
       <section className="grid gap-3 md:grid-cols-2">
         <Card className="bg-card">

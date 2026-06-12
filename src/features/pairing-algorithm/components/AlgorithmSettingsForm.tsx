@@ -1,6 +1,7 @@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
+import { PageHeader } from "@/components/ui/page-header";
 import { Settings2 } from "lucide-react";
 import {
   PeriodLengthField,
@@ -40,10 +41,11 @@ export function AlgorithmSettingsForm({
 
   return (
     <div className="mx-auto w-full max-w-5xl px-8 py-12">
-      <h1 className="flex items-center gap-3 mb-12 text-3xl font-bold">
-        <Settings2 aria-hidden className="h-8 w-8 text-primary" />
-        <span>Algorithm settings</span>
-      </h1>
+      <PageHeader
+        icon={Settings2}
+        title="Algorithm settings"
+        className="mb-12"
+      />
 
       <ExecutePairingSection
         onExecute={handleExecutePairing}

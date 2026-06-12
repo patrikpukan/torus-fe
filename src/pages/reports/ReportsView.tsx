@@ -12,6 +12,7 @@ import { ArrowDown, ArrowUp, ArrowUpDown, Eye, Flag } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/ui/page-header";
 import {
   Table,
   TableBody,
@@ -254,31 +255,26 @@ export const ReportsView = ({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div className="space-y-1">
-          <h1 className="flex items-center gap-3 font-heading text-3xl font-bold tracking-tight">
-            <Flag aria-hidden className="h-8 w-8 text-primary" />
-            <span>Reports</span>
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Review incident reports submitted by users. Click a row to see full
-            details along with the reasoning provided by the reporter.
-          </p>
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
-          {organizationSelector}
-          <label className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-            <input
-              id="show-resolved"
-              type="checkbox"
-              className="h-4 w-4 rounded border border-muted-foreground/60"
-              checked={showResolved}
-              onChange={(event) => setShowResolved(event.target.checked)}
-            />
-            Show resolved reports
-          </label>
-        </div>
-      </div>
+      <PageHeader
+        icon={Flag}
+        title="Reports"
+        description="Review incident reports submitted by users. Click a row to see full details along with the reasoning provided by the reporter."
+        actions={
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            {organizationSelector}
+            <label className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+              <input
+                id="show-resolved"
+                type="checkbox"
+                className="h-4 w-4 rounded border border-muted-foreground/60"
+                checked={showResolved}
+                onChange={(event) => setShowResolved(event.target.checked)}
+              />
+              Show resolved reports
+            </label>
+          </div>
+        }
+      />
 
       {error && (
         <div className="rounded border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">

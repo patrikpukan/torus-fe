@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
-  CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
@@ -163,168 +162,152 @@ const MaintainerHomePage = () => {
         description="Stay on top of your organization, pairings and reported activity."
       />
 
-      <section>
-        <Card className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between bg-card">
-          <div className="flex items-center gap-4">
-            <Avatar className="h-20 w-20 border">
-              <AvatarImage
-                alt={organization?.name ?? "Organization"}
-                src={organization?.imageUrl ?? undefined}
-              />
-              <AvatarFallback className="bg-muted text-2xl font-semibold">
-                {organization?.name?.[0]?.toUpperCase() ?? "O"}
-              </AvatarFallback>
-            </Avatar>
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">You are managing</p>
-              <h2 className="text-2xl font-semibold leading-tight">
-                {organization?.name ?? "Unknown organization"}
-              </h2>
-              {organization?.code && (
-                <span className="text-sm text-muted-foreground">
-                  Org code: {organization.code}
+      {/* Command-center layout: primary column + persistent right rail */}
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_clamp(290px,30%,360px)]">
+        {/* Main column */}
+        <div className="space-y-6">
+          <Card className="overflow-hidden border-0 shadow-elevated-lg">
+            <div className="h-1.5 w-full gradient-primary" />
+            <div className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between">
+              <div className="flex items-center gap-5">
+                <Avatar className="h-20 w-20 ring-2 ring-primary/20 ring-offset-2 ring-offset-card">
+                  <AvatarImage
+                    alt={organization?.name ?? "Organization"}
+                    src={organization?.imageUrl ?? undefined}
+                  />
+                  <AvatarFallback className="bg-primary/10 text-2xl font-semibold text-primary">
+                    {organization?.name?.[0]?.toUpperCase() ?? "O"}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="space-y-1.5">
+                  <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    You are managing
+                  </span>
+                  <h2 className="font-heading text-2xl font-bold leading-tight">
+                    {organization?.name ?? "Unknown organization"}
+                  </h2>
+                  {organization?.code && (
+                    <span className="text-sm text-muted-foreground">
+                      Org code: {organization.code}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="flex flex-col items-start gap-2 md:items-end">
+                <Button asChild>
+                  <Link to={orgLink}>View organization</Link>
+                </Button>
+                <span className="text-xs text-muted-foreground">
+                  Change assets or admins
                 </span>
-              )}
+              </div>
             </div>
-          </div>
-          <div className="flex flex-col items-start gap-2 md:items-end">
-            <CardDescription>
-              Jump into the organization detail to change assets or admins.
-            </CardDescription>
-            <Button asChild variant="outline">
-              <Link to={orgLink}>View organization</Link>
-            </Button>
-          </div>
-        </Card>
-      </section>
+          </Card>
 
-      <section className="grid gap-3 md:grid-cols-2">
-        <Card className="bg-card">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-base font-medium">
-              A new pairing cycle has been running since
-            </CardTitle>
-            <CardDescription className="text-lg font-semibold text-foreground">
-              {formatDate(activePeriodStart) || "—"}
-            </CardDescription>
-          </CardHeader>
-        </Card>
-        <Card className="bg-card">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-base font-medium">
-              Currently inactive members
-            </CardTitle>
-            <CardDescription className="text-3xl font-semibold text-foreground">
-              {statsLoading ? "…" : inactiveUsersCount}
-            </CardDescription>
-            <p className="text-xs text-muted-foreground">
-              Encourage them to finish onboarding to keep the pool fresh.
-            </p>
-          </CardHeader>
-        </Card>
-      </section>
-
-      <section className="grid gap-3 md:grid-cols-3">
-        <Card className="bg-card">
-          <CardHeader className="space-y-1">
-            <div className="flex items-center gap-2">
-              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                New users
-              </CardTitle>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-4 w-4 text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent side="top">
-                    {rollingWindowNote}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+          <section className="space-y-3">
+            <h2 className="text-lg font-semibold tracking-tight">
+              Quick actions
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {quickActions.map((action) => (
+                <Link
+                  key={action.title}
+                  to={action.to}
+                  className="group rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <Card className="flex h-full flex-col gap-4 border-0 p-5 shadow-elevated transition group-hover:shadow-elevated-lg">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                      {action.icon}
+                    </div>
+                    <div className="space-y-1">
+                      <CardTitle className="text-base font-semibold">
+                        {action.title}
+                      </CardTitle>
+                      <CardDescription className="text-sm">
+                        {action.description}
+                      </CardDescription>
+                    </div>
+                    {action.meta && (
+                      <p className="text-xs font-medium text-muted-foreground">
+                        {action.meta}
+                      </p>
+                    )}
+                  </Card>
+                </Link>
+              ))}
             </div>
-            <CardDescription className="text-3xl font-semibold text-foreground">
-              {statsLoading ? "…" : newUsersCount}
-            </CardDescription>
-            <p className="text-xs text-muted-foreground">
-              Invitations accepted within the last month.
-            </p>
-          </CardHeader>
-        </Card>
-
-        <Card className="bg-card">
-          <CardHeader className="space-y-1">
-            <div className="flex items-center gap-2">
-              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                Reports
-              </CardTitle>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-4 w-4 text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent side="top">
-                    {rollingWindowNote}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            <CardDescription className="text-3xl font-semibold text-foreground">
-              {statsLoading ? "…" : reportsCount}
-            </CardDescription>
-            <p className="text-xs text-muted-foreground">
-              Escalations that need your attention.
-            </p>
-          </CardHeader>
-        </Card>
-
-        <Card className="bg-card">
-          <CardHeader className="space-y-1">
-            <div className="flex items-center gap-2">
-              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                Active matches
-              </CardTitle>
-            </div>
-            <CardDescription className="text-3xl font-semibold text-foreground">
-              {statsLoading ? "…" : matchedPairs}
-            </CardDescription>
-            <p className="text-xs text-muted-foreground">
-              Keep an eye on the matchmaking health for this cycle.
-            </p>
-          </CardHeader>
-        </Card>
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold tracking-tight">Quick actions</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {quickActions.map((action) => (
-            <Link
-              key={action.title}
-              to={action.to}
-              className="block transition hover:scale-[1.01] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2"
-            >
-              <Card className="flex h-full flex-col gap-4 p-5 transition bg-card hover:bg-muted/40">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
-                  {action.icon}
-                </div>
-                <div className="space-y-1">
-                  <CardTitle className="text-base font-semibold">
-                    {action.title}
-                  </CardTitle>
-                  <CardDescription className="text-sm">
-                    {action.description}
-                  </CardDescription>
-                </div>
-                {action.meta && (
-                  <p className="text-xs font-medium text-muted-foreground">
-                    {action.meta}
-                  </p>
-                )}
-              </Card>
-            </Link>
-          ))}
+          </section>
         </div>
-      </section>
+
+        {/* Right rail */}
+        <aside className="space-y-4">
+          <Card className="border-0 p-5 shadow-elevated">
+            <CardTitle className="mb-4 text-sm font-medium text-muted-foreground">
+              This cycle
+            </CardTitle>
+            <div className="space-y-4">
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="text-sm text-muted-foreground">
+                  Running since
+                </span>
+                <span className="text-base font-semibold">
+                  {formatDate(activePeriodStart) || "—"}
+                </span>
+              </div>
+              <div className="flex items-baseline justify-between border-t border-border/60 pt-3">
+                <span className="text-sm text-muted-foreground">
+                  Active matches
+                </span>
+                <span className="text-2xl font-bold tabular-nums">
+                  {statsLoading ? "…" : matchedPairs}
+                </span>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="border-0 p-5 shadow-elevated">
+            <div className="mb-4 flex items-center gap-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Last 30 days
+              </CardTitle>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top">{rollingWindowNote}</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-baseline justify-between">
+                <span className="text-sm text-muted-foreground">New users</span>
+                <span className="text-2xl font-bold tabular-nums">
+                  {statsLoading ? "…" : newUsersCount}
+                </span>
+              </div>
+              <div className="flex items-baseline justify-between border-t border-border/60 pt-3">
+                <span className="text-sm text-muted-foreground">Reports</span>
+                <span className="text-2xl font-bold tabular-nums">
+                  {statsLoading ? "…" : reportsCount}
+                </span>
+              </div>
+              <div className="flex items-baseline justify-between border-t border-border/60 pt-3">
+                <span className="text-sm text-muted-foreground">
+                  Inactive members
+                </span>
+                <span className="text-2xl font-bold tabular-nums">
+                  {statsLoading ? "…" : inactiveUsersCount}
+                </span>
+              </div>
+            </div>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Encourage inactive members to finish onboarding to keep the pool
+              fresh.
+            </p>
+          </Card>
+        </aside>
+      </div>
     </div>
   );
 };

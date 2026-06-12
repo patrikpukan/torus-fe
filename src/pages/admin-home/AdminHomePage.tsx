@@ -12,7 +12,6 @@ import { Link } from "react-router-dom";
 import {
   Card,
   CardDescription,
-  CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -93,98 +92,85 @@ const AdminHomePage = () => {
         description="Get a snapshot of all organizations, users, and pairing controls."
       />
 
-      <section className="grid gap-3 md:grid-cols-2">
-        <Card className="bg-card">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-base font-medium">
-              Organization directory
-            </CardTitle>
-            <CardDescription className="text-sm text-muted-foreground">
-              Browse and drill into any organization to inspect owners, assets,
-              and pairing readiness.
-            </CardDescription>
-            <Button asChild variant="outline" className="w-fit">
-              <Link to="/organization-list">Go to organizations</Link>
-            </Button>
-          </CardHeader>
-        </Card>
-        <Card className="bg-card">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-base font-medium">User roster</CardTitle>
-            <CardDescription className="text-sm text-muted-foreground">
-              Review every user, resolve reports, and check onboarding status.
-            </CardDescription>
-            <Button asChild variant="outline" className="w-fit">
-              <Link to="/user-list">Go to users</Link>
-            </Button>
-          </CardHeader>
-        </Card>
-      </section>
+      {/* Command-center layout: shortcut tiles + stats rail */}
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_clamp(290px,30%,360px)]">
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold tracking-tight">
+            Admin shortcuts
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {quickLinks.map((link) => (
+              <Link
+                key={link.title}
+                to={link.to}
+                className="group rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                <Card className="flex h-full flex-col gap-4 border-0 p-5 shadow-elevated transition group-hover:shadow-elevated-lg">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    {link.icon}
+                  </div>
+                  <div className="space-y-1">
+                    <CardTitle className="text-base font-semibold">
+                      {link.title}
+                    </CardTitle>
+                    <CardDescription className="text-sm">
+                      {link.description}
+                    </CardDescription>
+                  </div>
+                  {link.meta && (
+                    <p className="text-xs font-medium text-muted-foreground">
+                      {link.meta}
+                    </p>
+                  )}
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </section>
 
-      <section className="grid gap-3 md:grid-cols-2">
-        <Card className="bg-card">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-base font-medium">
-              Pairing algorithms
+        {/* Right rail */}
+        <aside className="space-y-4">
+          <Card className="border-0 p-5 shadow-elevated">
+            <CardTitle className="mb-4 text-sm font-medium text-muted-foreground">
+              Last 30 days, all organizations
             </CardTitle>
-            <CardDescription className="text-sm text-muted-foreground">
-              Quickly access cadence and rules per organization to keep matches
-              healthy.
-            </CardDescription>
-            <Button asChild variant="outline" className="w-fit">
-              <Link to="/algorithm-settings">Manage algorithms</Link>
-            </Button>
-          </CardHeader>
-        </Card>
-        <Card className="bg-card">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-base font-medium">Statistics</CardTitle>
-            <CardDescription className="text-sm text-muted-foreground">
-              Monitor engagement and outcomes at the organization level.
-            </CardDescription>
-            <Button asChild variant="outline" className="w-fit">
-              <Link to="/statistics">Open statistics</Link>
-            </Button>
-          </CardHeader>
-        </Card>
-      </section>
+            <div className="space-y-4">
+              <div className="flex items-baseline justify-between">
+                <span className="text-sm text-muted-foreground">New users</span>
+                <span className="text-2xl font-bold tabular-nums">
+                  {statsLoading ? "…" : newUsersCount}
+                </span>
+              </div>
+              <div className="flex items-baseline justify-between border-t border-border/60 pt-3">
+                <span className="text-sm text-muted-foreground">Reports</span>
+                <span className="text-2xl font-bold tabular-nums">
+                  {statsLoading ? "…" : reportsCount}
+                </span>
+              </div>
+              <div className="flex items-baseline justify-between border-t border-border/60 pt-3">
+                <span className="text-sm text-muted-foreground">
+                  Inactive users
+                </span>
+                <span className="text-2xl font-bold tabular-nums">
+                  {statsLoading ? "…" : inactiveUsersCount}
+                </span>
+              </div>
+            </div>
+          </Card>
 
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold tracking-tight">
-          Admin shortcuts
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {quickLinks.map((link) => (
-            <Link
-              key={link.title}
-              to={link.to}
-              className="block transition hover:scale-[1.01] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2"
-            >
-              <Card className="flex h-full flex-col gap-4 bg-card p-5 transition hover:bg-muted/40">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
-                  {link.icon}
-                </div>
-                <div className="space-y-1">
-                  <CardTitle className="text-base font-semibold">
-                    {link.title}
-                  </CardTitle>
-                  <CardDescription className="text-sm">
-                    {link.description}
-                  </CardDescription>
-                </div>
-                {link.meta && (
-                  <p className="text-xs font-medium text-muted-foreground">
-                    {link.meta}
-                  </p>
-                )}
-                <Button variant="ghost" className="justify-start px-0">
-                  {link.cta}
-                </Button>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      </section>
+          <Card className="border-0 p-5 shadow-elevated">
+            <CardTitle className="mb-3 text-sm font-medium text-muted-foreground">
+              Need a new organization?
+            </CardTitle>
+            <CardDescription className="mb-4 text-sm">
+              Register an organization and assign its first admin.
+            </CardDescription>
+            <Button asChild className="w-full">
+              <Link to="/register-org">Register organization</Link>
+            </Button>
+          </Card>
+        </aside>
+      </div>
     </div>
   );
 };

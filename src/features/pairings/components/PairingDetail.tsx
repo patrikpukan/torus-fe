@@ -10,7 +10,7 @@ import ProfileForm from "@/features/profile/ProfileForm";
 import MeetingProposalModal from "@/features/meetings/MeetingProposalModal";
 import MeetingBanner from "@/features/meetings/MeetingBanner";
 import { cn } from "@/lib/utils";
-import type { PairingContact } from "@/mocks/mockPairings";
+import type { PairingContact } from "@/features/pairings/types";
 import { getDisplayName } from "@/features/pairings/utils/displayName";
 
 export type PairingDetailProps = {

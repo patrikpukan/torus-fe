@@ -4,7 +4,7 @@ import { useSendMessageMutation } from "@/features/chat/graphql/chat.operations"
 import { useTypingStatus } from "./useTypingStatus";
 import { useMessages } from "./useMessages";
 import { useScroll } from "./useScroll";
-import type { PairingContact } from "@/mocks/mockPairings";
+import type { PairingContact } from "@/features/pairings/types";
 
 interface UseChatPairingProps {
   contact: PairingContact | undefined;

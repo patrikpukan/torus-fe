@@ -1,7 +1,7 @@
 import { Handshake, MessageSquare } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import type { PairingContact } from "@/mocks/mockPairings";
+import type { PairingContact } from "@/features/pairings/types";
 import { formatDateTime } from "@/features/pairings/components/dateUtils";
 import {
   getDisplayName,

@@ -3,7 +3,7 @@ import { MessageCircle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { getInitials } from "@/features/pairings/utils/displayName";
-import type { PairingContact } from "@/mocks/mockPairings";
+import type { PairingContact } from "@/features/pairings/types";
 
 type PairingActiveStateProps = {
   pairing: PairingContact;

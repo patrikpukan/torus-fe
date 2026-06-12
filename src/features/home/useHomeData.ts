@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { usePairingsQuery } from "@/features/pairings/api/usePairingsQuery";
 import { useActivePairingPeriodQuery } from "@/features/pairings/api/useActivePairingPeriodQuery";
-import type { PairingContact } from "@/mocks/mockPairings";
+import type { PairingContact } from "@/features/pairings/types";
 
 type HomeStats = {
   activeSince: string | null;

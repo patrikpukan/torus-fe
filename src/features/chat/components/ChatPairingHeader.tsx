@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
 import { getDisplayName } from "@/features/pairings/utils/displayName";
 import { formatDateTime } from "./ChatPairingDetailUtils";
-import type { PairingContact } from "@/mocks/mockPairings";
+import type { PairingContact } from "@/features/pairings/types";
 
 interface ChatPairingHeaderProps {
   contact: PairingContact;

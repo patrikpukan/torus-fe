@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client/react";
 import { useMemo } from "react";
 import { PAIRINGS_QUERY, type PairingsQueryData } from "./pairingsQuery";
-import type { PairingContact } from "@/mocks/mockPairings";
+import type { PairingContact } from "@/features/pairings/types";
 import { useAuth } from "@/hooks/useAuth";
 
 /**

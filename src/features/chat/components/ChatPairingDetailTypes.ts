@@ -1,4 +1,4 @@
-import type { PairingContact } from "@/mocks/mockPairings";
+import type { PairingContact } from "@/features/pairings/types";
 
 export interface Message {
   id: string;

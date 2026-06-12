@@ -1,6 +1,6 @@
 import React from "react";
 import { getDisplayName } from "@/features/pairings/utils/displayName";
-import type { PairingContact } from "@/mocks/mockPairings";
+import type { PairingContact } from "@/features/pairings/types";
 
 interface ChatTypingIndicatorProps {
   isTyping: boolean;

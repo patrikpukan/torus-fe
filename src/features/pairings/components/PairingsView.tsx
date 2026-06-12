@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { Card } from "@/components/ui/card";
-import type { PairingContact } from "@/mocks/mockPairings";
+import type { PairingContact } from "@/features/pairings/types";
 import { useIsMobile } from "@/hooks/use-mobile";
 import PairingsList from "./PairingsList";
 import { usePairingsQuery } from "@/features/pairings/api/usePairingsQuery";

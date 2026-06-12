@@ -50,7 +50,7 @@ export const PricingSection = () => {
   return (
     <div className="mb-12 space-y-8 sm:mb-16 md:mb-20">
       <div className="space-y-2 text-center">
-        <h2 className="text-3xl font-bold sm:text-4xl">
+        <h2 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
           Simple, Transparent Pricing
         </h2>
         <p className="text-muted-foreground">
@@ -61,7 +61,7 @@ export const PricingSection = () => {
         {pricingTiers.map((tier) => (
           <Card
             key={tier.title}
-            className={`relative flex flex-col ${tier.popular ? "border-primary shadow-lg" : ""}`}
+            className={`relative flex flex-col border-0 ${tier.popular ? "shadow-elevated-lg ring-2 ring-primary" : "shadow-elevated"}`}
           >
             {tier.popular && (
               <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -70,13 +70,15 @@ export const PricingSection = () => {
             )}
             <div className="flex-1 space-y-4 p-6">
               <div>
-                <h3 className="text-xl font-bold">{tier.title}</h3>
+                <h3 className="font-heading text-xl font-bold">{tier.title}</h3>
                 <p className="text-sm text-muted-foreground">
                   {tier.description}
                 </p>
               </div>
               <div>
-                <span className="text-3xl font-bold">{tier.price}</span>
+                <span className="font-heading text-3xl font-bold">
+                  {tier.price}
+                </span>
                 {tier.period && (
                   <span className="text-sm text-muted-foreground">
                     {" "}
@@ -90,7 +92,7 @@ export const PricingSection = () => {
               <ul className="space-y-2">
                 {tier.features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm">
-                    <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600" />
+                    <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
                     <span>{f}</span>
                   </li>
                 ))}

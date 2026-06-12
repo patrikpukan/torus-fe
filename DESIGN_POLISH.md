@@ -38,13 +38,47 @@ git push origin main
 
 - [x] **Heading consistency** — standardized page `h1`/section `h2` titles to `font-heading font-bold` across pages (admin home, maintainer home, users, reports, orgs, profile, calendar, register-org, invite history, achievements, access-denied). Left stat values / avatar initials / `text-lg` subsection labels alone.
 - [x] **EmptyState** applied to `DepartmentDistributionChart` (statistics). Ratings panel left as-is (compact inline, medallion would be too heavy).
+- [x] **Phase 1 — Landing marketing sections** (verified light, public): Features (numbered primary medallions + display font + hover lift), Benefits (theme tokens instead of hardcoded green, refactored to data array), Pricing (primary-token checks, `shadow-elevated-lg`+ring for popular, display font), CTA (`gradient-primary` card + display font), HowItWorks (display font, consistent step medallions). All headings → display font.
 
-## To do / ideas
+## Roadmap (phased)
 
-- [ ] **Marketing sections** (Features / HowItWorks / Benefits / Pricing / CTA) — tighten spacing + type to match the new hero quality
-- [ ] **Table-cell loading/empty text** — light polish (currently plain centered text)
-- [ ] Loading **skeletons** — audit for consistency with the new elevated surfaces
-- [ ] `GoogleCalendarSelection` / `TagSelector` empties — inline dropdown contexts; medallion likely too heavy, evaluate case-by-case
+Ordered by leverage. Each phase = one or more commits; deploy in batches.
+
+### Phase 1 — Landing marketing sections  ✅ done (committed, not deployed)
+- [x] Section headings → `font-heading`
+- [x] `FeaturesSection` — numbered medallions, hover lift, display-font titles
+- [x] `BenefitsSection` — theme tokens (brand-safe), hover, display font
+- [x] `PricingSection` — tokens, `shadow-elevated-lg`+ring popular, display font
+- [x] `CTASection` — `gradient-primary`, display font
+- [x] `HowItWorksSection` — display font, consistent step medallions
+- [ ] (later) Landing footer + smooth-scroll anchors from hero nav
+
+### Phase 2 — Shared primitives & patterns
+- [ ] Extract a `PageHeader` component (icon + title + description) — reused across ~15 pages
+- [ ] Buttons: audit variants/sizes/focus-visible rings for consistency
+- [ ] Inputs/forms: unified field styling + focus ring
+- [ ] Badges / Tabs / Dialogs: align radius, elevation, color tokens
+- [ ] Loading **skeletons** — match the new elevated surfaces
+- [ ] Hunt remaining **hardcoded colors** (green/red/blue literals) → theme tokens (brand-safe)
+
+### Phase 3 — Other-role dashboards
+- [ ] `MaintainerHomePage` (org_admin) — apply command-center + elevation treatment
+- [ ] `AdminHomePage` (super_admin) — same
+
+### Phase 4 — Data screens (needs login to verify)
+- [ ] Users tables (`AdminUserTable`, `PairedUserTable`) — row density, avatars-in-rows, actions
+- [ ] Reports (`ReportsView`, `ReportDetailPage`)
+- [ ] Department management filled/empty states
+- [ ] Statistics/charts — chart colors from theme tokens, card framing
+- [ ] Table-cell loading/empty text — light polish
+
+### Phase 5 — Cross-cutting QA
+- [ ] Dark-mode pass across ALL surfaces
+- [ ] Responsive/mobile pass across ALL surfaces
+- [ ] Acme brand visual QA (auth panel, landing, dashboard)
+- [ ] Toasts styling; error states consistency
+- [ ] Accessibility: focus-visible rings, contrast, aria labels
+- [ ] `GoogleCalendarSelection` / `TagSelector` empties — inline contexts; evaluate case-by-case
 
 ## Needs a login to verify (blocked on access)
 

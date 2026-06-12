@@ -53,6 +53,9 @@ h3 {
     /* Success color */
     --success: 156 62% 36%;
     --success-foreground: 0 0% 100%;
+    /* Warning color */
+    --warning: 38 92% 44%;
+    --warning-foreground: 26 60% 14%;
     /* Brand gradient stops (overridable per brand at runtime) */
     --gradient-from: 244 64% 55%;
     --gradient-to: 258 70% 62%;
@@ -93,6 +96,9 @@ h3 {
     /* Success color */
     --success: 152 55% 45%;
     --success-foreground: 237 40% 10%;
+    /* Warning color */
+    --warning: 40 90% 55%;
+    --warning-foreground: 30 50% 12%;
     /* Brand gradient stops (dark) */
     --gradient-from: 250 85% 70%;
     --gradient-to: 244 64% 55%;

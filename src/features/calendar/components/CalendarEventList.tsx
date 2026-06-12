@@ -19,7 +19,7 @@ export const CalendarEventList: React.FC<CalendarEventListProps> = ({
 
   if (error) {
     return (
-      <div className="p-4 text-red-600">
+      <div className="p-4 text-destructive">
         Error loading events: {error.message}
       </div>
     );
@@ -43,8 +43,8 @@ export const CalendarEventList: React.FC<CalendarEventListProps> = ({
               key={occurrence.id}
               className={`p-2 rounded text-xs ${
                 event.type === "availability"
-                  ? "bg-green-100 text-green-900"
-                  : "bg-red-100 text-red-900"
+                  ? "bg-success/10 text-success"
+                  : "bg-destructive/10 text-destructive"
               }`}
             >
               <div className="font-medium">{event.title || "Untitled"}</div>

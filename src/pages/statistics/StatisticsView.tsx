@@ -95,9 +95,9 @@ export const StatisticsView = ({
       />
 
       {error && (
-        <Card className="border-red-200 bg-red-50">
+        <Card className="border-destructive/40 bg-destructive/10">
           <CardContent className="pt-6">
-            <p className="text-sm text-red-800">
+            <p className="text-sm text-destructive">
               Error loading statistics: {error.message}
             </p>
           </CardContent>

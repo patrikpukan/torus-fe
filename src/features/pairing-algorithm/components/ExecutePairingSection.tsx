@@ -49,8 +49,8 @@ export const ExecutePairingSection: React.FC<ExecutePairingSectionProps> = ({
         <Alert
           className={
             executionResult.success
-              ? "mt-4 border-green-500 bg-green-50 text-green-900"
-              : "mt-4 border-red-500 bg-red-50 text-red-900"
+              ? "mt-4 border-success/40 bg-success/10 text-success"
+              : "mt-4 border-destructive/40 bg-destructive/10 text-destructive"
           }
         >
           <AlertDescription className="text-sm">

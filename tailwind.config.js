@@ -30,6 +30,8 @@ export default {
         "destructive-foreground": "hsl(var(--destructive-foreground))",
         success: "hsl(var(--success))",
         "success-foreground": "hsl(var(--success-foreground))",
+        warning: "hsl(var(--warning))",
+        "warning-foreground": "hsl(var(--warning-foreground))",
         card: "hsl(var(--card))",
         "card-foreground": "hsl(var(--card-foreground))",
         muted: "hsl(var(--muted))",

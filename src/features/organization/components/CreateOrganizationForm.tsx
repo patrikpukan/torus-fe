@@ -209,13 +209,13 @@ const CreateOrganizationForm = () => {
           </div>
 
           {submitError && (
-            <div className="rounded-md border border-red-500 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div className="rounded-md border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
               {submitError}
             </div>
           )}
 
           {submitSuccess && (
-            <div className="rounded-md border border-green-500 bg-green-50 px-4 py-3 text-sm text-green-700">
+            <div className="rounded-md border border-success/40 bg-success/10 px-4 py-3 text-sm text-success">
               {submitSuccess}
             </div>
           )}

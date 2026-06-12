@@ -140,7 +140,7 @@ export const MeetingBanner: React.FC<Props> = ({
   };
 
   return (
-    <div className="mb-4 rounded-md border p-3 bg-amber-50">
+    <div className="mb-4 rounded-md border p-3 bg-warning/10">
       {bothConfirmed && !meeting.cancelledAt && (
         <div className="flex flex-col gap-2">
           <div className="text-sm">

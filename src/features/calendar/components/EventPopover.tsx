@@ -133,7 +133,7 @@ export const EventPopover: React.FC<EventPopoverProps> = ({
         </div>
         {isGoogleEvent && (
           <Cloud
-            className="h-4 w-4 text-blue-500 flex-shrink-0"
+            className="h-4 w-4 text-primary flex-shrink-0"
             aria-label="Synced from Google Calendar"
           />
         )}

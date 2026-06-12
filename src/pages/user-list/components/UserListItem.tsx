@@ -229,7 +229,7 @@ export const getColumns = (
                         size="icon"
                         onClick={openDialog}
                         disabled={loading}
-                        className="h-10 w-10 text-muted-foreground hover:text-green-600 [&_svg]:size-6"
+                        className="h-10 w-10 text-muted-foreground hover:text-success [&_svg]:size-6"
                       >
                         <UserRoundCheck />
                       </Button>

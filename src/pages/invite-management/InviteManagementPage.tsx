@@ -32,8 +32,8 @@ const InviteManagementPage = () => {
   if (!isAdmin) {
     return (
       <div className="container py-8">
-        <div className="rounded-lg bg-red-50 p-4">
-          <p className="text-sm text-red-800">
+        <div className="rounded-lg bg-destructive/10 p-4">
+          <p className="text-sm text-destructive">
             You do not have permission to access this page
           </p>
         </div>
@@ -64,12 +64,12 @@ const InviteManagementPage = () => {
         </TabsList>
 
         {/* Info Box */}
-        <Alert className="mt-6 bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
-          <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-          <AlertTitle className="text-blue-900 dark:text-blue-100">
+        <Alert className="mt-6 bg-primary/10 border-primary/20">
+          <Info className="h-4 w-4 text-primary" />
+          <AlertTitle className="text-primary">
             How it works
           </AlertTitle>
-          <AlertDescription className="text-blue-800 dark:text-blue-200 space-y-1 mt-2">
+          <AlertDescription className="text-foreground space-y-1 mt-2">
             <div>
               • <strong>URL:</strong> Click and send the link
             </div>

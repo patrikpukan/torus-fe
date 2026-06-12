@@ -11,7 +11,7 @@ export const MeetingEventList: React.FC = () => {
 
   if (error) {
     return (
-      <div className="p-4 text-red-600">
+      <div className="p-4 text-destructive">
         Error loading meetings: {error.message}
       </div>
     );
@@ -30,7 +30,7 @@ export const MeetingEventList: React.FC = () => {
         {meetings.map((meeting) => (
           <div
             key={meeting.id}
-            className="p-2 rounded text-xs bg-blue-100 text-blue-900"
+            className="p-2 rounded text-xs bg-primary/10 text-primary"
           >
             <div className="font-medium">Meeting</div>
             <div className="text-xs opacity-75">
@@ -38,10 +38,10 @@ export const MeetingEventList: React.FC = () => {
               {format(new Date(meeting.endDateTime), "HH:mm")}
             </div>
             <div className="flex gap-1 mt-1">
-              <span className="px-1 py-0.5 bg-blue-200 rounded">
+              <span className="px-1 py-0.5 bg-primary/20 rounded">
                 User A: {meeting.userAConfirmationStatus}
               </span>
-              <span className="px-1 py-0.5 bg-blue-200 rounded">
+              <span className="px-1 py-0.5 bg-primary/20 rounded">
                 User B: {meeting.userBConfirmationStatus}
               </span>
             </div>

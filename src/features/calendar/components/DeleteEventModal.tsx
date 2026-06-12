@@ -165,7 +165,7 @@ export const DeleteEventModal: React.FC<DeleteEventModalProps> = ({
         )}
 
         {error && (
-          <div className="p-2 bg-red-100 text-red-700 rounded text-sm">
+          <div className="p-2 bg-destructive/10 text-destructive rounded text-sm">
             {error}
           </div>
         )}

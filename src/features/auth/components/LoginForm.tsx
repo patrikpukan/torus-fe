@@ -96,7 +96,7 @@ const LoginForm = () => {
         <form onSubmit={form.handleSubmit(handleSubmit)} noValidate>
           <CardContent className="space-y-4">
             {flashMessage && (
-              <div className="rounded border border-emerald-600/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-700">
+              <div className="rounded border border-success/40 bg-success/10 px-3 py-2 text-sm text-success">
                 {flashMessage}
               </div>
             )}

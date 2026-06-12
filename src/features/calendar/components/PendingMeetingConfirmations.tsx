@@ -51,7 +51,7 @@ export const PendingMeetingConfirmations: React.FC = () => {
 
   if (error) {
     return (
-      <div className="p-4 text-red-600">
+      <div className="p-4 text-destructive">
         Error loading confirmations: {error.message}
       </div>
     );
@@ -70,7 +70,7 @@ export const PendingMeetingConfirmations: React.FC = () => {
         {pending.map((meeting) => (
           <div
             key={meeting.id}
-            className="p-2 rounded border border-amber-300 bg-amber-50"
+            className="p-2 rounded border border-warning/40 bg-warning/10"
           >
             <div className="text-xs">
               <div className="font-medium">
@@ -90,13 +90,13 @@ export const PendingMeetingConfirmations: React.FC = () => {
                   <div className="flex gap-1">
                     <button
                       onClick={() => handleConfirm(meeting.id)}
-                      className="flex-1 px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700"
+                      className="flex-1 px-2 py-1 bg-success text-success-foreground rounded text-xs hover:bg-success/90"
                     >
                       Confirm
                     </button>
                     <button
                       onClick={() => handleReject(meeting.id)}
-                      className="flex-1 px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700"
+                      className="flex-1 px-2 py-1 bg-destructive text-destructive-foreground rounded text-xs hover:bg-destructive/90"
                     >
                       Reject
                     </button>
@@ -114,7 +114,7 @@ export const PendingMeetingConfirmations: React.FC = () => {
               ) : (
                 <button
                   onClick={() => setSelectedMeetingId(meeting.id)}
-                  className="mt-1 px-2 py-0.5 bg-amber-500 text-white rounded text-xs hover:bg-amber-600 w-full"
+                  className="mt-1 px-2 py-0.5 bg-warning text-warning-foreground rounded text-xs hover:bg-warning/90 w-full"
                 >
                   Respond
                 </button>

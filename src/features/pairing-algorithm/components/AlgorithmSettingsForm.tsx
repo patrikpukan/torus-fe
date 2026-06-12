@@ -65,7 +65,7 @@ export function AlgorithmSettingsForm({
           </div>
 
           {warning && (
-            <Alert className="border-amber-500 bg-amber-50 text-amber-900">
+            <Alert className="border-warning/40 bg-warning/10 text-warning">
               <AlertDescription className="text-sm">{warning}</AlertDescription>
             </Alert>
           )}

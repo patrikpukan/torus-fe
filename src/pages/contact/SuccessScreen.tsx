@@ -12,7 +12,7 @@ export const SuccessScreen = () => {
         <CardContent className="pt-6">
           <div className="text-center space-y-4">
             <div className="flex justify-center">
-              <CheckCircle className="h-12 w-12 text-green-600" />
+              <CheckCircle className="h-12 w-12 text-success" />
             </div>
             <h2 className="text-2xl font-bold">Thank you!</h2>
             <p className="text-muted-foreground">

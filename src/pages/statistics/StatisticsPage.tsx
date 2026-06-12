@@ -24,8 +24,8 @@ const StatisticsPage = () => {
 
   return (
     <div className="container py-8">
-      <div className="rounded-lg bg-red-50 p-4">
-        <p className="text-sm text-red-800">
+      <div className="rounded-lg bg-destructive/10 p-4">
+        <p className="text-sm text-destructive">
           You do not have permission to access this page
         </p>
       </div>

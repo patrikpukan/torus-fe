@@ -100,12 +100,12 @@ export default function AchievementCard({
         {achievement.isUnlocked && unlockedDate ? (
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="inline-block w-1.5 h-1.5 bg-green-500 rounded-full" />
+              <span className="inline-block w-1.5 h-1.5 bg-success rounded-full" />
               Unlocked on {unlockedDate}
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground">Earned:</span>
-              <span className="font-semibold text-sm text-green-600 dark:text-green-400">
+              <span className="font-semibold text-sm text-success">
                 +{achievement.pointValue} points
               </span>
             </div>
@@ -138,7 +138,7 @@ export default function AchievementCard({
             <span className="text-xs text-muted-foreground">
               Available Points
             </span>
-            <span className="font-semibold text-sm text-blue-600 dark:text-blue-400">
+            <span className="font-semibold text-sm text-primary">
               +{achievement.pointValue}
             </span>
           </div>

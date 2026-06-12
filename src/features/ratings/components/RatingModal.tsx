@@ -151,7 +151,7 @@ export const RatingModal = ({
                     disabled={loading}
                   />
                   {form.formState.errors.stars && (
-                    <p className="text-sm text-red-500">
+                    <p className="text-sm text-destructive">
                       Please rate the meeting
                     </p>
                   )}

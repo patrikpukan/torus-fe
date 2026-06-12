@@ -34,10 +34,10 @@ export default function PairingProfileCard({
   isCurrentlyMatched = false,
 }: PairingProfileCardProps) {
   const statusColors: Record<string, string> = {
-    planned: "bg-blue-100 text-blue-800",
-    matched: "bg-green-100 text-green-800",
-    met: "bg-purple-100 text-purple-800",
-    not_met: "bg-red-100 text-red-800",
+    planned: "bg-primary/10 text-primary",
+    matched: "bg-success/10 text-success",
+    met: "bg-accent text-accent-foreground",
+    not_met: "bg-destructive/10 text-destructive",
     cancelled: "bg-gray-100 text-gray-800",
   };
 
@@ -125,9 +125,9 @@ export default function PairingProfileCard({
 
           {/* Currently matched indicator */}
           {isCurrentlyMatched && (
-            <div className="flex items-center justify-center gap-2 rounded-md bg-green-50 p-3">
-              <div className="h-2 w-2 rounded-full bg-green-600" />
-              <span className="text-sm font-medium text-green-900">
+            <div className="flex items-center justify-center gap-2 rounded-md bg-success/10 p-3">
+              <div className="h-2 w-2 rounded-full bg-success" />
+              <span className="text-sm font-medium text-success">
                 Currently Matched
               </span>
             </div>

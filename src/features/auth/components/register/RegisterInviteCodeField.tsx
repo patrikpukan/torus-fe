@@ -37,39 +37,39 @@ export const RegisterInviteCodeField = ({
         className={
           hasValue
             ? isValidating
-              ? "border-amber-200 bg-amber-50/30"
+              ? "border-warning/40 bg-warning/10"
               : isValid
-                ? "border-emerald-600/40 bg-emerald-500/5"
+                ? "border-success/40 bg-success/5"
                 : hasError || !isValid
-                  ? "border-red-600/40 bg-red-500/5"
+                  ? "border-destructive/40 bg-destructive/5"
                   : ""
             : ""
         }
       />
       <div className="absolute right-3 top-1/2 -translate-y-1/2">
         {hasValue && isValidating && (
-          <Loader2 className="h-4 w-4 animate-spin text-amber-600" />
+          <Loader2 className="h-4 w-4 animate-spin text-warning" />
         )}
         {hasValue && !isValidating && isValid && (
-          <CheckCircle className="h-4 w-4 text-emerald-600" />
+          <CheckCircle className="h-4 w-4 text-success" />
         )}
         {hasValue && !isValidating && (hasError || !isValid) && (
-          <XCircle className="h-4 w-4 text-red-600" />
+          <XCircle className="h-4 w-4 text-destructive" />
         )}
       </div>
     </div>
 
     {isPrefilled && isValid && (
-      <div className="flex items-start gap-2 rounded-md bg-blue-50/60 p-2.5">
-        <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
-        <div className="text-xs text-blue-700">
+      <div className="flex items-start gap-2 rounded-md bg-primary/10 p-2.5">
+        <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+        <div className="text-xs text-primary">
           Using an invite from your organization
         </div>
       </div>
     )}
 
     {hasValue && !isValidating && isValid && !isPrefilled && (
-      <p className="text-xs text-emerald-700">
+      <p className="text-xs text-success">
         {organizationName
           ? `${organizationName} (${remainingUses ?? 0} uses remaining)`
           : "Invite code valid"}
@@ -77,7 +77,7 @@ export const RegisterInviteCodeField = ({
     )}
 
     {hasValue && !isValidating && (hasError || !isValid) && (
-      <p className="text-xs text-red-600">Invalid organization code</p>
+      <p className="text-xs text-destructive">Invalid organization code</p>
     )}
   </div>
 );

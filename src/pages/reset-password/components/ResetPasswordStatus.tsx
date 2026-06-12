@@ -18,7 +18,7 @@ export const ErrorResetStatus = ({ message }: { message: string }) => (
 
 export const SuccessResetStatus = () => (
   <CardContent>
-    <p className="rounded border border-emerald-600/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-700">
+    <p className="rounded border border-success/40 bg-success/10 px-3 py-2 text-sm text-success">
       Password updated successfully. Redirecting to the login page...
     </p>
   </CardContent>

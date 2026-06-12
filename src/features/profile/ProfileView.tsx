@@ -131,13 +131,13 @@ const ProfileView = () => {
 
   if (error) {
     return (
-      <div className="text-center py-8 text-red-500">Error loading profile</div>
+      <div className="text-center py-8 text-destructive">Error loading profile</div>
     );
   }
 
   if (!user) {
     return (
-      <div className="text-center py-8 text-red-500">Error loading profile</div>
+      <div className="text-center py-8 text-destructive">Error loading profile</div>
     );
   }
 
@@ -240,12 +240,12 @@ const ProfileView = () => {
                   </Button>
                 </div>
               ) : (
-                <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 space-y-3">
-                  <p className="text-sm font-medium text-yellow-900">
+                <div className="rounded-lg border border-warning/40 bg-warning/10 p-4 space-y-3">
+                  <p className="text-sm font-medium text-warning">
                     ⏸️ Your activity is paused
                   </p>
                   {activePause.originalEvent.description && (
-                    <p className="text-sm text-yellow-700">
+                    <p className="text-sm text-muted-foreground">
                       {activePause.originalEvent.description}
                     </p>
                   )}

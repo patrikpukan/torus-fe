@@ -86,14 +86,14 @@ export const DepartmentDistributionChart = () => {
 
   if (error) {
     return (
-      <Card className="border-red-200 bg-red-50">
+      <Card className="border-destructive/40 bg-destructive/10">
         <CardHeader>
-          <CardTitle className="text-red-800">
+          <CardTitle className="text-destructive">
             Department Distribution
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-red-700">
+          <p className="text-sm text-destructive">
             Error loading department distribution: {error}
           </p>
         </CardContent>

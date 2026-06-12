@@ -20,7 +20,7 @@ const ProfileEditPage = () => {
 
   if (!data?.getCurrentUser) {
     return (
-      <div className="text-center py-8 text-red-500">Error loading profile</div>
+      <div className="text-center py-8 text-destructive">Error loading profile</div>
     );
   }
 

@@ -127,7 +127,7 @@ export const InviteHistoryTable = ({
                       </TableCell>
                       <TableCell>
                         {code.expiresAt ? (
-                          <span className={isExpired ? "text-red-600" : ""}>
+                          <span className={isExpired ? "text-destructive" : ""}>
                             {format(new Date(code.expiresAt), "d MMM yyyy", {
                               locale: enUS,
                             })}

@@ -4,6 +4,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useStatisticsQuery } from "@/features/statistics/api/useStatisticsQuery";
+import { CycleTrendsChart } from "@/features/statistics/components/CycleTrendsChart";
 import { DepartmentDistributionChart } from "@/features/statistics/components/DepartmentDistributionChart";
 import { FilterStatistics } from "./components/FilterStatistics";
 import { PairingsByStatus } from "./components/PairingsByStatus";
@@ -78,8 +79,8 @@ export const StatisticsView = ({
     <div className="container mx-auto max-w-7xl space-y-8 px-4 py-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="flex items-center gap-2 text-3xl font-bold">
-            <BarChart3 className="h-8 w-8" />
+          <h1 className="flex items-center gap-2 font-heading text-3xl font-bold tracking-tight">
+            <BarChart3 className="h-8 w-8 text-primary" />
             Statistics
           </h1>
           <p className="mt-2 text-muted-foreground">
@@ -118,6 +119,7 @@ export const StatisticsView = ({
       ) : statistics ? (
         <>
           <StatisticsCards statistics={statistics} />
+          <CycleTrendsChart organizationId={organizationId} />
           <PairingsByStatus pairingsByStatus={statistics.pairingsByStatus} />
           <DepartmentDistributionChart />
           <PairingsByUser

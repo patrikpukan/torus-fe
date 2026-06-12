@@ -87,7 +87,7 @@ const AdminHomePage = () => {
   return (
     <div className="space-y-6">
       <header className="space-y-1">
-        <h1 className="flex items-center gap-3 text-3xl font-semibold tracking-tight text-foreground">
+        <h1 className="flex items-center gap-3 font-heading text-3xl font-bold tracking-tight text-foreground">
           <Home aria-hidden className="h-8 w-8 text-primary" />
           <span>Admin overview</span>
         </h1>

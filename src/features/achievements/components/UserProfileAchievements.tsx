@@ -45,7 +45,7 @@ export function UserProfileAchievements({
 
     return (
       <div className="mt-6">
-        <h2 className="text-2xl font-semibold mb-4">Achievements</h2>
+        <h2 className="font-heading text-2xl font-bold mb-4">Achievements</h2>
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Unable to load achievements</AlertTitle>
@@ -62,7 +62,7 @@ export function UserProfileAchievements({
   if (loading) {
     return (
       <div className="mt-6">
-        <h2 className="text-2xl font-semibold mb-4">Achievements</h2>
+        <h2 className="font-heading text-2xl font-bold mb-4">Achievements</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} className="h-64 rounded-lg" />
@@ -94,7 +94,7 @@ export function UserProfileAchievements({
     <div className="mt-6 mb-4">
       <div className="space-y-4">
         <div>
-          <h2 className="text-2xl font-semibold mb-4">Achievements</h2>
+          <h2 className="font-heading text-2xl font-bold mb-4">Achievements</h2>
 
           {/* Summary of unlocked achievements and points */}
           <div className="grid grid-cols-2 gap-3 mb-4">

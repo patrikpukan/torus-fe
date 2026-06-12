@@ -78,7 +78,7 @@ export default function PairingProfileCard({
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
       {/* Profile picture section */}
       <div className="flex flex-col items-center gap-3">
-        <h1 className="text-3xl font-semibold">Profile</h1>
+        <h1 className="font-heading text-3xl font-bold">Profile</h1>
         <div className="flex flex-col items-center gap-2">
           <Avatar className="h-24 w-24">
             {currentAvatarSrc ? (

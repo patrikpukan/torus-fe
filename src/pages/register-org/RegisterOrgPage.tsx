@@ -5,7 +5,7 @@ const RegisterOrgPage = () => {
   return (
     <div className="flex flex-col items-center gap-8 py-10">
       <header className="max-w-2xl text-center">
-        <h1 className="flex items-center gap-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+        <h1 className="flex items-center gap-3 font-heading text-3xl font-bold tracking-tight sm:text-4xl">
           <Building aria-hidden className="h-8 w-8 text-primary" />
           <span>Create a New Organization</span>
         </h1>

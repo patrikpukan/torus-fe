@@ -88,7 +88,7 @@ const ProfileEditPage = () => {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <h1 className="text-3xl font-semibold mb-4">Edit Profile</h1>
+      <h1 className="font-heading text-3xl font-bold mb-4">Edit Profile</h1>
       <ProfileForm
         value={initialProfile}
         onChange={handleChange}

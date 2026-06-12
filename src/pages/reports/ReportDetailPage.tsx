@@ -136,7 +136,7 @@ const ReportDetailPage = () => {
   if (!reportId) {
     return (
       <div className="space-y-3">
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="font-heading text-2xl font-bold tracking-tight">
           Report not found
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -162,7 +162,7 @@ const ReportDetailPage = () => {
   if (error) {
     return (
       <div className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="font-heading text-2xl font-bold tracking-tight">
           Unable to load report
         </h1>
         <p className="text-sm text-destructive">{error.message}</p>
@@ -176,7 +176,7 @@ const ReportDetailPage = () => {
   if (!report) {
     return (
       <div className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="font-heading text-2xl font-bold tracking-tight">
           Report not available
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -192,7 +192,7 @@ const ReportDetailPage = () => {
   if (!report.reportedUser || !report.reporter) {
     return (
       <div className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="font-heading text-2xl font-bold tracking-tight">
           Report details incomplete
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -235,7 +235,7 @@ const ReportDetailPage = () => {
       <div className="space-y-8 min-w-0">
         <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
-            <h1 className="text-3xl font-semibold tracking-tight">
+            <h1 className="font-heading text-3xl font-bold tracking-tight">
               Report detail
             </h1>
             <p className="text-sm text-muted-foreground">

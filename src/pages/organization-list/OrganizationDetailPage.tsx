@@ -53,7 +53,7 @@ const OrganizationDetailPage = () => {
   if (loading) {
     return (
       <div className="mx-auto max-w-3xl py-8 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="font-heading text-2xl font-bold tracking-tight">
           Loading organization...
         </h1>
       </div>
@@ -63,7 +63,7 @@ const OrganizationDetailPage = () => {
   if (error) {
     return (
       <div className="mx-auto max-w-3xl py-8">
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="font-heading text-2xl font-bold tracking-tight">
           Unable to load organization
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
@@ -74,7 +74,7 @@ const OrganizationDetailPage = () => {
   if (!organization) {
     return (
       <div className="mx-auto max-w-3xl py-8">
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="font-heading text-2xl font-bold tracking-tight">
           Organization not found
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -155,7 +155,7 @@ const OrganizationDetailPage = () => {
         </Button>
       </div>
 
-      <h1 className="flex items-center gap-3 mb-4 text-3xl font-semibold">
+      <h1 className="flex items-center gap-3 mb-4 font-heading text-3xl font-bold">
         <Building aria-hidden className="h-8 w-8 text-primary" />
         <span>{isMyOrg ? "My Organization" : "Organization Details"}</span>
       </h1>

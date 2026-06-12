@@ -162,7 +162,7 @@ const ProfileCalendar = () => {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-semibold">Calendar</h1>
+        <h1 className="font-heading text-3xl font-bold">Calendar</h1>
         <Button
           className="h-auto rounded-xl bg-muted-foreground py-2 font-semibold hover:bg-muted-foreground/90"
           onClick={() => setCreateEventModalOpen(true)}

@@ -44,7 +44,7 @@ const UserDetailPage = () => {
   if (combinedLoading) {
     return (
       <div className="mx-auto max-w-3xl py-8 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
           Loading user...
         </h1>
       </div>
@@ -59,7 +59,7 @@ const UserDetailPage = () => {
 
     return (
       <div className="mx-auto max-w-3xl py-8">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
           Unable to load user
         </h1>
         {message && (
@@ -76,7 +76,7 @@ const UserDetailPage = () => {
   if (!user) {
     return (
       <div className="mx-auto max-w-3xl py-8">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
           User not found
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -89,7 +89,7 @@ const UserDetailPage = () => {
   if (isSelf) {
     return (
       <div className="mx-auto max-w-3xl py-12 text-center">
-        <h1 className="text-3xl font-semibold tracking-tight">
+        <h1 className="font-heading text-3xl font-bold tracking-tight">
           This is your profile
         </h1>
         <p className="mt-3 text-sm text-muted-foreground">

@@ -12,6 +12,8 @@ import {
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ChartColumnBig } from "lucide-react";
 import { useDepartmentDistributionQuery } from "../api/useDepartmentDistributionQuery";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -106,10 +108,12 @@ export const DepartmentDistributionChart = () => {
           <CardTitle>Department Distribution</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex min-h-80 items-center justify-center text-center">
-            <p className="text-sm text-muted-foreground">
-              No departments found. Create departments to see distribution data.
-            </p>
+          <div className="flex min-h-80 items-center justify-center">
+            <EmptyState
+              icon={ChartColumnBig}
+              title="No departments found"
+              description="Create departments to see distribution data."
+            />
           </div>
         </CardContent>
       </Card>

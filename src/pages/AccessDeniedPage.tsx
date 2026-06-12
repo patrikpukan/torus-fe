@@ -14,7 +14,7 @@ export default function AccessDeniedPage() {
         </div>
         <div className="space-y-2">
           <p className="text-5xl font-semibold text-foreground">403</p>
-          <h1 className="text-2xl font-semibold text-foreground">
+          <h1 className="font-heading text-2xl font-bold text-foreground">
             Access denied
           </h1>
           <p className="text-sm text-muted-foreground">

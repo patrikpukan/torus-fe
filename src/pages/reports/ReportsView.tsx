@@ -256,7 +256,7 @@ export const ReportsView = ({
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="space-y-1">
-          <h1 className="flex items-center gap-3 text-3xl font-semibold tracking-tight">
+          <h1 className="flex items-center gap-3 font-heading text-3xl font-bold tracking-tight">
             <Flag aria-hidden className="h-8 w-8 text-primary" />
             <span>Reports</span>
           </h1>

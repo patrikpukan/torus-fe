@@ -11,7 +11,7 @@ const OrganizationListPage = () => {
   return (
     <div className="container py-4">
       <div className="space-y-3">
-        <h1 className="flex items-center gap-3 text-3xl font-semibold tracking-tight">
+        <h1 className="flex items-center gap-3 font-heading text-3xl font-bold tracking-tight">
           <Building2 aria-hidden className="h-8 w-8 text-primary" />
           <span>Organizations</span>
         </h1>

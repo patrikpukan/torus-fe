@@ -275,7 +275,7 @@ const ProfileForm = ({
       noValidate
     >
       <div className="flex flex-col items-center gap-3">
-        <h1 className="flex items-center gap-3 text-3xl font-semibold">
+        <h1 className="flex items-center gap-3 font-heading text-3xl font-bold">
           <User aria-hidden className="h-8 w-8 text-primary" />
           <span>Profile</span>
         </h1>

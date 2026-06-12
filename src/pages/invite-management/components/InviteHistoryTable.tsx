@@ -49,7 +49,7 @@ export const InviteHistoryTable = ({
   return (
     <div className="mt-12">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-semibold">Invite History</h2>
+        <h2 className="font-heading text-2xl font-bold">Invite History</h2>
         <p className="text-sm text-muted-foreground">
           {inviteCodes?.length || 0} total invites
         </p>

@@ -113,7 +113,7 @@ const AdminUserTable = ({ organizationId }: AdminUserTableProps) => {
     <div className="container py-8 min-w-0">
       <div className="space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="flex items-center gap-3 text-3xl font-semibold tracking-tight">
+          <h1 className="flex items-center gap-3 font-heading text-3xl font-bold tracking-tight">
             <Users aria-hidden className="h-8 w-8 text-primary" />
             <span>Users</span>
           </h1>

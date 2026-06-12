@@ -53,8 +53,18 @@ export const useRatingModalTrigger = () => {
   }, [data?.unratedMeetings, shownMeetings, currentMeeting, queue.length]);
 
   const handleClose = useCallback(() => {
+    // "Remind me later": silence the whole queue for this browser session
+    // (sessionStorage is ephemeral, so the prompt returns next session).
+    const updated = new Set(shownMeetings);
+    if (currentMeeting) updated.add(currentMeeting.id);
+    for (const m of queue) updated.add(m.id);
+    setShownMeetings(updated);
+    saveShownMeetings(updated);
+
     setIsOpen(false);
-  }, []);
+    setCurrentMeeting(null);
+    setQueue([]);
+  }, [currentMeeting, queue, shownMeetings]);
 
   const handleSuccess = useCallback(() => {
     if (currentMeeting) {

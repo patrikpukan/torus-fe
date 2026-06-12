@@ -6,7 +6,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
-import { Eye, Flag } from "lucide-react";
+import { Eye, Flag, Loader2, Users } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -284,13 +284,20 @@ const PairedUserTable = ({
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center text-sm text-muted-foreground"
-                >
-                  {!loading
-                    ? "No paired users to display."
-                    : "Loading rows, please wait."}
+                <TableCell colSpan={columns.length} className="h-28">
+                  <div className="flex flex-col items-center justify-center gap-2 text-sm text-muted-foreground">
+                    {loading ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        <span>Loading paired users…</span>
+                      </>
+                    ) : (
+                      <>
+                        <Users className="h-5 w-5 opacity-60" />
+                        <span>No paired users to display.</span>
+                      </>
+                    )}
+                  </div>
                 </TableCell>
               </TableRow>
             )}

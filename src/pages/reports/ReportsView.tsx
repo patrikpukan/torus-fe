@@ -8,7 +8,7 @@ import {
   type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ArrowUpDown, Eye, Flag } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Eye, Flag, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -316,13 +316,20 @@ export const ReportsView = ({
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center text-sm text-muted-foreground"
-                >
-                  {!loading
-                    ? "No reports found."
-                    : "Loading reports, please wait."}
+                <TableCell colSpan={columns.length} className="h-28">
+                  <div className="flex flex-col items-center justify-center gap-2 text-sm text-muted-foreground">
+                    {loading ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        <span>Loading reports…</span>
+                      </>
+                    ) : (
+                      <>
+                        <Flag className="h-5 w-5 opacity-60" />
+                        <span>No reports found.</span>
+                      </>
+                    )}
+                  </div>
                 </TableCell>
               </TableRow>
             )}

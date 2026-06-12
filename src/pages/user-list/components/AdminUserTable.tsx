@@ -33,7 +33,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { getRoleOptions } from "@/lib/roleUtils";
 
 import { getColumns, type UserTableRow } from "./UserListItem";
-import { Users } from "lucide-react";
+import { Loader2, Users } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 
 const EMPTY_USERS: UsersQueryItem[] = [];
@@ -212,13 +212,20 @@ const AdminUserTable = ({ organizationId }: AdminUserTableProps) => {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center text-sm text-muted-foreground"
-                    >
-                      {!loading
-                        ? "No users to display."
-                        : "Loading rows, please wait."}
+                    <TableCell colSpan={columns.length} className="h-28">
+                      <div className="flex flex-col items-center justify-center gap-2 text-sm text-muted-foreground">
+                        {loading ? (
+                          <>
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                            <span>Loading users…</span>
+                          </>
+                        ) : (
+                          <>
+                            <Users className="h-5 w-5 opacity-60" />
+                            <span>No users match the current filters.</span>
+                          </>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}

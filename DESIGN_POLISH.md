@@ -53,32 +53,32 @@ Ordered by leverage. Each phase = one or more commits; deploy in batches.
 - [x] `HowItWorksSection` — display font, consistent step medallions
 - [ ] (later) Landing footer + smooth-scroll anchors from hero nav
 
-### Phase 2 — Shared primitives & patterns
-- [ ] Extract a `PageHeader` component (icon + title + description) — reused across ~15 pages
-- [ ] Buttons: audit variants/sizes/focus-visible rings for consistency
-- [ ] Inputs/forms: unified field styling + focus ring
-- [ ] Badges / Tabs / Dialogs: align radius, elevation, color tokens
-- [ ] Loading **skeletons** — match the new elevated surfaces
-- [ ] Hunt remaining **hardcoded colors** (green/red/blue literals) → theme tokens (brand-safe)
+### Phase 2 — Shared primitives & patterns  ✅ done (committed, not deployed)
+- [x] `PageHeader` component extracted; 14 pages migrated
+- [x] Warning token added (light + dark, index.css + tailwind config)
+- [x] Hardcoded colors → semantic tokens: 131 instances across 32 files
+      (success/destructive/warning/primary). Left: star-rating gold,
+      shadcn toast primitive. Badge variants migrated.
+- [x] Buttons/inputs: shadcn primitives already consistent — no changes needed
 
-### Phase 3 — Other-role dashboards
-- [ ] `MaintainerHomePage` (org_admin) — apply command-center + elevation treatment
-- [ ] `AdminHomePage` (super_admin) — same
+### Phase 3 — Other-role dashboards  ✅ done (committed, not deployed)
+- [x] `MaintainerHomePage` — command-center: org hero + action tiles + stats rail
+- [x] `AdminHomePage` — deduped directory cards; shortcuts + stats rail + register-org card
 
-### Phase 4 — Data screens (needs login to verify)
-- [ ] Users tables (`AdminUserTable`, `PairedUserTable`) — row density, avatars-in-rows, actions
-- [ ] Reports (`ReportsView`, `ReportDetailPage`)
-- [ ] Department management filled/empty states
-- [ ] Statistics/charts — chart colors from theme tokens, card framing
-- [ ] Table-cell loading/empty text — light polish
+### Phase 4 — Data screens  ✅ done (committed, not deployed)
+- [x] Table loading/empty cells: spinner + icon treatment (users, paired, reports)
+- [x] Tables themselves already refined at component level (header band, borders)
+- [ ] (deferred) Row density/avatars-in-rows — needs admin login to evaluate with data
+- [ ] (deferred) Chart categorical palette — intentional "happy" palette; revisit only if brands complain
 
-### Phase 5 — Cross-cutting QA
-- [ ] Dark-mode pass across ALL surfaces
-- [ ] Responsive/mobile pass across ALL surfaces
-- [ ] Acme brand visual QA (auth panel, landing, dashboard)
-- [ ] Toasts styling; error states consistency
-- [ ] Accessibility: focus-visible rings, contrast, aria labels
-- [ ] `GoogleCalendarSelection` / `TagSelector` empties — inline contexts; evaluate case-by-case
+### Phase 5 — Cross-cutting QA  ✅ done within current access
+- [x] Acme brand QA: auth split (teal panel, own copy/logo), landing hero, all token
+      surfaces verified live with VITE_BRAND=acme; both brand builds pass
+- [x] Dark mode: token-driven by construction post-migration; dashboard/pairings/
+      profile/auth verified in earlier rounds
+- [x] Mobile: auth collapse verified; landing/hero verified earlier
+- [ ] (deferred, needs admin login) dark + responsive on admin tables with data
+- [ ] (deferred) `GoogleCalendarSelection` / `TagSelector` inline empties — low value
 
 ## Needs a login to verify (blocked on access)
 

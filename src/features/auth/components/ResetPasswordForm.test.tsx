@@ -12,7 +12,7 @@ describe("ResetPasswordForm", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByLabelText("Email:")).toBeInTheDocument();
+    expect(screen.getByLabelText("Email")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Send reset password email" })
     ).toBeInTheDocument();

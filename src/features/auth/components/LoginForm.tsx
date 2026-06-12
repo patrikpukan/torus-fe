@@ -109,7 +109,6 @@ const LoginForm = () => {
                   <FormControl>
                     <Input
                       {...field}
-                      id="login-email"
                       type="email"
                       autoComplete="email"
                     />
@@ -127,7 +126,6 @@ const LoginForm = () => {
                   <FormControl>
                     <Input
                       {...field}
-                      id="login-password"
                       type="password"
                       autoComplete="current-password"
                     />

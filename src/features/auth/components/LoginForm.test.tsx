@@ -1,8 +1,15 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 
 import LoginForm from "./LoginForm";
+
+vi.mock("@/hooks/useAuth", () => ({
+  useAuth: () => ({
+    signIn: vi.fn(),
+    signInWithGoogle: vi.fn(),
+  }),
+}));
 
 describe("LoginForm", () => {
   it("should render the login form", () => {

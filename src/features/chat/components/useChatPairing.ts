@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useSendMessageMutation } from "@/features/chat/graphql/chat.operations";
+import { useSendMessageMutation } from "@/features/chat/api/chat.api";
+import { useChatChannel } from "@/features/chat/api/useChatChannel";
 import { useTypingStatus } from "./useTypingStatus";
 import { useMessages } from "./useMessages";
 import { useScroll } from "./useScroll";
@@ -20,15 +21,25 @@ export const useChatPairing = ({ contact, activeTab }: UseChatPairingProps) => {
   const [sendMessage, { loading: sendingMessage, error: sendError }] =
     useSendMessageMutation();
 
+  // Single Supabase Realtime channel for this conversation; events fan out to
+  // the typing + messages hooks below (replaces the 3 GraphQL subscriptions).
+  const { messageSent, typingStatus, messagesRead } = useChatChannel({
+    pairingId,
+    userId: user?.id,
+  });
+
   const { otherUserTyping, handleTyping, stopTyping } = useTypingStatus({
     pairingId,
     userId: user?.id,
+    typingStatus,
   });
 
   const { messages, messagesLoading } = useMessages({
     pairingId,
     activeTab,
     userId: user?.id,
+    messageSent,
+    messagesRead,
   });
 
   const scrollRef = useScroll({ messages, otherUserTyping });

@@ -1,33 +1,28 @@
 import { useState, useEffect } from "react";
-import {
-  useSetTypingStatusMutation,
-  useTypingStatusSubscription,
-} from "@/features/chat/graphql/chat.operations";
+import { useSetTypingStatusMutation } from "@/features/chat/api/chat.api";
 
 interface UseTypingStatusProps {
   pairingId: string | undefined;
   userId: string | undefined;
+  // Latest typing event from the pairing's Supabase channel (already filtered
+  // to exclude the current user; see useChatChannel).
+  typingStatus: { pairingId: string; userId: string; isTyping: boolean } | null;
 }
 
 export const useTypingStatus = ({
   pairingId,
-  userId,
+  typingStatus,
 }: UseTypingStatusProps) => {
   const [isTyping, setIsTyping] = useState(false);
   const [otherUserTyping, setOtherUserTyping] = useState(false);
   const [setTypingStatus] = useSetTypingStatusMutation();
 
-  const { data: typingData } = useTypingStatusSubscription(
-    pairingId || "",
-    userId || ""
-  );
-
-  // Handle typing status updates
+  // Handle typing status updates from the realtime channel
   useEffect(() => {
-    if (typingData?.typingStatus) {
-      setOtherUserTyping(typingData.typingStatus.isTyping);
+    if (typingStatus) {
+      setOtherUserTyping(typingStatus.isTyping);
     }
-  }, [typingData]);
+  }, [typingStatus]);
 
   // Handle typing input with debounce
   useEffect(() => {

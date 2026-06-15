@@ -1,22 +1,26 @@
 import { useEffect, useState } from "react";
 import {
   useGetMessagesQuery,
-  useMessageSentSubscription,
-  useMessagesReadSubscription,
   useMarkMessagesAsReadMutation,
-} from "@/features/chat/graphql/chat.operations";
+  type MessageModel,
+} from "@/features/chat/api/chat.api";
 import type { Message } from "./ChatPairingDetailTypes";
 
 interface UseMessagesProps {
   pairingId: string | undefined;
   activeTab: string;
   userId: string | undefined;
+  // Latest realtime events from the pairing's Supabase channel (see useChatChannel).
+  messageSent: MessageModel | null;
+  messagesRead: { pairingId: string; userId: string } | null;
 }
 
 export const useMessages = ({
   pairingId,
   activeTab,
   userId,
+  messageSent,
+  messagesRead,
 }: UseMessagesProps) => {
   const {
     data: messagesData,
@@ -25,15 +29,6 @@ export const useMessages = ({
   } = useGetMessagesQuery(pairingId || "");
 
   const [markMessagesAsRead] = useMarkMessagesAsReadMutation();
-
-  const { data: subscriptionData } = useMessageSentSubscription(
-    pairingId || ""
-  );
-
-  const { data: readReceiptData } = useMessagesReadSubscription(
-    pairingId || "",
-    userId || ""
-  );
 
   // Update messages when query data arrives
   const [messages, setMessages] = useState<Message[]>([]);
@@ -52,32 +47,32 @@ export const useMessages = ({
     }
   }, [activeTab, pairingId, refetchMessages, markMessagesAsRead]);
 
-  // Add new message from subscription
+  // Add new message from the realtime channel
   useEffect(() => {
-    if (subscriptionData?.messageSent) {
+    if (messageSent) {
       setMessages((prev) => {
-        if (prev.find((m) => m.id === subscriptionData.messageSent.id)) {
+        if (prev.find((m) => m.id === messageSent.id)) {
           return prev;
         }
-        return [...prev, subscriptionData.messageSent];
+        return [...prev, messageSent];
       });
 
-      if (pairingId && subscriptionData.messageSent.senderId !== userId) {
+      if (pairingId && messageSent.senderId !== userId) {
         markMessagesAsRead({ variables: { pairingId } });
       }
     }
-  }, [subscriptionData, pairingId, userId, markMessagesAsRead]);
+  }, [messageSent, pairingId, userId, markMessagesAsRead]);
 
   // Handle read receipts
   useEffect(() => {
-    if (readReceiptData?.messagesRead) {
+    if (messagesRead) {
       setMessages((prev) =>
         prev.map((msg) =>
           msg.senderId === userId ? { ...msg, isRead: true } : msg
         )
       );
     }
-  }, [readReceiptData, userId]);
+  }, [messagesRead, userId]);
 
   return {
     messages,

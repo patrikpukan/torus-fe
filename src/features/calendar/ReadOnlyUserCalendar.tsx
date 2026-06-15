@@ -5,8 +5,7 @@ import "@schedule-x/theme-default/dist/index.css";
 import "temporal-polyfill/global";
 import { CustomCalendar } from "./components";
 import { useUserCalendarEvents } from "./api/useUserCalendarEvents";
-import { useQuery } from "@apollo/client/react";
-import { gql } from "@apollo/client";
+import { useAllMeetingsForPairing } from "./api/useMeetingEvents";
 
 // Convert calendar events from GraphQL to ScheduleX format
 const convertToScheduleXEvents = (
@@ -67,34 +66,6 @@ type ReadOnlyUserCalendarProps = {
   otherUserName?: string;
 };
 
-const ALL_MEETINGS_FOR_PAIRING = gql`
-  query AllMeetingsForPairing($pairingId: ID!) {
-    allMeetingsForPairing(pairingId: $pairingId) {
-      id
-      startDateTime
-      endDateTime
-      userAId
-      userBId
-      userAConfirmationStatus
-      userBConfirmationStatus
-      cancelledAt
-    }
-  }
-`;
-
-type AllMeetingsForPairingData = {
-  allMeetingsForPairing: Array<{
-    id: string;
-    startDateTime: string;
-    endDateTime: string;
-    userAId: string;
-    userBId: string;
-    userAConfirmationStatus: string;
-    userBConfirmationStatus: string;
-    cancelledAt?: string | null;
-  }>;
-};
-
 /**
  * Read-only calendar for displaying another user's events inside pairings.
  * Shows event details popover without edit/delete actions.
@@ -119,14 +90,7 @@ const ReadOnlyUserCalendar = ({
     endDate
   );
   // Fetch meetings for this pairing to overlay (skips if no pairingId)
-  const { data: pairingMeetings } = useQuery<AllMeetingsForPairingData>(
-    ALL_MEETINGS_FOR_PAIRING,
-    {
-      variables: { pairingId: pairingId as string },
-      skip: !pairingId,
-      fetchPolicy: "cache-and-network",
-    }
-  );
+  const { data: pairingMeetings } = useAllMeetingsForPairing(pairingId);
 
   const scheduleXEvents = useMemo(
     () => convertToScheduleXEvents(calendarData?.expandedCalendarOccurrences),

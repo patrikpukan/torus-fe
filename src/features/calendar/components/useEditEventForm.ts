@@ -1,12 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { useMutation } from "@apollo/client/react";
 import { Temporal } from "temporal-polyfill";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  CALENDAR_EVENTS_QUERY,
-  UPDATE_CALENDAR_EVENT,
-} from "../api/useCalendarEvents";
+import { useUpdateCalendarEventMutation } from "../api/useCalendarEvents";
 import {
   editEventSchema,
   type EditEventFormValues,
@@ -16,6 +12,8 @@ import {
 
 interface UseEditEventFormProps {
   occurrence: Occurrence;
+  // Retained for API compatibility with callers; cache invalidation now covers
+  // refetching, so these range hints are no longer needed by the mutation.
   initialStartDate?: string;
   initialEndDate?: string;
   onSuccess?: () => void;
@@ -23,25 +21,13 @@ interface UseEditEventFormProps {
 
 export const useEditEventForm = ({
   occurrence,
-  initialStartDate,
-  initialEndDate,
   onSuccess,
 }: UseEditEventFormProps) => {
   const event = occurrence.originalEvent;
   const [scope, setScope] = useState<"this" | "following" | "all">("this");
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const [mutate, { loading }] = useMutation(UPDATE_CALENDAR_EVENT, {
-    refetchQueries: [
-      {
-        query: CALENDAR_EVENTS_QUERY,
-        variables: {
-          startDate: initialStartDate || "",
-          endDate: initialEndDate || "",
-        },
-      },
-    ],
-  });
+  const [mutate, { loading }] = useUpdateCalendarEventMutation();
 
   const initialValues = useMemo(() => {
     const tz = Temporal.Now.zonedDateTimeISO().timeZoneId;
@@ -115,7 +101,13 @@ export const useEditEventForm = ({
 
       const occurrenceStartDate = new Date(occurrence.occurrenceStart);
 
-      const input: Record<string, unknown> = {
+      const input: {
+        id: string;
+        title: string;
+        type: string;
+        startDateTime?: string;
+        endDateTime?: string;
+      } = {
         id: event.id,
         title: values.title.trim(),
         type: values.type,

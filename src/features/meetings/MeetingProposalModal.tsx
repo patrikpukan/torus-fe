@@ -15,12 +15,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { useApolloClient } from "@apollo/client/react";
 import {
   useCreateMeetingMutation,
   useProposeMeetingTimeMutation,
 } from "@/features/calendar/api/useMeetingEvents";
-import { LATEST_MEETING_FOR_PAIRING_QUERY } from "@/features/calendar/api/useMeetingEvents";
 
 type Props = {
   open: boolean;
@@ -74,7 +72,6 @@ export const MeetingProposalModal: React.FC<Props> = ({
   const currentUserId = user?.id;
   const [createMeeting, { loading: creating }] = useCreateMeetingMutation();
   const [proposeTime, { loading: proposing }] = useProposeMeetingTimeMutation();
-  const apollo = useApolloClient();
 
   const [error, setError] = useState<string | null>(null);
   const form = useForm<MeetingProposalFormValues>({
@@ -151,14 +148,8 @@ export const MeetingProposalModal: React.FC<Props> = ({
 
       onOpenChange(false);
       form.reset();
-
-      if (pairingId) {
-        await apollo.query({
-          query: LATEST_MEETING_FOR_PAIRING_QUERY,
-          variables: { pairingId },
-          fetchPolicy: "network-only",
-        });
-      }
+      // The create/propose mutations invalidate the latest-meeting-for-pairing
+      // query key, so react-query refetches the banner automatically.
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to propose meeting"

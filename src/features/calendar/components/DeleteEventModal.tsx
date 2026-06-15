@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useMutation } from "@apollo/client/react";
 import {
   Dialog,
   DialogContent,
@@ -10,10 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import {
-  CALENDAR_EVENTS_QUERY,
-  DELETE_CALENDAR_EVENT,
-} from "../api/useCalendarEvents";
+import { useDeleteCalendarEventMutation } from "../api/useCalendarEvents";
 import type { CalendarEventItem } from "../api/useCalendarEvents";
 
 type Occurrence = {
@@ -28,6 +24,8 @@ interface DeleteEventModalProps {
   event: Occurrence | null;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+  // Retained for API compatibility with callers; cache invalidation now covers
+  // refetching, so these range hints are no longer used here.
   startDate?: string;
   endDate?: string;
 }
@@ -37,22 +35,10 @@ export const DeleteEventModal: React.FC<DeleteEventModalProps> = ({
   event,
   onOpenChange,
   onSuccess,
-  startDate,
-  endDate,
 }) => {
   const [error, setError] = useState<string | null>(null);
   const [scope, setScope] = useState<"this" | "following" | "all">("all");
-  const [mutate, { loading }] = useMutation(DELETE_CALENDAR_EVENT, {
-    refetchQueries: [
-      {
-        query: CALENDAR_EVENTS_QUERY,
-        variables: {
-          startDate: startDate || "",
-          endDate: endDate || "",
-        },
-      },
-    ],
-  });
+  const [mutate, { loading }] = useDeleteCalendarEventMutation();
 
   const handleDelete = async () => {
     if (!event) return;

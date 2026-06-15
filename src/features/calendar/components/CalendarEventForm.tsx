@@ -1,12 +1,10 @@
 import React, { useMemo, useState } from "react";
-import { useMutation } from "@apollo/client/react";
-import { graphql } from "gql.tada";
 import { Temporal } from "temporal-polyfill";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/hooks/useAuth";
-import { CALENDAR_EVENTS_QUERY } from "../api/useCalendarEvents";
+import { useCreateCalendarEventMutation } from "../api/useCalendarEvents";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,19 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-const CREATE_CALENDAR_EVENT = graphql(`
-  mutation CreateCalendarEvent($input: CreateCalendarEventInput!) {
-    createCalendarEvent(input: $input) {
-      id
-      title
-      startDateTime
-      endDateTime
-      type
-      rrule
-    }
-  }
-`);
 
 const recurrenceOptions = [
   "none",
@@ -88,17 +73,7 @@ export const CalendarEventForm: React.FC<CalendarEventFormProps> = ({
   endDate: initialEndDate,
 }) => {
   const { user } = useAuth();
-  const [mutate, { loading }] = useMutation(CREATE_CALENDAR_EVENT, {
-    refetchQueries: [
-      {
-        query: CALENDAR_EVENTS_QUERY,
-        variables: {
-          startDate: initialStartDate || "",
-          endDate: initialEndDate || "",
-        },
-      },
-    ],
-  });
+  const [mutate, { loading }] = useCreateCalendarEventMutation();
 
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -186,6 +161,11 @@ export const CalendarEventForm: React.FC<CalendarEventFormProps> = ({
       const endDateTime = endZoned.toInstant().toString();
       const rrule = buildRrule(values.recurrence, values.startDate);
 
+      if (!user?.id) {
+        setSubmitError("Not authenticated");
+        return;
+      }
+
       await mutate({
         variables: {
           input: {
@@ -194,7 +174,7 @@ export const CalendarEventForm: React.FC<CalendarEventFormProps> = ({
             startDateTime,
             endDateTime,
             rrule,
-            userId: user?.id,
+            userId: user.id,
           },
         },
       });

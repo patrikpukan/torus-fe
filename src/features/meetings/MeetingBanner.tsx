@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from "react";
-import { useApolloClient } from "@apollo/client/react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -8,7 +7,6 @@ import {
   useRejectMeetingMutation,
   useCancelMeetingMutation,
   useConfirmMeetingMutation,
-  LATEST_MEETING_FOR_PAIRING_QUERY,
 } from "@/features/calendar/api/useMeetingEvents";
 import "temporal-polyfill/global";
 import MeetingProposalModal from "./MeetingProposalModal";
@@ -49,7 +47,6 @@ export const MeetingBanner: React.FC<Props> = ({
   const [rejectMeeting] = useRejectMeetingMutation();
   const [cancelMeeting] = useCancelMeetingMutation();
   const [confirmMeeting] = useConfirmMeetingMutation();
-  const apollo = useApolloClient();
 
   const me = user?.id;
   const isParticipant =
@@ -108,26 +105,16 @@ export const MeetingBanner: React.FC<Props> = ({
   // Only now decide not to render if prerequisites missing
   if (!pairingId || !meeting || !isParticipant) return null;
 
-  const refetchLatest = async () => {
-    if (pairingId) {
-      await apollo.query({
-        query: LATEST_MEETING_FOR_PAIRING_QUERY,
-        variables: { pairingId },
-        fetchPolicy: "network-only",
-      });
-    }
-  };
+  // Each mutation invalidates the latest-meeting-for-pairing query key, so
+  // react-query refetches this banner automatically after a write.
   const onAcceptProposed = async () => {
     await acceptProposed({ variables: { meetingId: meeting.id } });
-    await refetchLatest();
   };
   const onAcceptInitial = async () => {
     await confirmMeeting({ variables: { meetingId: meeting.id } });
-    await refetchLatest();
   };
   const onReject = async () => {
     await rejectMeeting({ variables: { meetingId: meeting.id } });
-    await refetchLatest();
   };
   const onCancel = async () => {
     if (!me) return;
@@ -136,7 +123,6 @@ export const MeetingBanner: React.FC<Props> = ({
         input: { meetingId: meeting.id, cancelledByUserId: me, reason: null },
       },
     });
-    await refetchLatest();
   };
 
   return (

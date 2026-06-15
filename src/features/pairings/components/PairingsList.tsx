@@ -11,6 +11,7 @@ import {
   getDisplayName,
   getInitials,
 } from "@/features/pairings/utils/displayName";
+import { formatPairingStatus } from "@/features/pairings/utils/pairingStatus";
 
 export type SortMode = "paired" | "message";
 
@@ -115,7 +116,7 @@ export default function PairingsList({
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>{contact.profile.pairingStatus}</span>
+                    <span>{formatPairingStatus(contact.profile.pairingStatus)}</span>
                     {contact.profile.pairingStatus === "Paired" && (
                       <Handshake className="h-3.5 w-3.5" />
                     )}
@@ -169,7 +170,7 @@ export default function PairingsList({
                   size="sm"
                   onClick={() => setStatusFilter(status)}
                 >
-                  {status}
+                  {formatPairingStatus(status)}
                 </Button>
               ))}
             </div>

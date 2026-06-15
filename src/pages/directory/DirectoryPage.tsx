@@ -214,7 +214,7 @@ const DirectoryPage = () => {
       </Card>
 
       {loading && colleagues.length === 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <ColleagueSkeleton key={i} />
           ))}
@@ -232,7 +232,7 @@ const DirectoryPage = () => {
           />
         </Card>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((colleague) => (
             <ColleagueCard
               key={colleague.id}

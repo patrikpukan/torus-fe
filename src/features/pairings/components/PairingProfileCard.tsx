@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { TagObject, UserProfile } from "@/types/User";
 import { formatDateTime } from "@/features/pairings/components/dateUtils";
 import { getInitials } from "@/features/pairings/utils/displayName";
+import { formatPairingStatus } from "@/features/pairings/utils/pairingStatus";
 import { normalizeAssetUrl } from "@/lib/assetUrl";
 
 export type PairingProfileCardProps = {
@@ -39,17 +40,6 @@ export default function PairingProfileCard({
     met: "bg-accent text-accent-foreground",
     not_met: "bg-destructive/10 text-destructive",
     cancelled: "bg-gray-100 text-gray-800",
-  };
-
-  const getStatusLabel = (status: string): string => {
-    const labels: Record<string, string> = {
-      planned: "Planned",
-      matched: "Matched",
-      met: "Met",
-      not_met: "Not Met",
-      cancelled: "Cancelled",
-    };
-    return labels[status] || status;
   };
 
   const getFieldValue = (key: keyof UserProfile) => {
@@ -107,7 +97,7 @@ export default function PairingProfileCard({
             <Badge
               className={statusColors[pairingStatus] || statusColors.planned}
             >
-              {getStatusLabel(pairingStatus)}
+              {formatPairingStatus(pairingStatus)}
             </Badge>
           </div>
 

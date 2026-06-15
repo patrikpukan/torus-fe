@@ -6,7 +6,6 @@ import { HeroSection } from "./landing/HeroSection";
 import { FeaturesSection } from "./landing/FeaturesSection";
 import { HowItWorksSection } from "./landing/HowItWorksSection";
 import { BenefitsSection } from "./landing/BenefitsSection";
-import { PricingSection } from "./landing/PricingSection";
 import { CTASection } from "./landing/CTASection";
 
 const LandingPage = () => {
@@ -30,8 +29,6 @@ const LandingPage = () => {
         <HowItWorksSection />
         <Separator className="my-12 sm:my-16" />
         <BenefitsSection />
-        <Separator className="my-12 sm:my-16" />
-        <PricingSection />
         <Separator className="my-12 sm:my-16" />
         <CTASection />
       </div>

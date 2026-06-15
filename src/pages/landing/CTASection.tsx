@@ -12,7 +12,8 @@ export const CTASection = () => {
           Ready to strengthen your workplace culture?
         </h2>
         <p className="mx-auto max-w-2xl text-lg text-white/90">
-          Start connecting your employees with meaningful 1:1 meetings today.
+          Tell us about your team and we&apos;ll show you how Torus can
+          strengthen your culture.
         </p>
         <div className="flex flex-col justify-center gap-3 sm:flex-row">
           <Button
@@ -20,7 +21,7 @@ export const CTASection = () => {
             onClick={() => navigate("/contact")}
             className="bg-white text-gray-900 hover:bg-white/90"
           >
-            Start Free Trial
+            Let&apos;s talk
           </Button>
         </div>
       </div>

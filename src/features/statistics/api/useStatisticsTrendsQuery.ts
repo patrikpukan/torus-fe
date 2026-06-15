@@ -1,5 +1,5 @@
-import { useQuery } from "@apollo/client/react";
-import { graphql } from "gql.tada";
+import { apiGet } from "@/lib/restClient";
+import { useQuery } from "@tanstack/react-query";
 
 export type PeriodTrend = {
   periodId: string;
@@ -23,33 +23,29 @@ export type StatisticsTrendsQueryData = {
   };
 };
 
-export const STATISTICS_TRENDS_QUERY = graphql(`
-  query StatisticsTrends($organizationId: String, $limit: Int) {
-    statisticsTrends(organizationId: $organizationId, limit: $limit) {
-      trends {
-        periodId
-        startDate
-        endDate
-        status
-        pairingsCount
-        metPairingsCount
-        meetingCompletionRate
-        pairedUsersCount
-        activeUsersCount
-        participationRate
-        averageRating
-        ratingsCount
-        didNotMeetCount
-      }
-    }
-  }
-`);
+type TrendsResponse = {
+  trends: PeriodTrend[];
+};
 
 export const useStatisticsTrendsQuery = (
   organizationId?: string | null,
   limit = 8
-) =>
-  useQuery<StatisticsTrendsQueryData>(STATISTICS_TRENDS_QUERY, {
-    variables: { organizationId: organizationId ?? null, limit },
-    fetchPolicy: "cache-and-network",
+) => {
+  const params = {
+    organizationId: organizationId ?? undefined,
+    limit,
+  };
+
+  const query = useQuery({
+    queryKey: ["statistics-trends", params],
+    queryFn: () => apiGet<TrendsResponse>("/statistics/trends", params),
   });
+
+  return {
+    data: query.data
+      ? { statisticsTrends: { trends: query.data.trends } }
+      : undefined,
+    loading: query.isLoading,
+    error: query.error ?? undefined,
+  };
+};

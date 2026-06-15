@@ -2,8 +2,8 @@ import type {
   StatisticsFilterInputType,
   StatisticsResponseType,
 } from "@/graphql/generated/schema";
-import { useQuery } from "@apollo/client/react";
-import { graphql } from "gql.tada";
+import { apiGet } from "@/lib/restClient";
+import { useQuery } from "@tanstack/react-query";
 
 export type StatisticsFilter = StatisticsFilterInputType;
 
@@ -11,30 +11,23 @@ export type StatisticsQueryData = {
   statistics: StatisticsResponseType;
 };
 
-export const STATISTICS_QUERY = graphql(`
-  query Statistics($filter: StatisticsFilterInputType) {
-    statistics(filter: $filter) {
-      newUsersCount
-      inactiveUsersCount
-      reportsCount
-      pairingsByStatus {
-        status
-        count
-      }
-      pairingsByStatusAndUser {
-        userId
-        userEmail
-        userName
-        status
-        count
-      }
-    }
-  }
-`);
-
 export const useStatisticsQuery = (filter?: StatisticsFilter) => {
-  return useQuery<StatisticsQueryData>(STATISTICS_QUERY, {
-    variables: { filter: filter ?? null },
-    fetchPolicy: "cache-and-network",
+  const params = {
+    startDate: filter?.startDate ?? undefined,
+    endDate: filter?.endDate ?? undefined,
+    month: filter?.month ?? undefined,
+    year: filter?.year ?? undefined,
+    organizationId: filter?.organizationId ?? undefined,
+  };
+
+  const query = useQuery({
+    queryKey: ["statistics", params],
+    queryFn: () => apiGet<StatisticsResponseType>("/statistics", params),
   });
+
+  return {
+    data: query.data ? { statistics: query.data } : undefined,
+    loading: query.isLoading,
+    error: query.error ?? undefined,
+  };
 };

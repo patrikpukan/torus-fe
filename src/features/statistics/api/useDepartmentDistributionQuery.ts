@@ -1,5 +1,5 @@
-import { useQuery } from "@apollo/client/react";
-import { graphql } from "gql.tada";
+import { apiGet } from "@/lib/restClient";
+import { useQuery } from "@tanstack/react-query";
 
 export type DepartmentDistributionItem = {
   departmentName: string;
@@ -13,29 +13,23 @@ export type DepartmentDistributionData = {
   };
 };
 
-export const DEPARTMENT_DISTRIBUTION_QUERY = graphql(`
-  query DepartmentDistribution {
-    departmentDistribution {
-      departments {
-        departmentName
-        userCount
-      }
-      totalUsers
-    }
-  }
-`);
+type DepartmentDistributionResponse = {
+  departments: DepartmentDistributionItem[];
+  totalUsers: number;
+};
 
 export const useDepartmentDistributionQuery = () => {
-  const { data, loading, error } = useQuery<DepartmentDistributionData>(
-    DEPARTMENT_DISTRIBUTION_QUERY,
-    {
-      fetchPolicy: "cache-and-network",
-    }
-  );
+  const query = useQuery({
+    queryKey: ["department-distribution"],
+    queryFn: () =>
+      apiGet<DepartmentDistributionResponse>(
+        "/statistics/department-distribution"
+      ),
+  });
 
   return {
-    data,
-    loading,
-    error: error?.message,
+    data: query.data ? { departmentDistribution: query.data } : undefined,
+    loading: query.isLoading,
+    error: query.error?.message,
   };
 };

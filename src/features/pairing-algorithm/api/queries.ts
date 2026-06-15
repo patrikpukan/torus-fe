@@ -1,11 +1,9 @@
-import { useMutation as useApolloMutation } from "@apollo/client/react";
 import {
   useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
 
-import { graphql } from "gql.tada";
 import { apiGet, apiSend } from "@/lib/restClient";
 import type {
   AlgorithmSettings,
@@ -39,18 +37,6 @@ export const GET_ALGORITHM_SETTINGS = "algorithmSettings" as const;
 
 const algorithmSettingsQueryKey = (organizationId: string) =>
   [GET_ALGORITHM_SETTINGS, { organizationId }] as const;
-
-// executePairingAlgorithm remains on GraphQL (out of scope for this migration).
-export const EXECUTE_PAIRING_ALGORITHM = graphql(`
-  mutation ExecutePairingAlgorithm($organizationId: String!) {
-    executePairingAlgorithm(organizationId: $organizationId) {
-      success
-      pairingsCreated
-      message
-      unpairedUsers
-    }
-  }
-`);
 
 /**
  * Fetches algorithm settings via REST. Mirrors the Apollo `useQuery` return
@@ -117,9 +103,35 @@ export const useUpdateAlgorithmSettings = (): [
   return [mutate, { loading: mutation.isPending }];
 };
 
-export const useExecutePairingAlgorithm = () => {
-  return useApolloMutation<
-    ExecutePairingAlgorithmData,
-    ExecutePairingAlgorithmVariables
-  >(EXECUTE_PAIRING_ALGORITHM);
+type ExecuteMutationArgs = {
+  variables: ExecutePairingAlgorithmVariables;
+};
+
+/**
+ * Executes the pairing algorithm via REST. Returns a tuple matching the Apollo
+ * `useMutation` shape consumers expect: `[mutateFn, { loading }]`, where
+ * `mutateFn({ variables: { organizationId } })` resolves to
+ * `{ data: { executePairingAlgorithm } }`.
+ */
+export const useExecutePairingAlgorithm = (): [
+  (args: ExecuteMutationArgs) => Promise<{
+    data: ExecutePairingAlgorithmData;
+  }>,
+  { loading: boolean }
+] => {
+  const mutation = useMutation({
+    mutationFn: (variables: ExecutePairingAlgorithmVariables) =>
+      apiSend<PairingExecutionResult>(
+        "POST",
+        "/pairing-algorithm/execute",
+        { organizationId: variables.organizationId }
+      ),
+  });
+
+  const mutate = async ({ variables }: ExecuteMutationArgs) => {
+    const result = await mutation.mutateAsync(variables);
+    return { data: { executePairingAlgorithm: result } };
+  };
+
+  return [mutate, { loading: mutation.isPending }];
 };

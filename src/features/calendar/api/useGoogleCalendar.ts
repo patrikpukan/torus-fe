@@ -1,6 +1,5 @@
-import { useQuery, useMutation } from "@apollo/client/react";
-import { graphql } from "gql.tada";
-import { CALENDAR_EVENTS_QUERY } from "./useCalendarEvents";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { apiGet, apiSend } from "@/lib/restClient";
 
 export type GoogleCalendar = {
   id: string;
@@ -24,56 +23,80 @@ export type ImportGoogleCalendarEventsData = {
   importGoogleCalendarEvents: GoogleCalendarImportResult;
 };
 
-export const GOOGLE_CALENDAR_LIST_QUERY = graphql(`
-  query GetGoogleCalendarList($accessToken: String) {
-    googleCalendarList(accessToken: $accessToken) {
-      id
-      summary
-      backgroundColor
-      foregroundColor
-      primary
-    }
-  }
-`);
-
-export const IMPORT_GOOGLE_CALENDAR_EVENTS_MUTATION = graphql(`
-  mutation ImportGoogleCalendarEvents(
-    $input: ImportGoogleCalendarEventsInput!
-  ) {
-    importGoogleCalendarEvents(input: $input) {
-      success
-      importedCount
-      message
-    }
-  }
-`);
-
-/**
- * Hook to fetch the user's Google Calendar list
- */
-export const useGoogleCalendarList = (accessToken?: string | null) => {
-  return useQuery<GoogleCalendarListQueryData>(GOOGLE_CALENDAR_LIST_QUERY, {
-    variables: accessToken ? { accessToken } : undefined,
-    fetchPolicy: "network-only", // Always fetch fresh data
-    skip: !accessToken, // Don't run query if no token
-  });
+export type ImportGoogleCalendarEventsInput = {
+  calendarIds: string[];
+  startDate: string;
+  endDate: string;
+  accessToken?: string;
 };
 
 /**
- * Hook to import events from Google Calendar
+ * React Query key for the Google Calendar list. Parameterized by access token
+ * so a token change refetches.
  */
-export const useImportGoogleCalendar = () => {
-  return useMutation<
-    ImportGoogleCalendarEventsData,
-    {
-      input: {
-        calendarIds: string[];
-        startDate: string;
-        endDate: string;
-        accessToken?: string;
-      };
-    }
-  >(IMPORT_GOOGLE_CALENDAR_EVENTS_MUTATION, {
-    refetchQueries: [{ query: CALENDAR_EVENTS_QUERY }],
+export const GOOGLE_CALENDAR_LIST_QUERY = "googleCalendarList" as const;
+
+const googleCalendarListQueryKey = (accessToken?: string | null) =>
+  [GOOGLE_CALENDAR_LIST_QUERY, { accessToken: accessToken ?? null }] as const;
+
+/**
+ * Fetches the user's Google Calendar list via REST. Mirrors the Apollo
+ * `useQuery` return shape consumers expect:
+ * `{ data?: { googleCalendarList }, loading, error, refetch }`. The query is
+ * disabled until an access token is present (matching the old `skip`).
+ */
+export const useGoogleCalendarList = (accessToken?: string | null) => {
+  const query = useQuery({
+    queryKey: googleCalendarListQueryKey(accessToken),
+    queryFn: () =>
+      apiGet<GoogleCalendar[]>(
+        "/google-calendar/calendars",
+        accessToken ? { accessToken } : undefined
+      ),
+    enabled: !!accessToken,
   });
+
+  return {
+    data: query.data
+      ? ({ googleCalendarList: query.data } as GoogleCalendarListQueryData)
+      : undefined,
+    loading: query.isLoading,
+    error: query.error ?? undefined,
+    refetch: query.refetch,
+  };
+};
+
+type ImportMutationArgs = {
+  variables: { input: ImportGoogleCalendarEventsInput };
+};
+
+/**
+ * Imports events from Google Calendar via REST. Returns a tuple matching the
+ * Apollo `useMutation` shape consumers expect: `[mutateFn, { loading }]`, where
+ * `mutateFn({ variables: { input } })` resolves to
+ * `{ data: { importGoogleCalendarEvents } }`. The calendar refresh after a
+ * successful import is driven by the consumer's `onSyncSuccess` callback (the
+ * calendar-events query lives in the Apollo cache), mirroring prior behavior.
+ */
+export const useImportGoogleCalendar = (): [
+  (args: ImportMutationArgs) => Promise<{
+    data: ImportGoogleCalendarEventsData;
+  }>,
+  { loading: boolean }
+] => {
+  const mutation = useMutation({
+    mutationFn: (input: ImportGoogleCalendarEventsInput) =>
+      apiSend<GoogleCalendarImportResult>(
+        "POST",
+        "/google-calendar/import",
+        input
+      ),
+  });
+
+  const mutate = async ({ variables }: ImportMutationArgs) => {
+    const result = await mutation.mutateAsync(variables.input);
+    return { data: { importGoogleCalendarEvents: result } };
+  };
+
+  return [mutate, { loading: mutation.isPending }];
 };

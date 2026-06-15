@@ -1,5 +1,5 @@
-import { useQuery } from "@apollo/client/react";
-import { graphql } from "gql.tada";
+import { useQuery } from "@tanstack/react-query";
+import { apiGet } from "@/lib/restClient";
 
 export type ReportUserSummary = {
   id: string;
@@ -22,32 +22,36 @@ export type ReportsQueryData = {
   reports: ReportsQueryItem[];
 };
 
-export const REPORTS_QUERY = graphql(`
-  query Reports($organizationId: ID) {
-    reports(organizationId: $organizationId) {
-      id
-      createdAt
-      reason
-      status
-      resolvedAt
-      reporter {
-        id
-        firstName
-        lastName
-        email
-      }
-      reportedUser {
-        id
-        firstName
-        lastName
-        email
-      }
-    }
-  }
-`);
+/**
+ * React Query key for the reports list. Kept under the historical name
+ * `REPORTS_QUERY` so existing consumers (e.g. ReportDetailPage's
+ * `refetchQueries`) continue to import it unchanged.
+ */
+export const REPORTS_QUERY = "reports" as const;
 
-export const useReportsQuery = (organizationId?: string | null) =>
-  useQuery<ReportsQueryData>(REPORTS_QUERY, {
-    variables: { organizationId: organizationId ?? null },
-    fetchPolicy: "cache-and-network",
+export const reportsQueryKey = (organizationId?: string | null) =>
+  [REPORTS_QUERY, { organizationId: organizationId ?? null }] as const;
+
+/**
+ * Fetches reports via REST. Mirrors the Apollo `useQuery` return shape
+ * consumers expect: `{ data?: { reports }, loading, error }`.
+ */
+export const useReportsQuery = (organizationId?: string | null) => {
+  const query = useQuery({
+    queryKey: reportsQueryKey(organizationId),
+    queryFn: () =>
+      apiGet<ReportsQueryItem[]>(
+        "/reports",
+        organizationId ? { organizationId } : undefined
+      ),
   });
+
+  return {
+    data: query.data
+      ? ({ reports: query.data } as ReportsQueryData)
+      : undefined,
+    loading: query.isLoading,
+    error: query.error ?? undefined,
+    refetch: query.refetch,
+  };
+};

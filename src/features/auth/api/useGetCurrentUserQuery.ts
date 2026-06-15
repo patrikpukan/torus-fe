@@ -35,6 +35,7 @@ export const GET_CURRENT_USER = graphql(`
       preferredActivity
       suspendedUntil
       departmentId
+      hiddenFromDirectory
       activeBan {
         id
         reason

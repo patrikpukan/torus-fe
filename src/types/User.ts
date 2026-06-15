@@ -22,4 +22,5 @@ export type UserProfile = {
   organizationId?: string;
   departmentId?: string | null;
   departmentName?: string;
+  hiddenFromDirectory?: boolean;
 };

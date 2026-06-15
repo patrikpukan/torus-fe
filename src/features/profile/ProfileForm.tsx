@@ -506,6 +506,33 @@ const ProfileForm = ({
               )}
             </FieldContent>
           </Field>
+          {!readOnly && (
+            <Field>
+              <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-4">
+                <input
+                  id="profile-hidden-from-directory"
+                  type="checkbox"
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-input text-primary accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  checked={form.watch("hiddenFromDirectory") ?? false}
+                  onChange={(e) => {
+                    form.setValue("hiddenFromDirectory", e.target.checked, {
+                      shouldDirty: true,
+                    });
+                    onChange?.(buildProfilePayload(form.getValues(), value));
+                  }}
+                />
+                <div className="space-y-1">
+                  <FieldLabel htmlFor="profile-hidden-from-directory">
+                    Hide me from the colleague directory
+                  </FieldLabel>
+                  <p className="text-xs text-muted-foreground">
+                    When on, your profile won&apos;t appear in your
+                    organization&apos;s directory.
+                  </p>
+                </div>
+              </div>
+            </Field>
+          )}
         </FieldGroup>
       </FieldSet>
 

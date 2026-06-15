@@ -24,6 +24,7 @@ export const UPDATE_USER_PROFILE = graphql(`
       profileImageUrl
       profileStatus
       isActive
+      hiddenFromDirectory
       departmentId
       department {
         id

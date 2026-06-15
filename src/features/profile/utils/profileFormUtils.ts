@@ -23,6 +23,7 @@ export const normalizeProfile = (profile: UserProfile): ProfileFormValues => ({
   hobbies: Array.isArray(profile.hobbies) ? profile.hobbies : [],
   interests: Array.isArray(profile.interests) ? profile.interests : [],
   departmentId: profile.departmentId ?? null,
+  hiddenFromDirectory: profile.hiddenFromDirectory ?? false,
 });
 
 export const buildProfilePayload = (
@@ -46,4 +47,5 @@ export const buildProfilePayload = (
   hobbies: Array.isArray(values.hobbies) ? values.hobbies : [],
   interests: Array.isArray(values.interests) ? values.interests : [],
   departmentId: values.departmentId ?? null,
+  hiddenFromDirectory: values.hiddenFromDirectory ?? false,
 });

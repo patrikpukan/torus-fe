@@ -9,6 +9,7 @@ import {
   Mail,
   Settings2,
   Users,
+  Users2,
   Wrench,
 } from "lucide-react";
 export type NavItem = {
@@ -31,6 +32,12 @@ export const navConfig: NavItem[] = [
     path: "/pairings",
     roles: ["user"],
     icon: <Handshake />,
+  },
+  {
+    label: "Directory",
+    path: "/directory",
+    roles: ["user"],
+    icon: <Users2 />,
   },
   {
     label: "Users",

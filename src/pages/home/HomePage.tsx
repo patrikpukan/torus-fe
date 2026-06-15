@@ -22,6 +22,9 @@ import { formatDate } from "@/features/pairings/components/dateUtils.ts";
 import { HomeSkeleton } from "./components/HomeSkeleton";
 import { PairingActiveState } from "./components/PairingActiveState";
 import { PairingEmptyState } from "./components/PairingEmptyState";
+import { ConversationStarters } from "@/features/home/components/ConversationStarters";
+import { AchievementsShowcase } from "@/features/home/components/AchievementsShowcase";
+import { EngagementStatsPanel } from "@/features/home/components/EngagementStatsPanel";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { GET_CURRENT_USER } from "@/features/auth/api/useGetCurrentUserQuery";
@@ -140,6 +143,12 @@ const HomePage = () => {
             </div>
           </Card>
 
+          {hasActivePairing && currentPairing && (
+            <ConversationStarters pairing={currentPairing} />
+          )}
+
+          <AchievementsShowcase />
+
           <div className="grid gap-4 sm:grid-cols-2">
             <Link
               to="/profile"
@@ -216,6 +225,8 @@ const HomePage = () => {
               </div>
             </div>
           </Card>
+
+          <EngagementStatsPanel />
 
           <Card className="border-0 p-5 shadow-elevated">
             <div className="mb-3 flex items-center gap-2">

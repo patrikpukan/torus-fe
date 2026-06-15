@@ -40,6 +40,7 @@ const ProfileEditPage = () => {
     accountStatus: user.isActive ? "Active" : "Inactive",
     pairingStatus: user.profileStatus || undefined,
     departmentId: user.departmentId || null,
+    hiddenFromDirectory: user.hiddenFromDirectory ?? false,
   };
 
   const handleChange = (updatedProfile: UserProfile) => {
@@ -74,6 +75,7 @@ const ProfileEditPage = () => {
                 ? updatedProfile.profileImageUrl.trim()
                 : null,
             departmentId: updatedProfile.departmentId || null,
+            hiddenFromDirectory: updatedProfile.hiddenFromDirectory ?? false,
           },
         },
         refetchQueries: ["GetCurrentUser"],

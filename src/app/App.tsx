@@ -32,6 +32,7 @@ const PairingsRoute = lazy(() => import("../pages/pairings/PairingsRoute"));
 const ProfilePage = lazy(() => import("../pages/profile/ProfilePage"));
 const ProfileEditPage = lazy(() => import("../pages/profile/ProfileEditPage"));
 const StatisticsPage = lazy(() => import("@/pages/statistics/StatisticsPage"));
+const DirectoryPage = lazy(() => import("@/pages/directory/DirectoryPage"));
 const InviteManagementPage = lazy(
   () => import("@/pages/invite-management/InviteManagementPage")
 );
@@ -168,6 +169,14 @@ const App = () => {
               element={
                 <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
                   <PairingsRoute />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="directory"
+              element={
+                <ProtectedRoute allowedRoles={AUTHENTICATED_ROLES}>
+                  <DirectoryPage />
                 </ProtectedRoute>
               }
             />

@@ -6,11 +6,9 @@ import {
 } from "@/features/calendar/graphql/pause-activity.mutations";
 import { PauseActivityModal } from "@/features/profile/components/PauseActivityModal";
 import { ProfileAchievements } from "@/features/achievements";
-import type { UpdateUserProfileMutation } from "@/graphql/generated/schema";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import type { UserProfile } from "@/types/User";
-import { useMutation } from "@apollo/client/react";
 import { addYears, isAfter, parseISO, subDays } from "date-fns";
 import { useEffect, useState } from "react";
 import {
@@ -19,7 +17,10 @@ import {
 } from "../auth/api/useGetCurrentUserQuery";
 import SendResetPasswordButton from "../auth/components/SendResetPasswordButton";
 import ProfileForm from "./ProfileForm";
-import { UPDATE_USER_PROFILE } from "./UpdateUserProfileMutation";
+import {
+  useUpdateUserProfileMutation,
+  type UpdateUserProfileData,
+} from "./UpdateUserProfileMutation";
 
 const mapUserToProfile = (user: CurrentUserData): UserProfile => {
   const hobbies = Array.isArray(user.hobbies) ? user.hobbies : [];
@@ -68,7 +69,7 @@ const ProfileView = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [updateProfile, { loading: mutationLoading }] =
-    useMutation(UPDATE_USER_PROFILE);
+    useUpdateUserProfileMutation();
   const [showPauseModal, setShowPauseModal] = useState(false);
 
   const user = data?.getCurrentUser ?? null;
@@ -191,7 +192,7 @@ const ProfileView = () => {
 
       // Update local profile state immediately with mutation response
       // This ensures the image displays correctly even before refetch completes
-      const mutationData = result.data as UpdateUserProfileMutation | undefined;
+      const mutationData = result.data as UpdateUserProfileData | undefined;
       if (mutationData?.updateCurrentUserProfile) {
         const updatedUser = mutationData.updateCurrentUserProfile;
         setProfile(mapUserToProfile(updatedUser as CurrentUserData));

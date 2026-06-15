@@ -1,16 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@apollo/client/react";
 import { useGetCurrentUserQuery } from "@/features/auth/api/useGetCurrentUserQuery.ts";
 import ProfileForm from "../../features/profile/ProfileForm";
-import { UPDATE_USER_PROFILE } from "@/features/profile/UpdateUserProfileMutation.ts";
+import { useUpdateUserProfileMutation } from "@/features/profile/UpdateUserProfileMutation.ts";
 import type { UserProfile } from "@/types/User.ts";
 
 const ProfileEditPage = () => {
   const navigate = useNavigate();
   const { data, loading: queryLoading } = useGetCurrentUserQuery();
   const [updateProfile, { loading: mutationLoading }] =
-    useMutation(UPDATE_USER_PROFILE);
+    useUpdateUserProfileMutation();
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
 

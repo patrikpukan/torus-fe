@@ -1,5 +1,6 @@
-import { useMutation } from "@apollo/client/react";
-import { graphql } from "gql.tada";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiSend } from "@/lib/restClient";
+import { GET_PAIRED_USERS_QUERY } from "./useGetPairedUsersQuery";
 
 export type ReportUserInput = {
   reportedUserId: string;
@@ -17,20 +18,40 @@ export type ReportUserMutationData = {
   };
 };
 
-export const REPORT_USER_MUTATION = graphql(`
-  mutation ReportUser($input: ReportUserInput!) {
-    reportUser(input: $input) {
-      id
-      reporterId
-      reportedUserId
-      pairingId
-      reason
-      createdAt
-    }
-  }
-`);
+type ReportUserApiResult = ReportUserMutationData["reportUser"];
 
-export const useReportUserMutation = () =>
-  useMutation<ReportUserMutationData, { input: ReportUserInput }>(
-    REPORT_USER_MUTATION
-  );
+type ReportMutationArgs = {
+  variables: { input: ReportUserInput };
+  // Accepted for call-site compatibility with the old Apollo signature.
+  refetchQueries?: unknown;
+};
+
+/**
+ * Migrated from Apollo to react-query (GraphQL -> REST strangler).
+ * POST /api/users/report. Returns the Apollo `useMutation` tuple consumers
+ * expect: `[mutateFn, { loading }]`, where
+ * `mutateFn({ variables: { input } })` resolves to `{ data: { reportUser } }`.
+ * On success the paired-users list is invalidated (reported users are filtered
+ * out), replacing the old `refetchQueries`.
+ */
+export const useReportUserMutation = (): [
+  (args: ReportMutationArgs) => Promise<{ data: ReportUserMutationData }>,
+  { loading: boolean }
+] => {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (input: ReportUserInput) =>
+      apiSend<ReportUserApiResult>("POST", "/users/report", input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: GET_PAIRED_USERS_QUERY });
+    },
+  });
+
+  const mutate = async ({ variables }: ReportMutationArgs) => {
+    const result = await mutation.mutateAsync(variables.input);
+    return { data: { reportUser: result } };
+  };
+
+  return [mutate, { loading: mutation.isPending }];
+};

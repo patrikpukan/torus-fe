@@ -2,6 +2,7 @@ import { Handshake, Sparkles, User } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
+import { useApolloClient } from "@apollo/client/react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -28,7 +29,6 @@ import { AchievementsShowcase } from "@/features/home/components/AchievementsSho
 import { EngagementStatsPanel } from "@/features/home/components/EngagementStatsPanel";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { GET_CURRENT_USER } from "@/features/auth/api/useGetCurrentUserQuery";
 import { PAIRINGS_QUERY } from "@/features/pairings/api/pairingsQuery";
 import { ACTIVE_PAIRING_PERIOD_QUERY_KEY } from "@/features/pairings/api/useActivePairingPeriodQuery";
 
@@ -47,6 +47,7 @@ const HomePage = () => {
     useFindIdealColleague();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const queryClient = useQueryClient();
+  const apolloClient = useApolloClient();
 
   if (isLoading) {
     return <HomeSkeleton />;
@@ -66,14 +67,12 @@ const HomePage = () => {
 
   const handleFindIdealColleague = async () => {
     try {
-      const { data } = await findIdealColleague({
-        refetchQueries: [
-          { query: GET_CURRENT_USER },
-          { query: PAIRINGS_QUERY },
-        ],
-      });
-      // activePairingPeriod now lives in react-query (REST); invalidate its key
-      // so the home view refetches after a new pairing is created.
+      const { data } = await findIdealColleague();
+      // The current-user query (idealColleague uses remaining) is invalidated
+      // inside the mutation. Pairings still live on GraphQL (Apollo), so
+      // refetch that document; activePairingPeriod lives in react-query (REST),
+      // so invalidate its key. Both refresh the home view after a new pairing.
+      await apolloClient.refetchQueries({ include: [PAIRINGS_QUERY] });
       void queryClient.invalidateQueries({
         queryKey: ACTIVE_PAIRING_PERIOD_QUERY_KEY,
       });

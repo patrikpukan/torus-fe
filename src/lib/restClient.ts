@@ -13,7 +13,10 @@ if (!graphqlApi) {
   );
 }
 
-export const REST_BASE_URL = graphqlApi.replace(/\/graphql$/, "");
+// The backend mounts REST under the global "/api" prefix, so swap the
+// trailing "/graphql" for "/api" (NOT bare origin — paths passed in are like
+// "/users/me", which must resolve to ".../api/users/me").
+export const REST_BASE_URL = graphqlApi.replace(/\/graphql$/, "/api");
 
 type QueryParams = Record<
   string,

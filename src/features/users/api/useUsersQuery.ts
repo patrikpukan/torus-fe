@@ -1,5 +1,5 @@
-import { useQuery } from "@apollo/client/react";
-import { graphql } from "gql.tada";
+import { useQuery } from "@tanstack/react-query";
+import { apiGet } from "@/lib/restClient";
 
 export type UsersQueryItem = {
   id: string;
@@ -22,29 +22,36 @@ export type UsersQueryData = {
   users: UsersQueryItem[];
 };
 
-export const USERS_QUERY = graphql(`
-  query Users($organizationId: ID) {
-    users(organizationId: $organizationId) {
-      id
-      email
-      firstName
-      lastName
-      location
-      profileImageUrl
-      profileStatus
-      role
-      activeBan {
-        id
-        reason
-        createdAt
-        expiresAt
-      }
-    }
-  }
-`);
+/**
+ * React-query key for the users list. Previously a GraphQL document under the
+ * same name; kept exported so consumers (BanUserDialog, UnbanUserButton) that
+ * referenced it in Apollo `refetchQueries` still import the identifier. The
+ * mutations now invalidate this key internally.
+ */
+export const USERS_QUERY = ["users", "list"] as const;
 
-export const useUsersQuery = (organizationId?: string) =>
-  useQuery<UsersQueryData>(USERS_QUERY, {
-    variables: organizationId ? { organizationId } : undefined,
-    fetchPolicy: "cache-and-network",
+export const usersQueryKey = (organizationId?: string) =>
+  [...USERS_QUERY, { organizationId: organizationId ?? null }] as const;
+
+/**
+ * Migrated from Apollo to react-query (GraphQL -> REST strangler).
+ * GET /api/users?organizationId= (org_admin / super_admin only). Preserves the
+ * Apollo return shape `{ data: { users }, loading, error, refetch }`.
+ */
+export const useUsersQuery = (organizationId?: string) => {
+  const query = useQuery({
+    queryKey: usersQueryKey(organizationId),
+    queryFn: () =>
+      apiGet<UsersQueryItem[]>(
+        "/users",
+        organizationId ? { organizationId } : undefined
+      ),
   });
+
+  return {
+    data: query.data ? ({ users: query.data } as UsersQueryData) : undefined,
+    loading: query.isLoading,
+    error: query.error ?? undefined,
+    refetch: query.refetch,
+  };
+};

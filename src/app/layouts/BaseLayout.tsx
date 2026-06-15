@@ -11,10 +11,9 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarRail,
-  SidebarSeparator,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { LogIn, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import {
   matchPath,
@@ -30,6 +29,7 @@ import {
 } from "../../components/ui/avatar";
 import { navConfig } from "../nav-config";
 import { useBrand } from "@/branding";
+import { cn } from "@/lib/utils";
 
 import { useAuth } from "@/hooks/useAuth";
 import { formatUserDisplayName } from "@/lib/userDisplay";
@@ -120,66 +120,55 @@ const BaseLayout = () => {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
-                <SidebarSeparator />
-                <SidebarMenuItem>
-                  {user ? (
-                    <SidebarMenuButton onClick={handleSignOut}>
-                      <LogOut />
-                      <span>Logout</span>
-                    </SidebarMenuButton>
-                  ) : location.pathname !== "/login" &&
-                    location.pathname !== "/register" ? (
-                    <SidebarMenuButton asChild>
-                      <NavLink to="/login">
-                        <LogIn />
-                        <span>Login</span>
-                      </NavLink>
-                    </SidebarMenuButton>
-                  ) : null}
-                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter className="mt-auto">
           {user ? (
-            <div className="px-2 py-1.5 text-xs text-sidebar-foreground/70">
-              {sidebarOpen && (
-                <div className="grid grid-cols-[auto_1fr] gap-2 items-center">
-                  <div className="max-w-10">
-                    <Avatar>
-                      <AvatarImage src={profileImageUrl} />
-                      <AvatarFallback>
-                        {user?.email?.[0]?.toUpperCase() ?? "U"}
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium">
+            <div className="flex items-center gap-2 p-1.5">
+              <NavLink
+                to="/profile"
+                aria-label="Open your profile"
+                className={cn(
+                  "flex min-w-0 flex-1 items-center gap-2 rounded-md p-1.5 text-left transition hover:bg-sidebar-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
+                  !sidebarOpen && "flex-none"
+                )}
+              >
+                <Avatar className="h-9 w-9 shrink-0">
+                  <AvatarImage src={profileImageUrl} />
+                  <AvatarFallback>
+                    {user?.email?.[0]?.toUpperCase() ?? "U"}
+                  </AvatarFallback>
+                </Avatar>
+                {sidebarOpen && (
+                  <div className="flex min-w-0 flex-col">
+                    <span className="truncate text-sm font-medium text-sidebar-foreground">
                       {userDisplayName}
                     </span>
                     {userRole && (
-                      <span className="text-xs text-muted-foreground capitalize">
+                      <span className="truncate text-xs capitalize text-sidebar-foreground/60">
                         {userRole.replace(/_/g, " ")}
                       </span>
                     )}
                     {userOrganization && (
-                      <span className="text-xs text-muted-foreground">
+                      <span className="truncate text-xs text-sidebar-foreground/60">
                         {userOrganization}
                       </span>
                     )}
                   </div>
-                </div>
-              )}
-              {!sidebarOpen && (
-                <div className="max-w-10">
-                  <Avatar>
-                    <AvatarImage src={profileImageUrl} />
-                    <AvatarFallback>
-                      {user?.email?.[0]?.toUpperCase() ?? "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
+                )}
+              </NavLink>
+              {sidebarOpen && (
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  aria-label="Log out"
+                  title="Log out"
+                  className="shrink-0 rounded-md p-2 text-sidebar-foreground/70 transition hover:bg-sidebar-accent hover:text-sidebar-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
               )}
             </div>
           ) : null}

@@ -8,7 +8,6 @@ import {
   Home,
   Mail,
   Settings2,
-  User,
   Users,
   Wrench,
 } from "lucide-react";
@@ -32,12 +31,6 @@ export const navConfig: NavItem[] = [
     path: "/pairings",
     roles: ["user"],
     icon: <Handshake />,
-  },
-  {
-    label: "Profile",
-    path: "/profile",
-    roles: ["user", "org_admin", "super_admin"],
-    icon: <User />,
   },
   {
     label: "Users",

@@ -1,29 +1,37 @@
-import { useQuery } from "@apollo/client/react";
-import { graphql } from "gql.tada";
+import { apiGet } from "@/lib/restClient";
+import { useQuery } from "@tanstack/react-query";
 
-export type ActivePairingPeriodData = {
-  activePairingPeriod: {
-    id: string;
-    organizationId: string;
-    startDate: string;
-    endDate?: string | null;
-    status: string;
-  } | null;
+export type ActivePairingPeriod = {
+  id: string;
+  organizationId: string;
+  startDate: string;
+  endDate?: string | null;
+  status: string;
 };
 
-export const ACTIVE_PAIRING_PERIOD_QUERY = graphql(`
-  query ActivePairingPeriod {
-    activePairingPeriod {
-      id
-      organizationId
-      startDate
-      endDate
-      status
-    }
-  }
-`);
+export type ActivePairingPeriodData = {
+  activePairingPeriod: ActivePairingPeriod | null;
+};
 
-export const useActivePairingPeriodQuery = () =>
-  useQuery<ActivePairingPeriodData>(ACTIVE_PAIRING_PERIOD_QUERY, {
-    fetchPolicy: "cache-and-network",
+/**
+ * react-query key for the active pairing period. Use this with
+ * `queryClient.invalidateQueries({ queryKey: ACTIVE_PAIRING_PERIOD_QUERY_KEY })`
+ * to refresh after a mutation (replaces the old Apollo `refetchQueries` entry).
+ */
+export const ACTIVE_PAIRING_PERIOD_QUERY_KEY = ["active-pairing-period"];
+
+export const useActivePairingPeriodQuery = () => {
+  const query = useQuery({
+    queryKey: ACTIVE_PAIRING_PERIOD_QUERY_KEY,
+    queryFn: () =>
+      apiGet<ActivePairingPeriod | null>("/pairing-periods/active"),
   });
+
+  return {
+    data: query.data
+      ? { activePairingPeriod: query.data }
+      : { activePairingPeriod: null },
+    loading: query.isLoading,
+    error: query.error ?? undefined,
+  };
+};

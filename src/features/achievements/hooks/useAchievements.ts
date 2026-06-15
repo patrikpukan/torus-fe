@@ -1,28 +1,40 @@
-import { useQuery } from "@apollo/client/react";
-import {
-  GET_USER_ACHIEVEMENTS,
-  GET_USER_PROFILE_ACHIEVEMENTS,
-} from "../graphql/achievement.types";
-import type {
-  Achievement,
-  GetUserAchievementsData,
-  GetUserProfileAchievementsData,
-} from "../graphql/achievement.types";
+import { useQuery } from "@tanstack/react-query";
+import { apiGet } from "@/lib/restClient";
+import type { Achievement } from "../graphql/achievement.types";
+
+/**
+ * REST shape returned by GET /api/achievements/user (a user's unlocked
+ * achievements). Mirrors the old GraphQL `userAchievements` selection.
+ */
+type RestUserAchievement = {
+  id: string;
+  achievement: {
+    id: string;
+    name: string;
+    description: string;
+    imageIdentifier: string;
+    type: Achievement["type"];
+    pointValue: number;
+  };
+  unlockedAt?: string | null;
+  currentProgress: number;
+};
 
 /**
  * Hook to fetch current user's achievements with progress
  * Used for achievement dashboard, profile sections
  */
 export function useUserAchievements() {
-  const { data, loading, error, refetch } = useQuery<GetUserAchievementsData>(
-    GET_USER_ACHIEVEMENTS
-  );
+  const query = useQuery({
+    queryKey: ["achievements", "mine"],
+    queryFn: () => apiGet<Achievement[]>("/achievements"),
+  });
 
   return {
-    achievements: data?.achievements || [],
-    loading,
-    error,
-    refetch,
+    achievements: query.data || [],
+    loading: query.isLoading,
+    error: query.error ?? undefined,
+    refetch: query.refetch,
   };
 }
 
@@ -32,14 +44,15 @@ export function useUserAchievements() {
  * Maps UserAchievement response to Achievement format for UI consistency
  */
 export function useUserProfileAchievements(userId: string) {
-  const { data, loading, error, refetch } =
-    useQuery<GetUserProfileAchievementsData>(GET_USER_PROFILE_ACHIEVEMENTS, {
-      variables: { userId },
-      skip: !userId,
-    });
+  const query = useQuery({
+    queryKey: ["achievements", "user", userId],
+    queryFn: () =>
+      apiGet<RestUserAchievement[]>("/achievements/user", { userId }),
+    enabled: !!userId,
+  });
 
   // Map UserAchievement to Achievement format
-  const mappedAchievements = (data?.userAchievements || []).map((ua) => ({
+  const mappedAchievements = (query.data || []).map((ua) => ({
     achievementId: ua.achievement.id,
     name: ua.achievement.name,
     description: ua.achievement.description,
@@ -55,9 +68,9 @@ export function useUserProfileAchievements(userId: string) {
 
   return {
     achievements: mappedAchievements,
-    loading,
-    error,
-    refetch,
+    loading: query.isLoading,
+    error: query.error ?? undefined,
+    refetch: query.refetch,
   };
 }
 

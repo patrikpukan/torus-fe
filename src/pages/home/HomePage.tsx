@@ -1,6 +1,7 @@
 import { Handshake, Sparkles, User } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +30,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { GET_CURRENT_USER } from "@/features/auth/api/useGetCurrentUserQuery";
 import { PAIRINGS_QUERY } from "@/features/pairings/api/pairingsQuery";
-import { ACTIVE_PAIRING_PERIOD_QUERY } from "@/features/pairings/api/useActivePairingPeriodQuery";
+import { ACTIVE_PAIRING_PERIOD_QUERY_KEY } from "@/features/pairings/api/useActivePairingPeriodQuery";
 
 const todayLabel = new Date().toLocaleDateString(undefined, {
   weekday: "long",
@@ -45,6 +46,7 @@ const HomePage = () => {
   const [findIdealColleague, { loading: findingMatch }] =
     useFindIdealColleague();
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   if (isLoading) {
     return <HomeSkeleton />;
@@ -68,8 +70,12 @@ const HomePage = () => {
         refetchQueries: [
           { query: GET_CURRENT_USER },
           { query: PAIRINGS_QUERY },
-          { query: ACTIVE_PAIRING_PERIOD_QUERY },
         ],
+      });
+      // activePairingPeriod now lives in react-query (REST); invalidate its key
+      // so the home view refetches after a new pairing is created.
+      void queryClient.invalidateQueries({
+        queryKey: ACTIVE_PAIRING_PERIOD_QUERY_KEY,
       });
       const pairingId = data?.findIdealColleague;
 

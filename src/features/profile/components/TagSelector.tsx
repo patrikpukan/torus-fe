@@ -8,9 +8,8 @@ import {
   TagsTrigger,
   TagsValue,
 } from "@/components/ui/shadcn-io/tags";
-import { GET_ALL_TAGS } from "@/features/profile/api/useTagsQueries";
+import { useAllTagsQuery } from "@/features/profile/api/useTagsQueries";
 import type { TagObject } from "@/types/User.ts";
-import { useQuery as useApolloQuery } from "@apollo/client/react";
 import { useState } from "react";
 
 export const TagSelector = ({
@@ -22,11 +21,11 @@ export const TagSelector = ({
   category: "HOBBY" | "INTEREST";
   onChange: (tags: TagObject[]) => void;
 }) => {
-  const { data: tagsData, loading } = useApolloQuery(GET_ALL_TAGS);
+  const { data: tagsData, loading } = useAllTagsQuery();
   const [searchValue, setSearchValue] = useState("");
 
   const availableTags =
-    (tagsData as { getAllTags?: TagObject[] })?.getAllTags?.filter(
+    tagsData?.getAllTags?.filter(
       (tag: TagObject) => tag.category === category
     ) || [];
 

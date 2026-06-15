@@ -1,16 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { gql } from "@apollo/client";
-import { apolloClient } from "../../../lib/apolloClient";
-
-const USER_ACHIEVEMENT_POINTS_QUERY = gql`
-  query UserAchievementPoints($userId: String) {
-    userAchievementPoints(userId: $userId) {
-      earnedPoints
-      possiblePoints
-      completionPercentage
-    }
-  }
-`;
+import { apiGet } from "@/lib/restClient";
 
 interface UserAchievementPoints {
   earnedPoints: number;
@@ -26,15 +15,10 @@ interface UserAchievementPoints {
 export function useUserAchievementPoints(userId?: string) {
   return useQuery({
     queryKey: ["userAchievementPoints", userId],
-    queryFn: async () => {
-      const result = await apolloClient.query<{
-        userAchievementPoints: UserAchievementPoints;
-      }>({
-        query: USER_ACHIEVEMENT_POINTS_QUERY,
-        variables: { userId: userId || undefined },
-      });
-      return result.data?.userAchievementPoints;
-    },
+    queryFn: () =>
+      apiGet<UserAchievementPoints>("/achievements/points", {
+        userId: userId || undefined,
+      }),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }

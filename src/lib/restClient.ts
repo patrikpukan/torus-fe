@@ -55,3 +55,39 @@ export async function apiGet<T>(path: string, params?: QueryParams): Promise<T> 
 
   return (await response.json()) as T;
 }
+
+type WriteMethod = "PUT" | "POST" | "PATCH" | "DELETE";
+
+/**
+ * Authenticated write (PUT/POST/PATCH/DELETE) against the REST API. Attaches
+ * the current Supabase access token as a Bearer header, sends `body` as JSON,
+ * throws on non-2xx with the response body, and returns the parsed JSON.
+ */
+export async function apiSend<T>(
+  method: WriteMethod,
+  path: string,
+  body?: unknown
+): Promise<T> {
+  const {
+    data: { session },
+  } = await supabaseClient.auth.getSession();
+  const token = session?.access_token;
+
+  const response = await fetch(`${REST_BASE_URL}${path}`, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(
+      errorBody || `Request failed with status ${response.status}`
+    );
+  }
+
+  return (await response.json()) as T;
+}

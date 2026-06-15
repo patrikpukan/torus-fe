@@ -1,8 +1,8 @@
-import { useMutation } from "@apollo/client/react";
-import { graphql } from "gql.tada";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiSend } from "@/lib/restClient";
 import {
-  GET_DEPARTMENTS_BY_ORGANIZATION_QUERY,
-  type GetDepartmentsByOrganizationVariables,
+  departmentsByOrganizationKey,
+  type Department,
 } from "./useGetDepartmentsByOrganizationQuery";
 
 export type CreateDepartmentInput = {
@@ -12,42 +12,43 @@ export type CreateDepartmentInput = {
 };
 
 export type CreateDepartmentMutationData = {
-  createDepartment: {
-    id: string;
-    name: string;
-    description?: string | null;
-    organizationId: string;
-    employeeCount: number;
-    createdAt: string;
-    updatedAt: string;
-  };
+  createDepartment: Department;
 };
 
-export const CREATE_DEPARTMENT_MUTATION = graphql(`
-  mutation CreateDepartment($input: CreateDepartmentInput!) {
-    createDepartment(input: $input) {
-      id
-      name
-      description
-      organizationId
-      employeeCount
-      createdAt
-      updatedAt
-    }
-  }
-`);
+type CreateDepartmentArgs = {
+  variables: { input: CreateDepartmentInput };
+};
 
-export const useCreateDepartmentMutation = (organizationId: string) =>
-  useMutation<CreateDepartmentMutationData, { input: CreateDepartmentInput }>(
-    CREATE_DEPARTMENT_MUTATION,
-    {
-      refetchQueries: [
-        {
-          query: GET_DEPARTMENTS_BY_ORGANIZATION_QUERY,
-          variables: {
-            organizationId,
-          } as GetDepartmentsByOrganizationVariables,
-        },
-      ],
-    }
-  );
+/**
+ * Migrated from Apollo to react-query (GraphQL -> REST strangler). Preserves the
+ * Apollo tuple call shape: `const [createDept, { loading }] = useCreateDepartmentMutation(orgId);`
+ * then `await createDept({ variables: { input } })`. Invalidates the
+ * organization's department list on success (matched the old refetchQueries).
+ */
+export const useCreateDepartmentMutation = (
+  organizationId: string
+): [
+  (args: CreateDepartmentArgs) => Promise<CreateDepartmentMutationData>,
+  { loading: boolean },
+] => {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (input: CreateDepartmentInput) =>
+      apiSend<Department>("POST", "/departments", input),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: departmentsByOrganizationKey(organizationId),
+      });
+    },
+  });
+
+  const createDepartment = async ({
+    variables,
+  }: CreateDepartmentArgs): Promise<CreateDepartmentMutationData> => {
+    const created = await mutation.mutateAsync(variables.input);
+    return { createDepartment: created };
+  };
+
+  return [createDepartment, { loading: mutation.isPending }];
+};

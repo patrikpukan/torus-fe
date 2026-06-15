@@ -1,5 +1,5 @@
-import { useQuery } from "@apollo/client/react";
-import { graphql } from "gql.tada";
+import { useQuery } from "@tanstack/react-query";
+import { apiGet } from "@/lib/restClient";
 
 export type Department = {
   id: string;
@@ -19,25 +19,33 @@ export type GetDepartmentsByOrganizationVariables = {
   organizationId: string;
 };
 
-export const GET_DEPARTMENTS_BY_ORGANIZATION_QUERY = graphql(`
-  query GetDepartmentsByOrganization($organizationId: String!) {
-    getDepartmentsByOrganization(organizationId: $organizationId) {
-      id
-      name
-      description
-      organizationId
-      employeeCount
-      createdAt
-      updatedAt
-    }
-  }
-`);
+/** Shared react-query key factory so mutations can invalidate the list. */
+export const departmentsByOrganizationKey = (organizationId: string) => [
+  "departments",
+  "by-organization",
+  organizationId,
+];
 
-export const useGetDepartmentsByOrganizationQuery = (organizationId?: string) =>
-  useQuery<
-    GetDepartmentsByOrganizationData,
-    GetDepartmentsByOrganizationVariables
-  >(GET_DEPARTMENTS_BY_ORGANIZATION_QUERY, {
-    skip: !organizationId,
-    variables: organizationId ? { organizationId } : { organizationId: "" },
+/**
+ * Migrated from Apollo to react-query (GraphQL -> REST strangler). Return shape
+ * preserves `{ data: { getDepartmentsByOrganization }, loading }` so the
+ * DepartmentManagementPage and ProfileForm consumers keep working.
+ */
+export const useGetDepartmentsByOrganizationQuery = (
+  organizationId?: string
+) => {
+  const query = useQuery({
+    queryKey: departmentsByOrganizationKey(organizationId ?? ""),
+    queryFn: () =>
+      apiGet<Department[]>("/departments", { organizationId }),
+    enabled: Boolean(organizationId),
   });
+
+  return {
+    ...query,
+    data: query.data
+      ? { getDepartmentsByOrganization: query.data }
+      : undefined,
+    loading: query.isLoading,
+  };
+};

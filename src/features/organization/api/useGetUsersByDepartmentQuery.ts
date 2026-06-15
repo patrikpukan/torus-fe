@@ -1,5 +1,5 @@
-import { useQuery } from "@apollo/client/react";
-import { graphql } from "gql.tada";
+import { useQuery } from "@tanstack/react-query";
+import { apiGet } from "@/lib/restClient";
 
 export type DepartmentUser = {
   id: string;
@@ -18,24 +18,21 @@ export type GetUsersByDepartmentVariables = {
   departmentId: string;
 };
 
-export const GET_USERS_BY_DEPARTMENT_QUERY = graphql(`
-  query GetUsersByDepartment($departmentId: String!) {
-    getUsersByDepartment(departmentId: $departmentId) {
-      id
-      email
-      firstName
-      lastName
-      profileImageUrl
-      role
-    }
-  }
-`);
+/**
+ * Migrated from Apollo to react-query (GraphQL -> REST strangler). Return shape
+ * preserves `{ data: { getUsersByDepartment }, loading }`.
+ */
+export const useGetUsersByDepartmentQuery = (departmentId?: string) => {
+  const query = useQuery({
+    queryKey: ["departments", departmentId ?? "", "users"],
+    queryFn: () =>
+      apiGet<DepartmentUser[]>(`/departments/${departmentId}/users`),
+    enabled: Boolean(departmentId),
+  });
 
-export const useGetUsersByDepartmentQuery = (departmentId?: string) =>
-  useQuery<GetUsersByDepartmentData, GetUsersByDepartmentVariables>(
-    GET_USERS_BY_DEPARTMENT_QUERY,
-    {
-      skip: !departmentId,
-      variables: departmentId ? { departmentId } : { departmentId: "" },
-    }
-  );
+  return {
+    ...query,
+    data: query.data ? { getUsersByDepartment: query.data } : undefined,
+    loading: query.isLoading,
+  };
+};

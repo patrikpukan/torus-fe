@@ -1,5 +1,5 @@
-import { useQuery } from "@apollo/client/react";
-import { graphql } from "gql.tada";
+import { useQuery } from "@tanstack/react-query";
+import { apiGet } from "@/lib/restClient";
 
 export type UnratedMeeting = {
   id: string;
@@ -23,30 +23,24 @@ export type UnratedMeetingsQueryData = {
   unratedMeetings: UnratedMeeting[];
 };
 
-export const UNRATED_MEETINGS_QUERY = graphql(`
-  query UnratedMeetings {
-    unratedMeetings {
-      id
-      startDateTime
-      endDateTime
-      userAId
-      userBId
-      userA {
-        id
-        firstName
-        lastName
-      }
-      userB {
-        id
-        firstName
-        lastName
-      }
-    }
-  }
-`);
+/** Shared react-query key so the create-rating mutation can invalidate it. */
+export const UNRATED_MEETINGS_QUERY_KEY = ["ratings", "unrated-meetings"];
 
-export const useUnratedMeetingsQuery = () =>
-  useQuery<UnratedMeetingsQueryData>(UNRATED_MEETINGS_QUERY, {
-    pollInterval: 30000, // Poll every 30 seconds
-    fetchPolicy: "cache-and-network",
+/**
+ * Migrated from Apollo to react-query (GraphQL -> REST strangler). Polls every
+ * 30s (was Apollo `pollInterval: 30000`). Return shape preserves
+ * `{ data: { unratedMeetings } }` so useRatingModalTrigger keeps working.
+ */
+export const useUnratedMeetingsQuery = () => {
+  const query = useQuery({
+    queryKey: UNRATED_MEETINGS_QUERY_KEY,
+    queryFn: () =>
+      apiGet<UnratedMeeting[]>("/ratings/unrated-meetings"),
+    refetchInterval: 30000,
   });
+
+  return {
+    ...query,
+    data: query.data ? { unratedMeetings: query.data } : undefined,
+  };
+};

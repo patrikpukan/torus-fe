@@ -1,8 +1,8 @@
-import { useMutation } from "@apollo/client/react";
-import { graphql } from "gql.tada";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiSend } from "@/lib/restClient";
 import {
-  GET_DEPARTMENTS_BY_ORGANIZATION_QUERY,
-  type GetDepartmentsByOrganizationVariables,
+  departmentsByOrganizationKey,
+  type Department,
 } from "./useGetDepartmentsByOrganizationQuery";
 
 export type UpdateDepartmentInput = {
@@ -12,48 +12,42 @@ export type UpdateDepartmentInput = {
 };
 
 export type UpdateDepartmentMutationData = {
-  updateDepartment: {
-    id: string;
-    name: string;
-    description?: string | null;
-    organizationId: string;
-    employeeCount: number;
-    createdAt: string;
-    updatedAt: string;
-  };
+  updateDepartment: Department;
 };
 
-export const UPDATE_DEPARTMENT_MUTATION = graphql(`
-  mutation UpdateDepartment($input: UpdateDepartmentInput!) {
-    updateDepartment(input: $input) {
-      id
-      name
-      description
-      organizationId
-      employeeCount
-      createdAt
-      updatedAt
-    }
-  }
-`);
+type UpdateDepartmentArgs = {
+  variables: { input: UpdateDepartmentInput };
+};
 
-export const useUpdateDepartmentMutation = () =>
-  useMutation<UpdateDepartmentMutationData, { input: UpdateDepartmentInput }>(
-    UPDATE_DEPARTMENT_MUTATION,
-    {
-      refetchQueries: [
-        {
-          query: GET_DEPARTMENTS_BY_ORGANIZATION_QUERY,
-          variables: (mutationResult: {
-            data?: UpdateDepartmentMutationData;
-          }) =>
-            ({
-              organizationId: (
-                mutationResult.data
-                  ?.updateDepartment as UpdateDepartmentMutationData["updateDepartment"]
-              ).organizationId,
-            }) as GetDepartmentsByOrganizationVariables,
-        },
-      ],
-    }
-  );
+/**
+ * Migrated from Apollo to react-query (GraphQL -> REST strangler). Preserves the
+ * Apollo tuple call shape: `const [updateDept, { loading }] = useUpdateDepartmentMutation();`
+ * then `await updateDept({ variables: { input } })`. Invalidates the updated
+ * department's organization list on success (the response carries
+ * organizationId, matching the old dynamic refetchQueries).
+ */
+export const useUpdateDepartmentMutation = (): [
+  (args: UpdateDepartmentArgs) => Promise<UpdateDepartmentMutationData>,
+  { loading: boolean },
+] => {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: ({ id, ...body }: UpdateDepartmentInput) =>
+      apiSend<Department>("PATCH", `/departments/${id}`, body),
+    onSuccess: (updated) => {
+      queryClient.invalidateQueries({
+        queryKey: departmentsByOrganizationKey(updated.organizationId),
+      });
+    },
+  });
+
+  const updateDepartment = async ({
+    variables,
+  }: UpdateDepartmentArgs): Promise<UpdateDepartmentMutationData> => {
+    const updated = await mutation.mutateAsync(variables.input);
+    return { updateDepartment: updated };
+  };
+
+  return [updateDepartment, { loading: mutation.isPending }];
+};

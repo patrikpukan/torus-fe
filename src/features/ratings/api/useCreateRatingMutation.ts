@@ -1,6 +1,6 @@
-import { useMutation, useApolloClient } from "@apollo/client/react";
-import { graphql } from "gql.tada";
-import { UNRATED_MEETINGS_QUERY } from "./useUnratedMeetingsQuery";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiSend } from "@/lib/restClient";
+import { UNRATED_MEETINGS_QUERY_KEY } from "./useUnratedMeetingsQuery";
 
 export type CreateRatingMutationData = {
   createRating: {
@@ -19,33 +19,44 @@ export type CreateRatingMutationVariables = {
   };
 };
 
-export const CREATE_RATING_MUTATION = graphql(`
-  mutation CreateRating($input: CreateRatingInputType!) {
-    createRating(input: $input) {
-      id
-      meetingEventId
-      stars
-      feedback
-    }
-  }
-`);
+type CreateRatingResponse = {
+  id: string;
+  meetingEventId: string;
+  stars: number;
+  feedback?: string | null;
+};
 
-export const useCreateRatingMutation = () => {
-  const client = useApolloClient();
+/**
+ * Migrated from Apollo to react-query (GraphQL -> REST strangler). Preserves the
+ * Apollo tuple call shape: `const [createRating, { loading }] = useCreateRatingMutation();`
+ * then `await createRating({ variables: { input } })`. On success it invalidates
+ * the unrated-meetings query so the prompt list refreshes (matched the old
+ * Apollo cache evict + refetch).
+ */
+export const useCreateRatingMutation = (): [
+  (args: {
+    variables: CreateRatingMutationVariables;
+  }) => Promise<CreateRatingMutationData>,
+  { loading: boolean },
+] => {
+  const queryClient = useQueryClient();
 
-  return useMutation<CreateRatingMutationData, CreateRatingMutationVariables>(
-    CREATE_RATING_MUTATION,
-    {
-      onCompleted: () => {
-        // Clear the cache for unrated meetings and refetch to ensure fresh data
-        client.cache.evict({
-          id: client.cache.identify({ __typename: "Query" }),
-          fieldName: "unratedMeetings",
-        });
-        client.refetchQueries({
-          include: [UNRATED_MEETINGS_QUERY],
-        });
-      },
-    }
-  );
+  const mutation = useMutation({
+    mutationFn: (input: CreateRatingMutationVariables["input"]) =>
+      apiSend<CreateRatingResponse>("POST", "/ratings", input),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: UNRATED_MEETINGS_QUERY_KEY });
+    },
+  });
+
+  const createRating = async ({
+    variables,
+  }: {
+    variables: CreateRatingMutationVariables;
+  }): Promise<CreateRatingMutationData> => {
+    const created = await mutation.mutateAsync(variables.input);
+    return { createRating: created };
+  };
+
+  return [createRating, { loading: mutation.isPending }];
 };

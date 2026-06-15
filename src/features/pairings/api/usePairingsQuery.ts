@@ -1,26 +1,34 @@
-import { useQuery } from "@apollo/client/react";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { PAIRINGS_QUERY, type PairingsQueryData } from "./pairingsQuery";
+import {
+  PAIRING_HISTORY_QUERY_KEY,
+  fetchPairingHistory,
+} from "./pairingsQuery";
 import type { PairingContact } from "@/features/pairings/types";
 import { useAuth } from "@/hooks/useAuth";
 
 /**
- * Hook to fetch user's pairing history from GraphQL backend.
+ * Hook to fetch the user's pairing history (REST GET /api/users/pairing-history).
  * Transforms the data into PairingContact format for use in PairingsView.
  * Sorts by latest pairing date.
  */
 export const usePairingsQuery = () => {
   const { user, currentUserData } = useAuth();
-  const { data, loading, error } = useQuery<PairingsQueryData>(PAIRINGS_QUERY, {
-    fetchPolicy: "cache-and-network",
-    skip: !user, // Don't fetch if user not authenticated
+  const {
+    data: pairings,
+    isLoading: loading,
+    error,
+  } = useQuery({
+    queryKey: PAIRING_HISTORY_QUERY_KEY,
+    queryFn: fetchPairingHistory,
+    enabled: !!user, // Don't fetch if user not authenticated
   });
 
-  // Transform GraphQL data into PairingContact format
+  // Transform pairing-history data into PairingContact format
   const pairingContacts = useMemo(() => {
-    if (!data?.getPairingHistory || !user) return [];
+    if (!pairings || !user) return [];
 
-    return data.getPairingHistory.map((pairing) => {
+    return pairings.map((pairing) => {
       // Determine which user is the "contact" (not the current user)
       const isUserA = pairing.userAId === user.id;
       const contactUser = isUserA ? pairing.userB : pairing.userA;
@@ -66,12 +74,12 @@ export const usePairingsQuery = () => {
         isCurrentlyMatched: boolean;
       };
     });
-  }, [data?.getPairingHistory, user, currentUserData]);
+  }, [pairings, user, currentUserData]);
 
   return {
     pairingContacts,
     loading,
     error,
-    pairings: data?.getPairingHistory ?? [],
+    pairings: pairings ?? [],
   };
 };

@@ -1,4 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useMemo } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiGet, apiSend } from "@/lib/restClient";
 
 /**
@@ -33,8 +34,15 @@ export const useGetMessagesQuery = (pairingId: string) => {
     staleTime: 0,
   });
 
+  // Memoize so the wrapped `data` keeps a stable reference between renders
+  // (consumers depend on it in effects).
+  const data = useMemo(
+    () => (query.data ? { getMessages: query.data } : undefined),
+    [query.data]
+  );
+
   return {
-    data: query.data ? { getMessages: query.data } : undefined,
+    data,
     loading: query.isLoading,
     refetch: query.refetch,
   };
@@ -56,14 +64,19 @@ export const useSendMessageMutation = (): [
       apiSend<MessageModel>("POST", "/chat/messages", input),
   });
 
-  const sendMessage = async ({
-    variables,
-  }: {
-    variables: { input: { pairingId: string; content: string } };
-  }) => {
-    const message = await mutation.mutateAsync(variables.input);
-    return { sendMessage: message };
-  };
+  // Stable identity: consumers pass these into effect deps (see useMessages),
+  // so an unstable function would re-fire effects every render -> request storm.
+  const sendMessage = useCallback(
+    async ({
+      variables,
+    }: {
+      variables: { input: { pairingId: string; content: string } };
+    }) => {
+      const message = await mutation.mutateAsync(variables.input);
+      return { sendMessage: message };
+    },
+    [mutation.mutateAsync]
+  );
 
   return [sendMessage, { loading: mutation.isPending, error: mutation.error }];
 };
@@ -79,7 +92,6 @@ export const useMarkMessagesAsReadMutation = (): [
   }>,
   { loading: boolean },
 ] => {
-  const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (pairingId: string) =>
       apiSend<{ success: boolean }>(
@@ -88,17 +100,17 @@ export const useMarkMessagesAsReadMutation = (): [
       ),
   });
 
-  const markMessagesAsRead = async ({
-    variables,
-  }: {
-    variables: { pairingId: string };
-  }) => {
-    const { success } = await mutation.mutateAsync(variables.pairingId);
-    queryClient.invalidateQueries({
-      queryKey: messagesQueryKey(variables.pairingId),
-    });
-    return { markMessagesAsRead: success };
-  };
+  // Stable identity (used in useMessages effect deps). Does NOT invalidate the
+  // messages query — read state propagates to the sender via the messages_read
+  // broadcast, so a refetch here is unnecessary and previously caused a
+  // render -> refetch -> render loop (request storm).
+  const markMessagesAsRead = useCallback(
+    async ({ variables }: { variables: { pairingId: string } }) => {
+      const { success } = await mutation.mutateAsync(variables.pairingId);
+      return { markMessagesAsRead: success };
+    },
+    [mutation.mutateAsync]
+  );
 
   return [markMessagesAsRead, { loading: mutation.isPending }];
 };
@@ -119,14 +131,17 @@ export const useSetTypingStatusMutation = (): [
       apiSend<{ success: boolean }>("POST", "/chat/typing", vars),
   });
 
-  const setTypingStatus = async ({
-    variables,
-  }: {
-    variables: { pairingId: string; isTyping: boolean };
-  }) => {
-    const { success } = await mutation.mutateAsync(variables);
-    return { setTypingStatus: success };
-  };
+  const setTypingStatus = useCallback(
+    async ({
+      variables,
+    }: {
+      variables: { pairingId: string; isTyping: boolean };
+    }) => {
+      const { success } = await mutation.mutateAsync(variables);
+      return { setTypingStatus: success };
+    },
+    [mutation.mutateAsync]
+  );
 
   return [setTypingStatus, { loading: mutation.isPending }];
 };

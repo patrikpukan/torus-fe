@@ -2,7 +2,6 @@ import { Handshake, Sparkles, User } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { useApolloClient } from "@apollo/client/react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +28,7 @@ import { AchievementsShowcase } from "@/features/home/components/AchievementsSho
 import { EngagementStatsPanel } from "@/features/home/components/EngagementStatsPanel";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { PAIRINGS_QUERY } from "@/features/pairings/api/pairingsQuery";
+import { PAIRING_HISTORY_QUERY_KEY } from "@/features/pairings/api/pairingsQuery";
 import { ACTIVE_PAIRING_PERIOD_QUERY_KEY } from "@/features/pairings/api/useActivePairingPeriodQuery";
 
 const todayLabel = new Date().toLocaleDateString(undefined, {
@@ -47,7 +46,6 @@ const HomePage = () => {
     useFindIdealColleague();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const queryClient = useQueryClient();
-  const apolloClient = useApolloClient();
 
   if (isLoading) {
     return <HomeSkeleton />;
@@ -69,10 +67,12 @@ const HomePage = () => {
     try {
       const { data } = await findIdealColleague();
       // The current-user query (idealColleague uses remaining) is invalidated
-      // inside the mutation. Pairings still live on GraphQL (Apollo), so
-      // refetch that document; activePairingPeriod lives in react-query (REST),
-      // so invalidate its key. Both refresh the home view after a new pairing.
-      await apolloClient.refetchQueries({ include: [PAIRINGS_QUERY] });
+      // inside the mutation. Pairing history + activePairingPeriod both live in
+      // react-query (REST) now, so invalidate their keys to refresh the home
+      // view after a new pairing.
+      void queryClient.invalidateQueries({
+        queryKey: PAIRING_HISTORY_QUERY_KEY,
+      });
       void queryClient.invalidateQueries({
         queryKey: ACTIVE_PAIRING_PERIOD_QUERY_KEY,
       });

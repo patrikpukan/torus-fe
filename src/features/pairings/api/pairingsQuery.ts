@@ -1,4 +1,4 @@
-import { graphql } from "gql.tada";
+import { apiGet } from "@/lib/restClient";
 
 export type PairingQueryItem = {
   id: string;
@@ -92,82 +92,12 @@ export type PairingsQueryData = {
 };
 
 /**
- * Query to get current user's pairing history with detailed pairing information
- * including: paired user profiles, pairing date, pairing status, and whether currently matched
+ * Shared react-query key + fetcher for the current user's pairing history
+ * (migrated GraphQL getPairingHistory -> REST GET /api/users/pairing-history,
+ * which maps userA/userB through the same user mapper, so the shape matches the
+ * old GraphQL document's selection set).
  */
-export const PAIRINGS_QUERY = graphql(`
-  query GetPairingHistory {
-    getPairingHistory {
-      id
-      userAId
-      userBId
-      status
-      derivedStatus
-      createdAt
-      userA {
-        id
-        email
-        firstName
-        lastName
-        profileImageUrl
-        profileStatus
-        about
-        location
-        position
-        preferredActivity
-        departmentId
-        department {
-          id
-          name
-        }
-        organization {
-          id
-          name
-        }
-        organizationId
-        hobbies {
-          id
-          name
-          category
-        }
-        interests {
-          id
-          name
-          category
-        }
-      }
-      userB {
-        id
-        email
-        firstName
-        lastName
-        profileImageUrl
-        profileStatus
-        about
-        location
-        position
-        preferredActivity
-        departmentId
-        department {
-          id
-          name
-        }
-        organization {
-          id
-          name
-        }
-        organizationId
-        hobbies {
-          id
-          name
-          category
-        }
-        interests {
-          id
-          name
-          category
-        }
-      }
-    }
-  }
-`);
+export const PAIRING_HISTORY_QUERY_KEY = ["users", "pairing-history"];
+
+export const fetchPairingHistory = () =>
+  apiGet<PairingQueryItem[]>("/users/pairing-history");

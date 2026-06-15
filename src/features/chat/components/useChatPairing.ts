@@ -38,6 +38,9 @@ export const useChatPairing = ({ contact, activeTab }: UseChatPairingProps) => {
     handleTyping();
   };
 
+  const appendToMessage = (text: string) =>
+    setMessageContent((prev) => prev + text);
+
   const handleSendMessage = async () => {
     if (!messageContent.trim() || !pairingId) {
       console.warn("Cannot send message - content empty or no pairingId", {
@@ -107,5 +110,6 @@ export const useChatPairing = ({ contact, activeTab }: UseChatPairingProps) => {
     handleInputChange,
     handleSendMessage,
     sendMessageDirect,
+    appendToMessage,
   };
 };

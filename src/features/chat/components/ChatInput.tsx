@@ -1,5 +1,11 @@
 import React from "react";
+import { Smile } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { MessageSuggestions } from "./MessageSuggestions";
 
@@ -12,7 +18,18 @@ interface ChatInputProps {
   isReplyToFirstMessage: boolean;
   onSendSuggestion: (message: string) => void;
   messageCount?: number;
+  onInsertEmoji?: (text: string) => void;
 }
+
+const EMOJIS = [
+  "😀", "😃", "😄", "😁", "😆", "😅", "😂", "🙂",
+  "😉", "😊", "😍", "😘", "😎", "🤔", "🙃", "😴",
+  "😢", "😭", "😡", "😮", "😱", "🤯", "🥳", "😇",
+  "👍", "👎", "👏", "🙏", "🙌", "👌", "✌️", "🤝",
+  "💪", "🎉", "🎊", "🔥", "✨", "⭐", "💡", "✅",
+  "❤️", "🧡", "💛", "💚", "💙", "💜", "💯", "👀",
+  "☕", "📅", "📌", "📎", "💬", "📞", "🚀", "🎯",
+];
 
 export const ChatInput: React.FC<ChatInputProps> = ({
   messageContent,
@@ -23,6 +40,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   isReplyToFirstMessage,
   onSendSuggestion,
   messageCount = 0,
+  onInsertEmoji,
 }) => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey && messageContent.trim()) {
@@ -48,7 +66,37 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         rows={2}
         disabled={sending}
       />
-      <div className="mt-3 flex justify-end">
+      <div className="mt-3 flex items-center justify-end gap-2">
+        {onInsertEmoji && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label="Insert emoji"
+                disabled={sending}
+              >
+                <Smile className="h-5 w-5" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-64">
+              <div className="grid grid-cols-8 gap-1">
+                {EMOJIS.map((emoji) => (
+                  <button
+                    key={emoji}
+                    type="button"
+                    aria-label={`Insert ${emoji}`}
+                    onClick={() => onInsertEmoji(emoji)}
+                    className="flex h-8 w-8 items-center justify-center rounded-md text-lg transition hover:bg-muted"
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
         <Button
           type="button"
           onClick={onSend}

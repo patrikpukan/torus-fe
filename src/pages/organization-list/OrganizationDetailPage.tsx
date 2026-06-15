@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useMutation } from "@apollo/client/react";
 import { useOrganizationByIdQuery } from "@/features/organization/api/useOrganizationByIdQuery";
 import { useMyOrganizationQuery } from "@/features/organization/api/useMyOrganizationQuery";
-import { UPDATE_ORGANIZATION_MUTATION } from "@/features/organization/api/useUpdateOrganizationMutation";
+import { useUpdateOrganizationMutation } from "@/features/organization/api/useUpdateOrganizationMutation";
 import OrganizationForm, {
   type OrganizationFormData,
 } from "@/features/organization/components/OrganizationForm";
@@ -40,9 +39,8 @@ const OrganizationDetailPage = () => {
     error: orgByIdError,
   } = useOrganizationByIdQuery(organizationId);
 
-  const [updateOrganization, { loading: mutationLoading }] = useMutation(
-    UPDATE_ORGANIZATION_MUTATION
-  );
+  const [updateOrganization, { loading: mutationLoading }] =
+    useUpdateOrganizationMutation();
 
   // Select the appropriate data source
   const loading = isMyOrg ? myOrgLoading : orgByIdLoading;

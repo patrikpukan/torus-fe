@@ -1,45 +1,37 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { gql } from "@apollo/client";
-import { apolloClient } from "@/lib/apolloClient";
+import { apiSend } from "@/lib/restClient";
 
 interface CreateInviteCodeInput {
   maxUses?: number;
   expiresInHours?: number;
 }
 
-interface CreateInviteCodeResponse {
-  createInviteCode: {
-    success: boolean;
-    message: string;
-    code: string;
-    inviteUrl: string;
-    expiresAt?: string;
-  };
+interface CreateInviteCodeResult {
+  success: boolean;
+  message: string;
+  code: string;
+  inviteUrl: string;
+  expiresAt?: string;
 }
 
-const CREATE_INVITE_CODE = gql`
-  mutation CreateInviteCode($input: CreateInviteCodeInputType) {
-    createInviteCode(input: $input) {
-      success
-      message
-      code
-      inviteUrl
-      expiresAt
-    }
-  }
-`;
-
+/**
+ * Migrated from Apollo to react-query (GraphQL -> REST strangler).
+ * POST /api/organizations/invite-codes (org_admin|super_admin). Preserves the
+ * react-query mutation return shape and the resolved value
+ * (`{ success, message, code, inviteUrl, expiresAt }`) so InviteUrlGenerator
+ * and InviteQrGenerator keep working unchanged. Invalidates the invite-codes
+ * list on success.
+ */
 export const useCreateInviteCodeMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (input?: CreateInviteCodeInput) => {
-      const { data } = await apolloClient.mutate<CreateInviteCodeResponse>({
-        mutation: CREATE_INVITE_CODE,
-        variables: { input },
-      });
-      return data?.createInviteCode;
-    },
+    mutationFn: (input?: CreateInviteCodeInput) =>
+      apiSend<CreateInviteCodeResult>(
+        "POST",
+        "/organizations/invite-codes",
+        input ?? {}
+      ),
     onSuccess: () => {
       // Refetch invite codes after creating a new one
       queryClient.invalidateQueries({ queryKey: ["inviteCodes"] });

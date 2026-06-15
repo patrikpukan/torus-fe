@@ -1,5 +1,5 @@
-import { useQuery } from "@apollo/client/react";
-import { graphql } from "gql.tada";
+import { useQuery } from "@tanstack/react-query";
+import { apiGet } from "@/lib/restClient";
 
 export type OrganizationQueryItem = {
   id: string;
@@ -16,22 +16,25 @@ export type OrganizationsQueryData = {
   organizations: OrganizationQueryItem[];
 };
 
-export const ORGANIZATIONS_QUERY = graphql(`
-  query Organizations {
-    organizations {
-      id
-      name
-      code
-      size
-      address
-      imageUrl
-      createdAt
-      updatedAt
-    }
-  }
-`);
+export const organizationsQueryKey = ["organizations", "list"];
 
-export const useOrganizationsQuery = () =>
-  useQuery<OrganizationsQueryData>(ORGANIZATIONS_QUERY, {
-    fetchPolicy: "cache-and-network",
+/**
+ * Migrated from Apollo to react-query (GraphQL -> REST strangler).
+ * GET /api/organizations (super_admin only). Preserves the Apollo return shape
+ * `{ data: { organizations }, loading, error }` so OrganizationListPage,
+ * AdminAlgorithmSettingsPage, AdminStatisticsPage, AdminReportsPage and
+ * AdminUserListPage keep working unchanged.
+ */
+export const useOrganizationsQuery = () => {
+  const query = useQuery({
+    queryKey: organizationsQueryKey,
+    queryFn: () => apiGet<OrganizationQueryItem[]>("/organizations"),
   });
+
+  return {
+    ...query,
+    data: query.data ? { organizations: query.data } : undefined,
+    loading: query.isLoading,
+    error: query.error as Error | undefined,
+  };
+};

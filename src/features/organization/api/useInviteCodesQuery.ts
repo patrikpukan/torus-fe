@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { gql } from "@apollo/client";
-import { apolloClient } from "@/lib/apolloClient";
+import { apiGet } from "@/lib/restClient";
 
 export interface InviteCode {
   id: string;
@@ -19,42 +18,17 @@ export interface InviteCode {
   inviteUrl: string;
 }
 
-interface GetOrganizationInvitesResponse {
-  getOrganizationInvites: InviteCode[];
-}
-
-const GET_ORGANIZATION_INVITES = gql`
-  query GetOrganizationInvites {
-    getOrganizationInvites {
-      id
-      code
-      createdAt
-      expiresAt
-      usedCount
-      maxUses
-      isActive
-      createdBy {
-        id
-        email
-        firstName
-        lastName
-      }
-      inviteUrl
-    }
-  }
-`;
-
+/**
+ * Migrated from Apollo to react-query (GraphQL -> REST strangler).
+ * GET /api/organizations/invite-codes (org_admin|super_admin). Preserves the
+ * react-query return shape and the `InviteCode[]` data so InviteManagementPage
+ * / InviteHistoryTable keep working unchanged.
+ */
 export const useInviteCodesQuery = () => {
   return useQuery({
     queryKey: ["inviteCodes"],
-    queryFn: async () => {
-      const { data } = await apolloClient.query<GetOrganizationInvitesResponse>(
-        {
-          query: GET_ORGANIZATION_INVITES,
-        }
-      );
-      return data?.getOrganizationInvites || [];
-    },
+    queryFn: () =>
+      apiGet<InviteCode[]>("/organizations/invite-codes"),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };

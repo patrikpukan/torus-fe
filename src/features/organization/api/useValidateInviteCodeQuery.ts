@@ -1,33 +1,25 @@
-import { gql } from "@apollo/client";
 import { useQuery } from "@tanstack/react-query";
-import { apolloClient } from "@/lib/apolloClient";
+import { apiGet } from "@/lib/restClient";
 
-interface ValidateInviteCodeResponse {
-  validateInviteCode: {
-    isValid: boolean;
-    message: string;
-    organizationId?: string;
-    organizationName?: string;
-    remainingUses?: number;
-  };
+export interface ValidateInviteCodeResult {
+  isValid: boolean;
+  message: string;
+  organizationId?: string;
+  organizationName?: string;
+  remainingUses?: number;
 }
 
-interface ValidateInviteCodeVariables {
-  code: string;
-}
-
-const VALIDATE_INVITE_CODE = gql`
-  query ValidateInviteCode($code: String!) {
-    validateInviteCode(code: $code) {
-      isValid
-      message
-      organizationId
-      organizationName
-      remainingUses
-    }
-  }
-`;
-
+/**
+ * Migrated from Apollo to react-query (GraphQL -> REST strangler).
+ * GET /api/organizations/invite-codes/validate?code= — PUBLIC. Works WITHOUT a
+ * session: restClient.apiGet only attaches a bearer token when a Supabase
+ * session exists and does not throw when there is none, so RegisterForm can
+ * validate invite codes before the user is authenticated.
+ *
+ * Preserves the prior react-query return shape and the `null` sentinel for an
+ * empty/blank code so RegisterForm (`inviteValidation?.isValid`,
+ * `inviteValidation !== null`) keeps working unchanged.
+ */
 export const useValidateInviteCodeQuery = (code: string | null) => {
   return useQuery({
     queryKey: ["validateInviteCode", code],
@@ -35,16 +27,10 @@ export const useValidateInviteCodeQuery = (code: string | null) => {
       if (!code || code.trim().length === 0) {
         return null;
       }
-
-      const result = await apolloClient.query<
-        ValidateInviteCodeResponse,
-        ValidateInviteCodeVariables
-      >({
-        query: VALIDATE_INVITE_CODE,
-        variables: { code: code.trim() },
-      });
-
-      return result.data?.validateInviteCode ?? null;
+      return apiGet<ValidateInviteCodeResult>(
+        "/organizations/invite-codes/validate",
+        { code: code.trim() }
+      );
     },
     enabled: !!code && code.trim().length > 0,
     staleTime: 30 * 1000, // 30 seconds

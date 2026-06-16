@@ -7,6 +7,7 @@ import { FeaturesSection } from "./landing/FeaturesSection";
 import { HowItWorksSection } from "./landing/HowItWorksSection";
 import { BenefitsSection } from "./landing/BenefitsSection";
 import { CTASection } from "./landing/CTASection";
+import { LandingFooter } from "./landing/LandingFooter";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ const LandingPage = () => {
         <Separator className="my-12 sm:my-16" />
         <CTASection />
       </div>
+      <LandingFooter />
     </div>
   );
 };

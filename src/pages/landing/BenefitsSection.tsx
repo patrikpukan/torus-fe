@@ -1,4 +1,3 @@
-import { Card } from "@/components/ui/card";
 import { Check } from "lucide-react";
 
 const benefits = [
@@ -26,27 +25,41 @@ const benefits = [
 
 export const BenefitsSection = () => {
   return (
-    <div className="mb-12 space-y-10 sm:mb-16 md:mb-20">
-      <h2 className="text-center font-heading text-3xl font-bold tracking-tight sm:text-4xl">
-        Benefits for Your Organization
-      </h2>
-      <div className="grid gap-6 md:grid-cols-2">
-        {benefits.map((b) => (
-          <Card
-            key={b.title}
-            className="border-0 p-8 shadow-elevated transition hover:shadow-elevated-lg"
-          >
-            <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                <Check className="h-6 w-6" />
-              </div>
-              <div className="space-y-1.5">
+    <div className="mb-12 sm:mb-16 md:mb-20">
+      <div className="grid items-start gap-10 rounded-3xl border border-border/60 bg-muted/30 p-8 sm:p-12 lg:grid-cols-[0.8fr_1fr] lg:gap-16">
+        {/* Intro column */}
+        <div className="space-y-4 lg:sticky lg:top-24">
+          <span className="font-heading text-sm font-bold uppercase tracking-widest text-primary">
+            Why Torus
+          </span>
+          <h2 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
+            Benefits for Your Organization
+          </h2>
+          <p className="text-muted-foreground">
+            More than a scheduling tool — Torus turns everyday introductions
+            into measurable culture change.
+          </p>
+        </div>
+
+        {/* Checklist column */}
+        <ul className="divide-y divide-border/60">
+          {benefits.map((b) => (
+            <li
+              key={b.title}
+              className="flex items-start gap-4 py-5 first:pt-0"
+            >
+              <span className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                <Check className="h-4 w-4" strokeWidth={3} />
+              </span>
+              <div className="space-y-1">
                 <h3 className="font-heading text-lg font-bold">{b.title}</h3>
-                <p className="text-muted-foreground">{b.description}</p>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {b.description}
+                </p>
               </div>
-            </div>
-          </Card>
-        ))}
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
